@@ -53,7 +53,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 8 of 18 tickets resolved.
+**Map progress:** 9 of 19 tickets resolved.
 
 ### Deliverables
 
@@ -73,11 +73,11 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Item bank: Future-state section (Personal + Team stance)](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6)
 - [Context items: which Respondent attributes to collect](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/7)
 - [Probe items: definition, count and scoring rule](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/8)
+- [Scoring rules: items → Dimension scores, grid → Coverage profile, gaps](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/9)
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
 
 ### Still open
 
-- [Scoring rules: items → Dimension scores, grid → Coverage profile, gaps](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/9) _(grilling)_
 - [Microsoft Forms export: column layout for Likert and grid questions](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10) _(research)_
 - [Dashboard prototype: the Slices and the Layered view with fake data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/11) _(prototype)_
 - [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12) _(grilling)_
@@ -87,6 +87,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16) _(task)_
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
+- [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20) _(grilling)_
 
 <!-- progress:end -->
 
