@@ -26,6 +26,7 @@ Ubiquitous language for the team AI-adoption survey and its rubric. Glossary onl
 - **Context item** — An unscored question about the Respondent (role, experience, tools used today) that becomes an extra Slice.
 - **Rubric** — The rules that map raw Survey answers to Dimension scores and describe what each score level means in words.
 - **Scoring sheet** — The spreadsheet/CSV template that applies the Rubric to exported responses and produces individual and Team scores.
+- **Scored CSV** — The single file the Scoring sheet exports and the dashboard reads: one row per Respondent, every per-Respondent value (scores, Gaps, Involvement levels, Edge markers, Safeguards, Levers, flags, raw answers) in named columns. Team-level statistics are never in it — they are computed from it. It is named and internal; it never travels to the manager and is never committed to the repository.
 
 ## Dimensions (v1)
 

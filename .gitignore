@@ -1,0 +1,4 @@
+# Real survey exports are named personal data and this repository is public.
+# Only the fake-persona sample is committed.
+scoring/*.csv
+!scoring/scored-sample.csv
