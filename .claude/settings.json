@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/on-issue-close.py\" 2>/dev/null || true",
+            "timeout": 120,
+            "statusMessage": "Issue closed: refreshing README, committing, pushing"
+          }
+        ]
+      }
+    ]
+  }
+}
