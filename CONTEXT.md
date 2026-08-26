@@ -13,6 +13,10 @@ Ubiquitous language for the team AI-adoption survey and its rubric. Glossary onl
 - **Gap** — Future score minus Current score, per Dimension. Positive = wants to adopt more; negative = wants to pull back.
 - **Stance** — Whose position a Future-state item captures. Every Future-state item is answered twice, once per stance: **Personal stance** ("what I would do") or **Team stance** ("what the team should adopt as a norm"). Distinguishing them surfaces "I'd go further, but I don't think we should" and the reverse.
 - **Team score** — Aggregate of Respondent scores on a Dimension (current or future). Includes a spread measure so disagreement is visible, not averaged away.
+- **Behaviour item** — A Current-state Dimension item about something the Respondent does; answered on a frequency scale (Never … Always).
+- **Attitude item** — A Current-state Dimension item about how the Respondent feels or judges; answered on a "describes me today" scale (Not at all … Completely).
+- **Desirability scale** — The single scale for every Future-state item (Definitely not … Definitely), used identically for the Personal and Team stance rows.
+- **Reverse-keyed item** — An item worded so that agreeing means *less* of the Dimension; its answer is flipped before scoring. Every Dimension has at least one.
 - **Probe item** — A deliberately extreme statement placed at a far end of a Dimension (e.g. "I'd merge an agent's PR unread if CI is green") whose purpose is to locate people at the edges. Used instead of open-text prompts; the survey has no free-text questions.
 - **Context item** — An unscored question about the Respondent (role, experience, tools used today) that becomes an extra Slice.
 - **Rubric** — The rules that map raw Survey answers to Dimension scores and describe what each score level means in words.
