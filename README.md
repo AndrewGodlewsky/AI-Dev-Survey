@@ -53,13 +53,13 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 10 of 19 tickets resolved.
+**Map progress:** 13 of 19 tickets resolved.
 
 ### Deliverables
 
 - [ ] Survey document — `survey/SURVEY.md`
 - [x] Coverage grid — `survey/coverage-grid.md`
-- [ ] Rubric — `rubric/RUBRIC.md`
+- [x] Rubric — `rubric/RUBRIC.md`
 - [ ] Scoring sheet (Excel) — `scoring/scoring.xlsx`
 - [ ] Dashboard (HTML) — `dashboard/index.html`
 - [ ] How to read the results — `docs/HOW-TO-READ.md`
@@ -75,14 +75,14 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Probe items: definition, count and scoring rule](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/8)
 - [Scoring rules: items → Dimension scores, grid → Coverage profile, gaps](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/9)
 - [Microsoft Forms export: column layout for Likert and grid questions](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10)
+- [Dashboard prototype: the Slices and the Layered view with fake data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/11)
+- [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12)
+- [Assemble the Rubric document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/14)
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
 
 ### Still open
 
-- [Dashboard prototype: the Slices and the Layered view with fake data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/11) _(prototype)_
-- [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12) _(grilling)_
 - [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13) _(task)_
-- [Assemble the Rubric document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/14) _(task)_
 - [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15) _(task)_
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16) _(task)_
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17) _(task)_
