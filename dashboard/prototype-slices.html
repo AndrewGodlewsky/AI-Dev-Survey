@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTOTYPE — dashboard Slices (fake data)</title>
+<!--
+  PROTOTYPE — THROWAWAY. Wayfinder ticket #11.
+
+  Question: what Slices does the dashboard need, and what shape should each take?
+  Plan:     three structurally different variants of the whole dashboard, switchable via
+            ?variant=A|B|C (or #A/#B/#C) and the floating bar at the bottom.
+              A — Slice tabs: one Slice at a time, full width.
+              B — Overview wall: everything on one scrolling page, expand-in-place.
+              C — Explorer: a "where do we disagree" list on the left, one topic on the right.
+  Data:     7 fake people, generated at ITEM level (26 current + 25 future stems × 2 stances
+            + 5 probes × 2 + 19×3 grid + safeguards) and scored with the real facet map from
+            scoring/scoring-rules.md — so decimals, Gaps, N/A pairings, Edge markers and Levers
+            come out of the actual rules, not hand-typed.
+  Open from disk. No dependencies. Nothing persists.
+-->
+<style>
+:root{
+  color-scheme:light;
+  --surface:#fcfcfb; --page:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s7:#4a3aa7; --s8:#e34948;
+  --div-neg:#2a78d6; --div-pos:#e34948; --div-mid:#f0efec;
+  --q1:#cde2fb;--q2:#b7d3f6;--q3:#9ec5f4;--q4:#86b6ef;--q5:#6da7ec;--q6:#5598e7;--q7:#3987e5;--q8:#256abf;
+  --o1:#86b6ef;--o2:#6da7ec;--o3:#5598e7;--o4:#3987e5;--o5:#2a78d6;--o6:#1c5cab;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  color-scheme:dark;
+  --surface:#1a1a19; --page:#0d0d0d; --ink:#fff; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --wash:rgba(255,255,255,.05);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s7:#9085e9; --s8:#e66767;
+  --div-neg:#3987e5; --div-pos:#e66767; --div-mid:#383835;
+  --q1:#184f95;--q2:#1c5cab;--q3:#256abf;--q4:#2a78d6;--q5:#3987e5;--q6:#5598e7;--q7:#6da7ec;--q8:#86b6ef;
+  --o1:#184f95;--o2:#1c5cab;--o3:#256abf;--o4:#2a78d6;--o5:#3987e5;--o6:#5598e7;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}
+h1{font-size:20px;margin:0;font-weight:650}
+h2{font-size:16px;margin:0 0 8px;font-weight:650}
+h3{font-size:13px;margin:0 0 6px;font-weight:650;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.app{max-width:1280px;margin:0 auto;padding:20px 20px 90px}
+.hdr{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:baseline;margin-bottom:12px}
+.hdr .sub{color:var(--ink2)}
+.proto{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border:1px solid var(--s8);color:var(--s8);border-radius:4px;vertical-align:middle;margin-left:8px}
+.filters{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:14px}
+.filters label{color:var(--ink2);font-size:12px;margin-right:4px}
+.filters select{font:inherit;font-size:13px;padding:3px 6px;background:var(--surface);color:var(--ink);border:1px solid var(--axis);border-radius:5px}
+.seg{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:4px 10px;background:transparent;color:var(--ink2);border:0;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--surface)}
+.banner{padding:8px 12px;border-radius:6px;border:1px solid var(--s8);color:var(--ink);background:var(--wash);margin-bottom:14px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.row>*{flex:1 1 300px;min-width:0}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--axis);margin-bottom:14px}
+.tabs button{font:inherit;font-size:14px;padding:8px 12px;border:0;background:transparent;color:var(--ink2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:3px 10px;border:1px solid var(--axis);border-radius:999px;background:transparent;color:var(--ink2);cursor:pointer}
+.chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip.static{cursor:default}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.grid{stroke:var(--grid);stroke-width:1}
+.axis{fill:var(--muted);font-size:12px}
+.name{fill:var(--ink);font-size:12.5px}
+.lbl{fill:var(--ink2);font-size:11px}
+.hair{stroke:var(--grid);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink2);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.legend b{display:inline-block;width:3px;height:12px;vertical-align:-2px;margin-right:6px}
+.legend .ln{display:inline-block;width:14px;height:0;border-top:2px solid;vertical-align:3px;margin-right:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.stat{padding:8px 10px;border:1px solid var(--border);border-radius:6px}
+.stat .l{font-size:11px;color:var(--ink2)}
+.stat .v{font-size:24px;font-weight:600;line-height:1.1}
+.stat .d{font-size:12px;color:var(--ink2)}
+.note{font-size:12px;color:var(--ink2)}
+.small{font-size:12px}
+.muted{color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+th{font-weight:600;color:var(--ink2);font-size:12px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.cell{min-width:64px;height:auto}
+.ini{display:inline-flex;align-items:center;justify-content:center;width:26px;height:22px;border-radius:5px;font-size:11px;font-weight:600;background:var(--wash);color:var(--ink);margin:1px;cursor:default;border:1px solid var(--border)}
+.ini.edge{outline:2px solid var(--ink);outline-offset:-2px}
+.sq{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--s1);margin-right:2px;vertical-align:middle}
+.cnt{font-variant-numeric:tabular-nums;font-weight:600}
+.med{outline:2px solid var(--ink2);outline-offset:-2px;border-radius:4px}
+.heat td.h{text-align:center;font-variant-numeric:tabular-nums;color:var(--ink)}
+.heat tr.sel td{background:var(--wash)}
+.heat tr{cursor:pointer}
+.groupname td{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:10px;border-bottom:0}
+.tip{position:fixed;z-index:50;max-width:340px;padding:8px 10px;background:var(--ink);color:var(--surface);border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.tip b{font-weight:650}
+.sw{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;background:#111;color:#fff;border:2px solid #ffd400;border-radius:999px;padding:6px 10px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35);z-index:60}
+.sw button{font:inherit;background:transparent;color:#fff;border:0;font-size:18px;cursor:pointer;padding:0 6px}
+.sw span{min-width:220px;text-align:center}
+.mark{display:inline-block;width:9px;height:9px;transform:rotate(45deg);border:1.5px solid var(--ink);vertical-align:-1px;margin:0 4px}
+.mark.full{background:var(--ink)}
+.mark.half{background:linear-gradient(90deg,var(--ink) 50%,transparent 50%)}
+.flag{display:inline-block;padding:1px 6px;border-radius:4px;border:1px solid var(--axis);font-size:11px;color:var(--ink2);margin:1px 4px 1px 0}
+.expand{cursor:pointer}
+.expand:hover{background:var(--wash)}
+.side{display:grid;grid-template-columns:320px 1fr;gap:14px}
+@media (max-width:900px){.side{grid-template-columns:1fr}}
+.topic{display:grid;grid-template-columns:1fr 70px 46px;gap:8px;align-items:center;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px}
+.topic:hover{background:var(--wash)}
+.topic.on{background:var(--ink);color:var(--surface)}
+.topic .kind{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.topic.on .kind{color:var(--surface);opacity:.7}
+.bar{height:6px;border-radius:3px;background:var(--grid);position:relative}
+.bar i{position:absolute;top:0;height:6px;border-radius:3px;background:var(--s1)}
+.topic.on .bar{background:rgba(255,255,255,.25)}.topic.on .bar i{background:#fff}
+.persongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.mini{display:grid;grid-template-columns:90px 1fr;gap:4px 8px;align-items:center;font-size:12px}
+.covstrip{display:grid;grid-template-columns:repeat(19,1fr);gap:2px}
+.covstrip div{height:16px;border-radius:2px;font-size:9px;text-align:center;line-height:16px;color:#fff}
+.covstrip div.na{background:transparent;border:1px dashed var(--axis);color:var(--muted)}
+kbd{font:inherit;font-size:11px;padding:0 4px;border:1px solid #666;border-radius:3px}
+.lvl{width:auto;font-size:11.5px;border-collapse:separate;border-spacing:2px 1px}
+.lvl th,.lvl td{padding:1px 4px;border:0;text-align:center;line-height:1.3}
+.lvl th{color:var(--muted);font-weight:500;font-size:10.5px}
+.lvl td.r{text-align:right;color:var(--ink2);white-space:nowrap;padding-right:6px}
+.lvl td.c{min-width:24px;border-radius:3px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.lvl td.mdn{font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.lvl td.na{color:var(--ink2);border:1px dashed var(--axis)}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<div id="tip" class="tip" hidden></div>
+<div id="switcher" class="sw"></div>
+
+<script>
+/* ============================================================
+   0. DOMAIN CONSTANTS (from CONTEXT.md, rubric/, survey/, scoring/)
+   ============================================================ */
+const DIMS = [
+ {key:'comfort', name:'Comfort', probe:'P1', cur:['C1','C2','C3'], fut:['FC1','FC2','FC3'],
+  levels:['Would rather not use AI for development work at all; uses it only when there is no alternative.',
+   'Uses AI for peripheral, low-stakes things — lookups, explanations, boilerplate — and keeps it away from real work.',
+   'Comfortable using AI on everyday work, but switches it off for anything important, unfamiliar, or high-blast-radius.',
+   'Reaches for AI by default on most work, including work that matters; only a few areas are deliberately held back.',
+   'AI is the default starting point for essentially all development work; working without it is the exception that needs a reason.']},
+ {key:'trust', name:'Trust', probe:'P2', cur:['T1','T2','T3'], fut:['FT1','FT2','FT3'],
+  levels:['Assumes AI output is wrong until proven otherwise; nothing is believed before it has been read in full.',
+   'Expects frequent errors; output is usable only after being checked end to end.',
+   'Trusts AI output on familiar, well-specified work; anything else gets full scrutiny.',
+   'Generally trusts AI output and reviews it the way a competent colleague\'s work is reviewed — read and judged, not re-derived.',
+   'Treats AI output as correct unless a test, check, or reviewer says otherwise; line-by-line reading is reserved for when something fails.']},
+ {key:'fluency', name:'Fluency', soft:true, cur:['F1','F2','F3'], fut:['FF1','FF2','FF3'],
+  levels:['Little or no hands-on use; unclear what the tools can do or how to drive them.',
+   'Uses a chat or autocomplete tool as it comes out of the box; prompting is ad-hoc and results are hit-or-miss.',
+   'Gets reliable results on ordinary tasks — knows how to supply context, iterate on a prompt, and recognise a bad answer.',
+   'Works fluently with agents and multi-step workflows; configures the tooling and knows the common failure modes.',
+   'Builds and tunes AI workflows that others use; treats setup, evaluation, and failure modes as part of the craft.']},
+ {key:'guardrails', name:'Guardrails', note:'high is not "good" — how much process this person wants', cur:['G1',['G2','G3'],'G4','G5','G6'], fut:['FG1','FG2','FG3','FG4','FG5'],
+  levels:['AI-assisted work needs no special treatment; the team\'s existing rules are already enough.',
+   'Norms rather than rules: people are expected to use judgement, with maybe a convention or two and nothing enforced.',
+   'A few explicit expectations for AI-assisted work — e.g. tests required, author reads it before opening a PR — held by agreement.',
+   'Written team rules covering what must be reviewed, disclosed, and tested, plus agreed limits on where AI may be used at all.',
+   'Controls enforced in the tooling: mandatory disclosure, required human review, gates in CI, and named areas AI may not touch.']},
+ {key:'concern', name:'Concern', probe:'P4', note:'5 = most concerned; high is not "bad"', cur:['N1','N2','N3','N4','N5'], fut:['FN1','FN2','FN3','FN4','FN5'],
+  levels:['No meaningful risk beyond the ordinary risks of writing software; nothing here needs watching.',
+   'The risks are real in principle but not live for this team on this work; awareness is enough.',
+   'One or two risk areas warrant active attention; the rest can be left alone.',
+   'Several risk areas warrant active attention at once, and real damage is expected if adoption continues unchanged.',
+   'Risk is the dominant fact about AI-assisted development; serious harm is expected unless something changes.']},
+ {key:'autonomy', name:'Autonomy', probe:'P3', cur:['A1','A2','A3'], fut:['FA1','FA2','FA3'],
+  levels:['Inline assistance only: completions and suggestions in the editor, accepted or rejected one at a time.',
+   'Chat: AI answers questions and produces snippets; a human carries every change into the codebase.',
+   'Supervised agent: AI edits files and runs commands while a human watches each step and approves the risky ones.',
+   'Delegated agent: AI is handed a task and works unattended, then hands back a finished change a human reviews before it lands.',
+   'Autonomous agent: AI takes a task all the way to landed work, with automated checks — not a person — as the gate.']},
+ {key:'craft', name:'Craft values', probe:'P5', soft:true, cur:['V1','V2','V3'], fut:['FV1','FV2','FV3'],
+  levels:['Working software is what counts; understanding, tests, and review are overhead to be skipped when they slow delivery.',
+   'Worth having in principle, but the first thing to drop under pressure.',
+   'A working baseline holds — reviewed, reasonably tested, understood by whoever ships it — traded away deliberately when the cost is high.',
+   'Understanding, tests, review, and ownership are non-negotiable for anything that reaches production.',
+   'Craft is the point: nothing ships that its author cannot explain line by line, even at real cost to speed.']},
+];
+const DIM = Object.fromEntries(DIMS.map(d=>[d.key,d]));
+const REV = new Set(['C3','T2','F3','G6','N4','A2','V2','FC3','FT2','FF3','FG5','FN4','FA2','FV2']);
+
+const PROBES = [
+ {id:'P1', dim:'comfort', pole:'low',  me:'…be happy working with no AI tooling at all, the way I worked before it existed.', team:'…be fine going back to no AI tooling at all.'},
+ {id:'P2', dim:'trust', pole:'high',   me:'…merge AI-written code I had not read line by line, as long as the tests pass.', team:'…merge AI-written code nobody has read line by line, as long as the tests pass.'},
+ {id:'P3', dim:'autonomy', pole:'high',me:'…let an agent work unsupervised for an hour and only look at the final result.', team:'…let agents work unsupervised for an hour and only review the final result.'},
+ {id:'P4', dim:'concern', pole:'high', me:'…slow down how fast I adopt AI, because the risks outweigh what I\'d gain.', team:'…slow down how fast we adopt AI, because the risks outweigh what we\'d gain.'},
+ {id:'P5', dim:'craft', pole:'high',   me:'…expect to be able to explain every line of code that ships under my name.', team:'…expect everyone to be able to explain every line that ships under their name.'},
+];
+const PROBE = Object.fromEntries(PROBES.map(p=>[p.id,p]));
+
+const LEVELS = ['None','Advisor','Drafter','Doer, reviewed','Doer, spot-checked','System-verified'];
+const LEVEL_DEF = ['I do this without AI.','I ask AI to explain, look up, or suggest; every artifact is written by me.','AI produces a first draft; I read and edit all of it before it counts.','AI produces the finished artifact; I review it as I would a colleague\'s work.','AI produces it; I sample or skim rather than review fully.','AI produces it end-to-end; no individual looks unless automated checks fail.'];
+const AREAS = [
+ ['Core SDLC','Requirements & ideation'],['Core SDLC','Architecture & design'],['Core SDLC','Writing production code'],['Core SDLC','Writing tests'],['Core SDLC','Code review'],['Core SDLC','Debugging'],['Core SDLC','Documentation'],['Core SDLC','Refactoring & legacy migration'],
+ ['Ops & delivery','CI/CD & build configuration'],['Ops & delivery','Infrastructure-as-code'],['Ops & delivery','Incident response & on-call'],['Ops & delivery','Monitoring & alerting'],
+ ['Data & security','SQL & data migrations'],['Data & security','Security review & threat modeling'],['Data & security','Dependency upgrades'],
+ ['Non-code','Estimates & planning'],['Non-code','Stakeholder comms & PR descriptions'],['Non-code','Learning new tech'],['Non-code','Meeting notes & summaries'],
+].map(([group,name],i)=>({i, group, name, hs:[4,8,9,10,12,13].includes(i)}));
+const CUSTOM = {
+ 4:['I review PRs without AI.','AI explains the diff or answers my questions; I write every review comment.','AI drafts review comments; I rewrite them before posting.','AI posts its review; I still read the whole diff and add or veto comments.','AI posts its review; I skim the diff and its findings.','AI review is the merge gate; no human reviewer unless it flags something.'],
+ 10:['I handle incidents without AI.','AI helps me read logs/errors and suggests hypotheses; I do everything.','AI proposes a diagnosis and a fix; I verify the diagnosis and rewrite the fix myself.','AI diagnoses and prepares the remediation; I review and execute it.','AI executes the remediation; I spot-check afterwards.','AI auto-remediates; monitors and rollback guards catch mistakes, no human in the loop.'],
+ 13:['I do security review without AI.','AI explains vulnerability classes or a specific finding; I do the review.','AI drafts a threat model / findings list; I re-derive and rewrite it.','AI produces the findings; I review each finding and the code it points at.','AI produces the findings; I spot-check the high-severity ones.','AI security gates in CI decide; no human security review unless a gate fails.'],
+ 17:['I learn from docs, books, and people; no AI.','AI answers questions while I work through the material myself.','AI builds me a tailored tutorial or example; I work through and verify all of it.','AI summarizes the tech and I rely on the summary after checking key claims.','AI summarizes; I skim and trust it.','I don\'t learn it — AI applies the tech for me and checks catch errors.'],
+};
+const anchor = (areaIdx, lvl) => (CUSTOM[areaIdx] || LEVEL_DEF)[lvl-1];
+
+const SAFEGUARDS = ['I\'d read it myself — nothing on this list changes that','Another person reviews it','The test suite passes','It\'s easy to roll back if it\'s wrong','A type check or schema validation covers it','The blast radius is small (docs, internal tooling, non-production)','An automated security or lint scan covers it'];
+const TOOLS = ['GitHub Copilot','Copilot Studio','Microsoft 365 Copilot','Azure AI Foundry','Another AI tool'];
+const TOOL_STATES = ['Never used','Tried it, not using it now','Use it occasionally','Use it regularly'];
+const PASSES = [['cur','Today'],['fp','In 6 months — me'],['ft','In 6 months — team should']];
+const PASS = Object.fromEntries(PASSES);
+
+/* ============================================================
+   1. FAKE DATA — 7 personas, generated at item level
+   ============================================================ */
+function rng(seed){ return ()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+// dims: [current, future-me, future-team] targets. probes: [me, team]. cov: base level per group (core/ops/data/non),
+// dMe/dTeam: future shift; over: area → [cur,fp,ft] (null = N/A); na: areas N/A in all three passes.
+// safe: indices into SAFEGUARDS (0 = "I'd read it myself"). tools: TOOL_STATES index+1 per TOOLS row.
+const PERSONAS = [
+ {name:'Maya Okafor',   ini:'MO', tools:[4,2,3,4,4], dims:{comfort:[4.6,4.9,4.4],trust:[4.1,4.6,3.7],fluency:[4.5,4.8,4.4],guardrails:[1.8,1.7,2.4],concern:[1.7,1.9,2.3],autonomy:[4.2,4.8,3.9],craft:[2.9,2.7,3.3]},
+  probes:{P1:[1,1],P2:[5,4],P3:[5,5],P4:[1,1],P5:[2,2]}, cov:{base:[4,3,3,5],dMe:1,dTeam:1,over:{4:[5,6,6],13:[4,5,4]},na:[]}, safe:{cur:[2,3,6],fp:[2,3,4,6],ft:[2,3,6],learn:[4,5]}},
+ {name:'Tom Lindqvist', ini:'TL', tools:[2,2,1,1,1], dims:{comfort:[2.0,2.2,2.6],trust:[1.5,1.8,2.0],fluency:[2.6,3.2,3.4],guardrails:[4.5,4.7,4.6],concern:[4.4,4.5,4.3],autonomy:[1.6,1.8,2.2],craft:[4.8,4.9,4.8]},
+  probes:{P1:[4,2],P2:[1,1],P3:[1,1],P4:[4,4],P5:[5,5]}, cov:{base:[2,1,2,2],dMe:0,dTeam:0,over:{17:[3,3,3]},na:[9,10]}, safe:{cur:[0],fp:[0],ft:[0],learn:[4]}},
+ {name:'Priya Raman',   ini:'PR', tools:[4,1,3,4,2], dims:{comfort:[4.0,4.7,3.8],trust:[3.4,4.4,3.2],fluency:[4.0,4.6,4.0],guardrails:[2.6,2.2,3.2],concern:[2.4,2.3,3.0],autonomy:[3.4,4.7,3.0],craft:[3.6,3.4,3.8]},
+  probes:{P1:[1,1],P2:[4,2],P3:[5,2],P4:[1,2],P5:[3,3]}, cov:{base:[4,2,3,4],dMe:1,dTeam:0,over:{2:[4,5,4],3:[4,6,4]},na:[11]}, safe:{cur:[2,5],fp:[2,3,5,6],ft:[2,5],learn:[4]}},
+ {name:'Daniel Cho',    ini:'DC', tools:[4,2,3,1,1], dims:{comfort:[3.2,3.5,4.2],trust:[2.8,3.0,3.8],fluency:[3.1,3.6,4.0],guardrails:[3.4,3.4,3.0],concern:[3.0,3.0,2.6],autonomy:[2.4,2.7,3.6],craft:[3.9,3.9,3.6]},
+  probes:{P1:[2,2],P2:[2,4],P3:[2,4],P4:[2,2],P5:[4,3]}, cov:{base:[3,2,2,3],dMe:0,dTeam:1,over:{},na:[10,13]}, safe:{cur:[1],fp:[1,2],ft:[1,2,6],learn:[3,4]}},
+ {name:'Sofia Marchetti',ini:'SM', tools:[3,1,4,2,1], dims:{comfort:[3.0,4.4,4.2],trust:[2.6,3.9,3.8],fluency:[2.8,4.2,4.1],guardrails:[3.2,3.0,3.1],concern:[3.2,2.8,2.9],autonomy:[2.4,3.9,3.8],craft:[3.5,3.5,3.5]},
+  probes:{P1:[2,1],P2:[3,3],P3:[3,3],P4:[2,2],P5:[3,3]}, cov:{base:[3,3,2,3],dMe:1,dTeam:1,over:{13:[null,3,3]},na:[9]}, safe:{cur:[1],fp:[0,2],ft:[2,3],learn:[4,5]}},
+ {name:'Liam O\'Connor', ini:'LO', tools:[4,1,2,2,4], dims:{comfort:[3.8,3.6,3.7],trust:[3.2,2.6,2.9],fluency:[4.2,4.3,4.1],guardrails:[3.0,3.6,3.7],concern:[3.4,3.8,3.6],autonomy:[3.8,3.0,3.2],craft:[4.1,4.3,4.2]},
+  probes:{P1:[3,2],P2:[2,2],P3:[2,2],P4:[3,4],P5:[4,4]}, cov:{base:[3,4,3,3],dMe:0,dTeam:0,over:{10:[5,4,4],11:[6,6,5],18:[3,null,null]},na:[0]}, safe:{cur:[2,3,6],fp:[2,3],ft:[2,3,6],learn:[]}},
+ {name:'Aisha Bello',   ini:'AB', tools:[3,1,4,1,1], dims:{comfort:[3.1,4.0,4.0],trust:[2.9,3.4,3.5],fluency:[2.0,4.4,4.2],guardrails:[3.3,3.3,3.4],concern:[2.7,2.7,2.9],autonomy:[2.0,3.2,3.3],craft:[3.4,3.6,3.6]},
+  probes:{P1:[2,2],P2:[2,2],P3:[2,3],P4:[2,2],P5:[3,3]}, cov:{base:[2,1,1,3],dMe:1,dTeam:1,over:{16:[3,4,4]},na:[9,10,12,13]}, safe:{cur:[0],fp:[1,2],ft:[1,2],learn:[2,4,6]}},
+];
+const GROUP_IDX = {'Core SDLC':0,'Ops & delivery':1,'Data & security':2,'Non-code':3};
+
+function generate(){
+  const r = rng(20260826);
+  const noise = ()=> (r()-0.5)*1.3;
+  return PERSONAS.map((P,pi)=>{
+    const cur={}, fp={}, ft={};
+    for (const d of DIMS){
+      const [tc,tp,tt] = P.dims[d.key];
+      for (const f of d.cur.flat()){ const v=clamp(Math.round(tc+noise()),1,5); cur[f]= REV.has(f)? 6-v : v; }
+      for (const f of d.fut){ const v1=clamp(Math.round(tp+noise()),1,5), v2=clamp(Math.round(tt+noise()),1,5); fp[f]=REV.has(f)?6-v1:v1; ft[f]=REV.has(f)?6-v2:v2; }
+    }
+    const cov = AREAS.map(a=>{
+      if (P.cov.na.includes(a.i)) return {cur:null,fp:null,ft:null};
+      if (P.cov.over[a.i]) { const [c,p,t]=P.cov.over[a.i]; return {cur:c,fp:p,ft:t}; }
+      const base = P.cov.base[GROUP_IDX[a.group]] + (r()<0.25 ? (r()<0.5?-1:1) : 0);
+      const c = clamp(base,1,6);
+      const p = clamp(c + P.cov.dMe + (r()<0.2?1:0), 1, 6);
+      const t = clamp(c + P.cov.dTeam + (r()<0.2?1:0), 1, 6);
+      return {cur:c, fp:p, ft:t};
+    });
+    return {id:pi, name:P.name, ini:P.ini, tools:P.tools, cur, fp, ft, probes:P.probes, cov, safe:P.safe};
+  });
+}
+
+/* ============================================================
+   2. SCORING (pure) — scoring/scoring-rules.md
+   ============================================================ */
+const mean = xs => xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : NaN;
+const val = (ans,f) => REV.has(f) ? 6-ans[f] : ans[f];
+function dimScore(ans, facets){ return mean(facets.map(f => Array.isArray(f) ? mean(f.map(x=>val(ans,x))) : val(ans,f))); }
+const label = x => Math.floor(x+0.5);             // nearest integer, halves up — a landmark, not the score
+const f1 = x => Number.isFinite(x) ? x.toFixed(1) : '—';
+const sgn = x => (x>0?'+':'')+f1(x);
+function lowerMedian(xs){ const s=[...xs].sort((a,b)=>a-b); if(!s.length) return null; return s[Math.ceil(s.length/2)-1]; }
+
+function scorePerson(p){
+  p.scores = {};
+  for (const d of DIMS){
+    const c = dimScore(p.cur, d.cur), fpv = dimScore(p.fp, d.fut), ftv = dimScore(p.ft, d.fut);
+    p.scores[d.key] = {cur:c, fp:fpv, ft:ftv, gap:fpv-c, stance:ftv-fpv};
+  }
+  // Edge markers from probes: fires at 4–5, per stance
+  p.edges = {};
+  for (const pr of PROBES){ const [me,team]=p.probes[pr.id]; const m=me>=4, t=team>=4; p.edges[pr.id] = m&&t?'both': m?'me': t?'team':null; }
+  // Edge markers from the grid: level 6 on a high-stakes area, per pass
+  p.covEdges = [];
+  for (const a of AREAS) if (a.hs) for (const [k,lab] of PASSES) if (p.cov[a.i][k]===6) p.covEdges.push({area:a, pass:k});
+  // Safeguards: inconsistency per list, levers by subtraction, principle hold, learning interest
+  const inc = k => p.safe[k].includes(0) && p.safe[k].length>1;
+  p.sg = { inconsistent: {cur:inc('cur'), fp:inc('fp'), ft:inc('ft')} };
+  p.sg.hold = p.safe.fp.includes(0) && !p.sg.inconsistent.fp;
+  p.sg.levers = (p.sg.inconsistent.cur||p.sg.inconsistent.fp) ? null : p.safe.fp.filter(s=>s!==0 && !p.safe.cur.includes(s));
+  p.sg.dropped = (p.sg.inconsistent.cur||p.sg.inconsistent.fp) ? null : p.safe.cur.filter(s=>s!==0 && !p.safe.fp.includes(s));
+  p.sg.learn = p.safe.learn.filter(s=>!p.safe.fp.includes(s));
+  return p;
+}
+
+function teamDim(d, people){
+  const m = k => { const xs = people.map(p=>p.scores[d.key][k]); const counts=[0,0,0,0,0]; xs.forEach(x=>counts[label(x)-1]++);
+    return {mean:mean(xs), min:Math.min(...xs), max:Math.max(...xs), range:Math.max(...xs)-Math.min(...xs), n:xs.length, counts}; };
+  const t = {cur:m('cur'), fp:m('fp'), ft:m('ft')};
+  t.gap = t.fp.mean - t.cur.mean;      // team personal Gap (= mean of Gaps by linearity)
+  t.norm = t.ft.mean - t.cur.mean;     // norm gap
+  return t;
+}
+function teamArea(a, people){
+  const pass = k => { const lv = people.map(p=>p.cov[a.i][k]); const num = lv.filter(x=>x!=null); const dist=[0,0,0,0,0,0]; num.forEach(x=>dist[x-1]++);
+    return {dist, na: lv.length-num.length, n:num.length, median: lowerMedian(num), range: num.length? Math.max(...num)-Math.min(...num) : 0}; };
+  const t = {cur:pass('cur'), fp:pass('fp'), ft:pass('ft')};
+  const pairGap = (ka,kb) => { const diffs=[], naToLevel=[], levelToNa=[], both=[];
+    for (const p of people){ const A=p.cov[a.i][ka], B=p.cov[a.i][kb]; if(A==null&&B==null) both.push(p); else if(A==null) naToLevel.push(p); else if(B==null) levelToNa.push(p); else diffs.push(B-A); }
+    return {median: lowerMedian(diffs), pairs: diffs.length, naToLevel, levelToNa, both}; };
+  t.gap = pairGap('cur','fp'); t.stance = pairGap('fp','ft');
+  t.edges = []; if (a.hs) for (const p of people) for (const [k] of PASSES) if (p.cov[a.i][k]===6) t.edges.push({p, pass:k});
+  return t;
+}
+
+/* ============================================================
+   3. DOM helpers
+   ============================================================ */
+function el(tag, attrs={}, ...kids){
+  const ns = tag.startsWith('svg:');
+  const e = ns ? document.createElementNS('http://www.w3.org/2000/svg', tag.slice(4)) : document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (v==null||v===false) continue;
+    if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (k==='html') e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat(Infinity)){ if (k==null||k===false) continue; e.append(k.nodeType ? k : document.createTextNode(String(k))); }
+  return e;
+}
+const TIP = document.getElementById('tip');
+function tip(node, html){
+  const show = ev => { TIP.innerHTML = typeof html==='function'? html() : html; TIP.hidden=false; move(ev); };
+  const move = ev => { const x = Math.min(ev.clientX+14, innerWidth-360), y = Math.min(ev.clientY+14, innerHeight-120); TIP.style.left=x+'px'; TIP.style.top=y+'px'; };
+  node.addEventListener('mouseenter', show); node.addEventListener('mousemove', move); node.addEventListener('mouseleave', ()=>TIP.hidden=true);
+  return node;
+}
+const nm = (p,S) => S.view==='internal' ? p.name : '(unnamed)';
+const iniChip = (p,S,extra='',title) => S.view==='internal' ? tip(el('span',{class:'ini '+extra}, p.ini), title||p.name) : null;
+
+/* ============================================================
+   4. SHARED CHART COMPONENTS
+   ============================================================ */
+// 4.1 Layered view for a Dimension: every Respondent (named row) with Current→Future-me dumbbell and a
+//     Future-team tick, overlaid with the team mean lines. Export mode: unnamed counts per level instead of rows.
+function LayeredDimension(d, people, S){
+  const t = teamDim(d, people);
+  const W=780, L=150, R=730, X = v => L + (v-1)/4*(R-L);
+  const [ka,kb] = S.compare==='cur-fp' ? ['cur','fp'] : ['fp','ft'];
+  const rows = S.view==='internal' ? people.length : 3;
+  const rh = S.view==='internal' ? 26 : 40;
+  const top=44, H = top + rows*rh + 12;
+  const svg = el('svg:svg',{viewBox:`0 0 ${W} ${H}`, class:'chart'});
+  for (let v=1; v<=5; v++){
+    svg.append(el('svg:line',{x1:X(v),x2:X(v),y1:top-8,y2:top+rows*rh,class:'grid'}));
+    svg.append(tip(el('svg:text',{x:X(v),y:top-16,class:'axis','text-anchor':'middle'}, v), `<b>${d.name} · level ${v}</b><br>${d.levels[v-1]}`));
+  }
+  const color = {cur:'var(--s1)', fp:'var(--s2)', ft:'var(--s3)'};
+  if (S.view==='internal'){
+    const sorted = [...people].sort((a,b)=> b.scores[d.key][ka]-a.scores[d.key][ka]);
+    sorted.forEach((p,i)=>{
+      const y = top + i*rh + rh/2, s = p.scores[d.key];
+      const g = el('svg:g',{});
+      g.append(el('svg:line',{x1:L,x2:R,y1:y,y2:y,class:'hair'}));
+      g.append(el('svg:text',{x:L-12,y:y+4,class:'name','text-anchor':'end'}, p.name));
+      g.append(el('svg:line',{x1:X(s[ka]),x2:X(s[kb]),y1:y,y2:y,stroke:'var(--axis)','stroke-width':2}));
+      // Future-team tick (always shown — it is the person's own answer to a different question)
+      g.append(tip(el('svg:rect',{x:X(s.ft)-1.5,y:y-8,width:3,height:16,fill:color.ft,rx:1}), `<b>${p.name}</b> · team should be at <b>${f1(s.ft)}</b> on ${d.name}`));
+      for (const [k,r] of [[ka,5],[kb,5]]){
+        const v=s[k]; const c = el('svg:circle',{cx:X(v),cy:y,r,fill:color[k],stroke:'var(--surface)','stroke-width':2});
+        tip(c, `<b>${p.name}</b> · ${PASS[k]}: <b>${f1(v)}</b><br>closest to level ${label(v)}: ${d.levels[label(v)-1]}<br><span style="opacity:.8">Gap ${sgn(s.gap)} · Stance gap ${sgn(s.stance)}</span>`);
+        g.append(el('svg:circle',{cx:X(v),cy:y,r:12,fill:'transparent'}), c);
+      }
+      if (d.probe && p.edges[d.probe]){
+        const st = p.edges[d.probe];
+        g.append(tip(el('svg:rect',{x:R+14,y:y-5,width:10,height:10,transform:`rotate(45 ${R+19} ${y})`,fill: st==='both'?'var(--ink)': st==='me'?'url(#half)':'var(--surface)',stroke:'var(--ink)','stroke-width':1.5}),
+          `<b>Edge marker</b> — ${p.name} endorsed the ${d.name} probe (${PROBE[d.probe].pole} pole)<br>${st==='both'?'both stances — accelerator': st==='me'?'personal only — "I\'d go, but we shouldn\'t"':'team only — "the team should, but not me"'}<br><i>${PROBE[d.probe].me}</i>`));
+      }
+      svg.append(g);
+    });
+    svg.prepend(el('svg:defs',{}, el('svg:linearGradient',{id:'half'}, el('svg:stop',{offset:'50%','stop-color':'var(--ink)'}), el('svg:stop',{offset:'50%','stop-color':'var(--surface)'}))));
+  } else {
+    PASSES.forEach(([k,labl],i)=>{
+      const y = top + i*rh + rh/2;
+      svg.append(el('svg:line',{x1:L,x2:R,y1:y,y2:y,class:'hair'}));
+      svg.append(el('svg:text',{x:L-12,y:y+4,class:'name','text-anchor':'end'}, labl));
+      t[k].counts.forEach((c,li)=>{ const x0 = X(li+1) - (c*12)/2; for(let j=0;j<c;j++) svg.append(tip(el('svg:rect',{x:x0+j*12,y:y-5,width:10,height:10,rx:2,fill:color[k]}), `${c} at level ${li+1} (${labl})`)); });
+    });
+  }
+  // team mean lines
+  const y2 = top + rows*rh;
+  for (const [k,labl] of [['cur','team mean, today'],['fp','team mean, 6 months (me)'],['ft','team-stance target']]){
+    const x = X(t[k].mean);
+    svg.append(tip(el('svg:line',{x1:x,x2:x,y1:top-6,y2:y2+6,stroke:color[k],'stroke-width':2,'stroke-opacity':.9}), `<b>${labl}</b>: ${f1(t[k].mean)} · range ${f1(t[k].range)} · n=${t[k].n}`));
+  }
+  const legend = el('div',{class:'legend'},
+    el('span',{}, el('i',{style:'background:var(--s1)'}), 'Today'), el('span',{}, el('i',{style:'background:var(--s2)'}), 'In 6 months — me'),
+    el('span',{}, el('b',{style:'background:var(--s3)'}), 'In 6 months — team should'),
+    el('span',{}, el('span',{class:'ln',style:'border-color:var(--s1)'}), `team mean today ${f1(t.cur.mean)}`), el('span',{}, el('span',{class:'ln',style:'border-color:var(--s2)'}), `team mean, 6 months (me) ${f1(t.fp.mean)}`), el('span',{}, el('span',{class:'ln',style:'border-color:var(--s3)'}), `team-stance target ${f1(t.ft.mean)}`),
+    S.view==='internal' && d.probe ? el('span',{}, el('i',{class:'mark full'}),'Edge marker (both) ', el('i',{class:'mark half'}),'me only ', el('i',{class:'mark'}),'team only') : null,
+    S.view==='internal' ? el('span',{class:'muted'}, `rows sorted by ${PASS[ka]}; connector = ${S.compare==='cur-fp'?'personal Gap':'Stance gap'}`) : el('span',{class:'muted'},'unnamed counts per nearest level — the exported team view'));
+  return el('div',{}, svg, legend);
+}
+
+// 4.2 Stats for a Dimension — mean, range, n per pass; Gap and norm gap; the landmark prose
+function DimStats(d, people){
+  const t = teamDim(d, people);
+  const lm = label(t.cur.mean);
+  return el('div',{},
+    el('div',{class:'stats'},
+      ...PASSES.map(([k,l]) => el('div',{class:'stat'}, el('div',{class:'l'}, l), el('div',{class:'v'}, f1(t[k].mean)), el('div',{class:'d'}, `range ${f1(t[k].range)} · n=${t[k].n}`))),
+      el('div',{class:'stat'}, el('div',{class:'l'},'Gap (team, personal)'), el('div',{class:'v'}, sgn(t.gap)), el('div',{class:'d'}, d.soft? 'softer — facet-matched mirror' : 'Future-me − Today')),
+      el('div',{class:'stat'}, el('div',{class:'l'},'Norm gap'), el('div',{class:'v'}, sgn(t.norm)), el('div',{class:'d'},'Team-should − Today'))),
+    el('p',{class:'note'}, el('b',{}, `Today ${f1(t.cur.mean)} — closest to level ${lm}: `), d.levels[lm-1], d.note ? el('span',{class:'muted'}, ` (${d.note})`) : null));
+}
+
+// 4.3 Compact strip: everyone on one line, initials in the dots. For the overview wall.
+function DimensionStrip(d, people, S){
+  const t = teamDim(d, people);
+  const W=780, L=110, R=680, X = v => L + (v-1)/4*(R-L), H=64, y=34;
+  const svg = el('svg:svg',{viewBox:`0 0 ${W} ${H}`, class:'chart'});
+  svg.append(el('svg:text',{x:L-12,y:y+4,class:'name','text-anchor':'end',style:'font-weight:600'}, d.name));
+  for (let v=1; v<=5; v++){ svg.append(el('svg:line',{x1:X(v),x2:X(v),y1:14,y2:54,class:'grid'})); svg.append(el('svg:text',{x:X(v),y:10,class:'axis','text-anchor':'middle'}, v)); }
+  svg.append(el('svg:line',{x1:L,x2:R,y1:y,y2:y,class:'hair'}));
+  const color = {cur:'var(--s1)', fp:'var(--s2)', ft:'var(--s3)'};
+  for (const k of ['cur','fp','ft']){ const x=X(t[k].mean); svg.append(tip(el('svg:line',{x1:x,x2:x,y1:14,y2:54,stroke:color[k],'stroke-width':2}), `<b>${k==='cur'?'team mean, today':k==='fp'?'team mean, 6 months (me)':'team-stance target'}</b> ${f1(t[k].mean)}`)); }
+  if (S.view==='internal'){
+    const bins = {}; [...people].sort((a,b)=>a.scores[d.key].cur-b.scores[d.key].cur).forEach(p=>{ const b=Math.round(p.scores[d.key].cur*5)/5; (bins[b]=bins[b]||[]).push(p); });
+    for (const [b,ps] of Object.entries(bins)) ps.forEach((p,j)=>{ const cx=X(+b), cy = y + (j-(ps.length-1)/2)*0; const s=p.scores[d.key];
+      const g = el('svg:g',{}, el('svg:circle',{cx:cx+j*18,cy,r:9,fill:'var(--s1)',stroke:'var(--surface)','stroke-width':2}), el('svg:text',{x:cx+j*18,y:cy+3.5,'text-anchor':'middle',style:'font-size:8.5px;font-weight:700;fill:#fff'}, p.ini));
+      svg.append(tip(g, `<b>${p.name}</b> today <b>${f1(s.cur)}</b> · in 6 months ${f1(s.fp)} (Gap ${sgn(s.gap)}) · team should ${f1(s.ft)}`)); });
+  } else {
+    t.cur.counts.forEach((c,li)=>{ const x0=X(li+1)-(c*12)/2; for(let j=0;j<c;j++) svg.append(el('svg:rect',{x:x0+j*12,y:y-5,width:10,height:10,rx:2,fill:'var(--s1)'})); });
+  }
+  svg.append(el('svg:text',{x:R+22,y:y-4,class:'lbl'}, `range ${f1(t.cur.range)}`));
+  svg.append(el('svg:text',{x:R+22,y:y+10,class:'lbl'}, `gap ${sgn(t.gap)}`));
+  return svg;
+}
+
+// 4.4 Layered view for a Development area: three passes × Involvement levels, people as chips (internal) or counts (export)
+function LayeredArea(a, people, S){
+  const t = teamArea(a, people);
+  const head = el('tr',{}, el('th',{}), ...LEVELS.map((l,i)=>el('th',{}, tip(el('span',{}, `${i+1} ${l}`), `<b>${i+1} — ${l}</b><br>${anchor(a.i,i+1)}`))), el('th',{},'N/A'));
+  const body = PASSES.map(([k,labl]) => {
+    const tk = t[k];
+    return el('tr',{}, el('th',{}, labl),
+      ...LEVELS.map((_,li)=>{ const ps = people.filter(p=>p.cov[a.i][k]===li+1); const isMed = tk.median===li+1;
+        return el('td',{class:'cell '+(isMed?'med':'')}, S.view==='internal'
+          ? ps.map(p=> iniChip(p,S, (a.hs&&li===5)?'edge':'', `<b>${p.name}</b> · ${labl}: ${li+1} ${LEVELS[li]}${(a.hs&&li===5)?'<br><b>Edge marker</b> — level 6 on a high-stakes area':''}`))
+          : (ps.length ? [el('span',{class:'cnt'}, ps.length), ' ', ...ps.map(()=>el('span',{class:'sq'}))] : el('span',{class:'muted'},'·'))); }),
+      el('td',{class:'cell'}, S.view==='internal' ? people.filter(p=>p.cov[a.i][k]==null).map(p=>iniChip(p,S,'',`${p.name} · N/A`)) : (tk.na||el('span',{class:'muted'},'·'))));
+  });
+  const flags = [];
+  const names = ps => S.view==='internal' ? ps.map(p=>p.name).join(', ') : `${ps.length} ${ps.length===1?'person':'people'}`;
+  if (t.gap.naToLevel.length) flags.push(el('span',{class:'flag'}, `N/A today → level in 6 months: ${names(t.gap.naToLevel)} — no Gap; a work-distribution signal`));
+  if (t.gap.levelToNa.length) flags.push(el('span',{class:'flag'}, `level today → N/A in 6 months: ${names(t.gap.levelToNa)} — no Gap; expects to stop doing this work`));
+  for (const e of t.edges) flags.push(el('span',{class:'flag'}, el('i',{class:'mark full'}), `Edge marker — ${S.view==='internal'?e.p.name:'someone'} at System-verified (${PASS[e.pass]})`));
+  const gapText = t.gap.median==null ? '—' : `${t.gap.median>0?'+':''}${t.gap.median} level${Math.abs(t.gap.median)===1?'':'s'}`;
+  return el('div',{},
+    el('table',{}, el('thead',{}, head), el('tbody',{}, ...body)),
+    el('div',{class:'legend'}, el('span',{}, el('span',{class:'med',style:'padding:0 6px'},'outlined'), ' = median (lower middle at even n) — the only number Coverage gets'),
+      a.hs ? el('span',{}, el('i',{class:'mark full'}),'high-stakes area: level 6 raises an Edge marker') : el('span',{class:'muted'},'not a high-stakes area — a 6 here raises nothing')),
+    el('div',{class:'stats',style:'margin-top:10px'},
+      el('div',{class:'stat'}, el('div',{class:'l'},'Coverage Gap'), el('div',{class:'v'}, gapText), el('div',{class:'d'}, `median of ${t.gap.pairs} within-person moves`)),
+      el('div',{class:'stat'}, el('div',{class:'l'},'Stance gap'), el('div',{class:'v'}, t.stance.median==null?'—':(t.stance.median>0?'+':'')+t.stance.median), el('div',{class:'d'},'team-should − me, median steps')),
+      el('div',{class:'stat'}, el('div',{class:'l'},'Don\'t do this work'), el('div',{class:'v'}, `${t.cur.na}/${people.length}`), el('div',{class:'d'},'today (N/A, excluded but counted)'))),
+    flags.length ? el('div',{style:'margin-top:8px'}, ...flags) : null);
+}
+
+// 4.5 Coverage heatmap: all 19 areas × levels for one pass; counts on a sequential ramp
+function CoverageHeatmap(people, S, onPick, selected){
+  const k = S.pass;
+  const ramp = c => c===0 ? 'transparent' : `var(--q${Math.min(8, c+1)})`;
+  const rows = []; let g=null;
+  for (const a of AREAS){
+    const t = teamArea(a, people);
+    if (a.group!==g){ g=a.group; rows.push(el('tr',{class:'groupname'}, el('td',{colspan:10}, g))); }
+    const tk = t[k];
+    rows.push(el('tr',{class: selected===a.i?'sel':'', onclick:()=>onPick(a.i)}, el('td',{}, a.name, a.hs? tip(el('span',{class:'muted'},' ◆'), 'high-stakes area') : null),
+      ...tk.dist.map((c,li)=> el('td',{class:'h', style:`background:${ramp(c)};${tk.median===li+1?'outline:2px solid var(--ink2);outline-offset:-2px;':''}`}, c||'')),
+      el('td',{class:'h muted'}, tk.na||''),
+      el('td',{class:'num'}, t.gap.median==null?'—':(t.gap.median>0?'+':'')+t.gap.median),
+      el('td',{class:'num muted'}, (t.gap.naToLevel.length+t.gap.levelToNa.length)||'')));
+  }
+  return el('div',{},
+    el('div',{class:'seg',style:'margin-bottom:8px'}, ...PASSES.map(([pk,l])=>el('button',{class:S.pass===pk?'on':'', onclick:()=>{S.pass=pk; render();}}, l))),
+    el('table',{class:'heat'}, el('thead',{}, el('tr',{}, el('th',{},'Development area'), ...LEVELS.map((l,i)=>el('th',{style:'text-align:center'}, `${i+1}`, el('div',{class:'muted',style:'font-weight:400;font-size:10px'}, l))), el('th',{style:'text-align:center'},'N/A'), el('th',{class:'num'},'Gap'), el('th',{class:'num'},'mixed'))), el('tbody',{}, ...rows)),
+    el('p',{class:'note'},'Each cell is a count of people; outlined cell = median. Gap = median of within-person moves (Today → 6 months, me), in levels. "mixed" counts N/A↔level pairs, which have no Gap. Click a row to open it.'));
+}
+
+// 4.6 Person profile — internal only
+function PersonProfile(p, people, S){
+  if (S.view!=='internal') return el('div',{class:'card'}, el('h2',{},'Individual results'), el('p',{class:'note'},'Not part of the exported team view. Switch to Internal to see per-person profiles.'));
+  const W=560, L=10, R=550, X=v=>L+(v-1)/4*(R-L);
+  const dims = el('div',{class:'mini'}, ...DIMS.flatMap(d=>{ const s=p.scores[d.key], t=teamDim(d,people); const svg=el('svg:svg',{viewBox:`0 0 ${W} 22`,class:'chart'});
+    for(let v=1;v<=5;v++) svg.append(el('svg:line',{x1:X(v),x2:X(v),y1:2,y2:20,class:'grid'}));
+    svg.append(el('svg:line',{x1:X(t.cur.mean),x2:X(t.cur.mean),y1:0,y2:22,stroke:'var(--axis)','stroke-width':2}));
+    svg.append(el('svg:line',{x1:X(s.cur),x2:X(s.fp),y1:11,y2:11,stroke:'var(--axis)','stroke-width':2}));
+    svg.append(el('svg:rect',{x:X(s.ft)-1.5,y:3,width:3,height:16,fill:'var(--s3)'}));
+    svg.append(el('svg:circle',{cx:X(s.cur),cy:11,r:5,fill:'var(--s1)',stroke:'var(--surface)','stroke-width':2}));
+    svg.append(el('svg:circle',{cx:X(s.fp),cy:11,r:5,fill:'var(--s2)',stroke:'var(--surface)','stroke-width':2}));
+    tip(svg, `<b>${d.name}</b> today ${f1(s.cur)} → 6 months ${f1(s.fp)} (Gap ${sgn(s.gap)}) · team should ${f1(s.ft)} (Stance gap ${sgn(s.stance)})<br>team mean today ${f1(t.cur.mean)} (gray line)`);
+    return [el('div',{}, d.name, p.edges[d.probe] ? el('i',{class:'mark '+(p.edges[d.probe]==='both'?'full':p.edges[d.probe]==='me'?'half':'')}) : null), svg]; }));
+  const ordinal = l => `var(--o${l})`;
+  const cov = el('div',{}, ...PASSES.map(([k,l])=> el('div',{style:'margin-bottom:4px'}, el('div',{class:'note'}, l), el('div',{class:'covstrip'}, ...AREAS.map(a=>{ const v=p.cov[a.i][k]; const isEdge = a.hs && v===6;
+    return tip(el('div',{class:v==null?'na':'', style:v==null?'':`background:${ordinal(v)};${isEdge?'outline:2px solid var(--ink);outline-offset:-2px':''}`}, v==null?'–':v), `<b>${a.name}</b> · ${l}: ${v==null?'N/A':v+' '+LEVELS[v-1]}${isEdge?'<br><b>Edge marker</b> (high-stakes area)':''}`); })))));
+  const sgList = idx => idx.length ? idx.map(i=>el('span',{class:'flag'}, SAFEGUARDS[i].split(' — ')[0])) : el('span',{class:'muted'},'none');
+  const sg = el('div',{class:'small'},
+    el('div',{}, el('b',{},'Accepts today: '), sgList(p.safe.cur)),
+    el('div',{}, el('b',{},'In 6 months: '), sgList(p.safe.fp), p.sg.inconsistent.fp ? el('span',{class:'flag',style:'border-color:var(--s8)'},'inconsistent — "read it myself" ticked alongside a safeguard; go and ask') : null),
+    el('div',{}, el('b',{},'Levers (would accept in 6 months, not today): '), p.sg.levers==null ? el('span',{class:'muted'},'not computed — inconsistent answer') : sgList(p.sg.levers), p.sg.hold ? el('span',{class:'flag'},'principle hold — the line does not move') : null, p.sg.dropped&&p.sg.dropped.length ? el('span',{class:'flag'}, 'pulls back: '+p.sg.dropped.map(i=>SAFEGUARDS[i].split(' — ')[0]).join(', ')) : null),
+    el('div',{}, el('b',{},'Team should accept: '), sgList(p.safe.ft)),
+    el('div',{}, el('b',{},'Wants to know more about: '), sgList(p.sg.learn)));
+  return el('div',{class:'card'},
+    el('div',{style:'display:flex;gap:10px;align-items:baseline;flex-wrap:wrap'}, el('h2',{}, p.name), el('span',{class:'chips'}, ...TOOLS.map((t,i)=> p.tools[i]>=3 ? el('span',{class:'chip static'}, `${t}: ${TOOL_STATES[p.tools[i]-1].toLowerCase()}`) : null), ...TOOLS.map((t,i)=> p.tools[i]===2 ? el('span',{class:'chip static muted'}, `${t}: tried, stopped`) : null))),
+    el('div',{class:'row',style:'margin-top:8px'},
+      el('div',{}, el('h3',{},'Dimensions'), dims, el('div',{class:'legend'}, el('span',{}, el('i',{style:'background:var(--s1)'}),'today'), el('span',{}, el('i',{style:'background:var(--s2)'}),'6 months — me'), el('span',{}, el('b',{style:'background:var(--s3)'}),'team should'), el('span',{}, el('span',{class:'ln',style:'border-color:var(--axis)'}),'team mean today'))),
+      el('div',{}, el('h3',{},'Coverage profile'), cov, el('div',{class:'legend'}, el('span',{class:'muted'},'1 None → 6 System-verified · darker = more AI · outlined = Edge marker')))),
+    el('div',{style:'margin-top:10px'}, el('h3',{},'Safeguards (read against Trust and Autonomy together)'), sg),
+    p.covEdges.length || Object.values(p.edges).some(Boolean) ? el('div',{style:'margin-top:10px'}, el('h3',{},'Edge markers — a position, not a fault'),
+      el('div',{class:'small'}, ...PROBES.filter(pr=>p.edges[pr.id]).map(pr=> el('div',{}, el('i',{class:'mark '+(p.edges[pr.id]==='both'?'full':p.edges[pr.id]==='me'?'half':'')}), `${DIM[pr.dim].name} probe (${pr.pole}) — ${p.edges[pr.id]==='both'?'both stances':p.edges[pr.id]==='me'?'"I\'d go, but we shouldn\'t"':'"the team should, but not me"'}: `, el('i',{}, pr.me))),
+        ...p.covEdges.map(e=> el('div',{}, el('i',{class:'mark full'}), `${e.area.name} at System-verified — ${PASS[e.pass]}`)))) : null);
+}
+
+// 4.7 Stance view — per Dimension, each person's Stance gap as a diverging bar; then the probe states
+function StanceView(people, S){
+  const blocks = DIMS.map(d=>{
+    const W=520, C=260, X=v=>C+v*55, H = (S.view==='internal'? people.length : 3)*20+8;
+    const svg = el('svg:svg',{viewBox:`0 0 ${W} ${H}`,class:'chart'});
+    svg.append(el('svg:line',{x1:C,x2:C,y1:0,y2:H,stroke:'var(--axis)','stroke-width':1}));
+    if (S.view==='internal'){
+      [...people].sort((a,b)=>a.scores[d.key].stance-b.scores[d.key].stance).forEach((p,i)=>{ const v=p.scores[d.key].stance, y=i*20+4;
+        const bar = el('svg:rect',{x:Math.min(C,X(v)),y,width:Math.abs(X(v)-C),height:12,rx:3,fill: v<0?'var(--div-neg)':'var(--div-pos)'});
+        tip(bar, `<b>${p.name}</b> Stance gap on ${d.name}: <b>${sgn(v)}</b><br>${v<-0.29?'"I\'d go further than the team should"': v>0.29?'"the team should go further than I would"':'aligned'}`);
+        svg.append(bar, el('svg:text',{x: v<0? X(v)-6 : X(v)+6, y:y+10, class:'lbl','text-anchor': v<0?'end':'start'}, p.ini)); });
+    } else {
+      const n = k => people.filter(p=> k==='neg'? p.scores[d.key].stance<-0.29 : k==='pos'? p.scores[d.key].stance>0.29 : Math.abs(p.scores[d.key].stance)<=0.29).length;
+      [['neg','would go further than the team should'],['aligned','aligned (within 0.3)'],['pos','think the team should go further than they would']].forEach(([k,l],i)=>{ const c=n(k), y=i*20+4;
+        svg.append(el('svg:rect',{x: k==='pos'?C: k==='neg'? C-c*24 : C-4, y, width: k==='aligned'?8:c*24, height:12, rx:3, fill: k==='neg'?'var(--div-neg)':k==='pos'?'var(--div-pos)':'var(--axis)'}));
+        svg.append(el('svg:text',{x: k==='neg'? C-c*24-6 : C+(k==='pos'?c*24:8)+6, y:y+10, class:'lbl','text-anchor':k==='neg'?'end':'start'}, `${c} ${l}`)); });
+    }
+    return el('div',{class:'card'}, el('h2',{}, d.name), svg);
+  });
+  const probeRows = PROBES.map(pr=> el('tr',{}, el('td',{}, el('b',{}, DIM[pr.dim].name), el('span',{class:'muted'}, ` (${pr.pole} pole)`), el('div',{class:'note'}, pr.me)),
+    ...(S.view==='internal' ? people.map(p=> el('td',{style:'text-align:center'}, p.edges[pr.id] ? tip(el('i',{class:'mark '+(p.edges[pr.id]==='both'?'full':p.edges[pr.id]==='me'?'half':'')}), `${p.name}: ${p.edges[pr.id]}`) : el('span',{class:'muted'},'·')))
+      : ['both','me','team'].map(st=> el('td',{class:'num'}, people.filter(p=>p.edges[pr.id]===st).length||'')))));
+  return el('div',{},
+    el('p',{class:'note'}, el('span',{class:'sq',style:'background:var(--div-neg)'}),' "I\'d go further than the team should" (team-should below me) · ', el('span',{class:'sq',style:'background:var(--div-pos)'}),' "the team should go further than I would". Both ends are the same person\'s own answers, so this is a real quantity. Threshold for "aligned": 0.3 (§2.4).'),
+    el('div',{class:'persongrid'}, ...blocks),
+    el('div',{class:'card'}, el('h2',{},'Probe items — Edge markers per stance'),
+      el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Probe'), ...(S.view==='internal'? people.map(p=>el('th',{style:'text-align:center'}, p.ini)) : [el('th',{class:'num'},'accelerator (both)'), el('th',{class:'num'},'"I\'d go, but we shouldn\'t"'), el('th',{class:'num'},'"the team should, but not me"')]))), el('tbody',{}, ...probeRows)),
+      el('p',{class:'note'}, el('i',{class:'mark full'}),' both stances — accelerator · ', el('i',{class:'mark half'}),' personal only · ', el('i',{class:'mark'}),' team only. A marker locates a position; it does not report a fault. Never scored.')));
+}
+
+// 4.8 Safeguards view — the team-norm matrix, levers, holds, flags
+function SafeguardsView(people, S){
+  const n = people.length, maj = Math.ceil(n/2);
+  const count = (k,i) => people.filter(p=>p.safe[k].includes(i));
+  const cell = (k,i) => { const ps=count(k,i); return el('td',{class:'num'}, el('span',{class:'cnt'}, ps.length), S.view==='internal' ? el('div',{}, ...ps.map(p=>iniChip(p,S))) : null); };
+  const rows = SAFEGUARDS.map((s,i)=> el('tr',{}, el('td',{}, s), cell('cur',i), cell('fp',i), cell('ft',i),
+    el('td',{}, i>0 && count('ft',i).length>=maj ? el('span',{class:'flag',style:'border-color:var(--s3)'}, `draft norm (${count('ft',i).length}/${n})`) : i===0 && count('ft',0).length ? el('span',{class:'flag'}, 'principle hold in team stance') : '')));
+  const leverRows = S.view==='internal' ? people.map(p=> el('tr',{}, el('td',{}, p.name),
+      el('td',{}, p.sg.levers==null ? el('span',{class:'flag',style:'border-color:var(--s8)'},'inconsistent — excluded') : p.sg.levers.length ? p.sg.levers.map(i=>el('span',{class:'flag'}, SAFEGUARDS[i].split(' — ')[0])) : el('span',{class:'muted'},'—')),
+      el('td',{}, p.sg.hold ? el('span',{class:'flag'},'holds') : p.sg.dropped&&p.sg.dropped.length ? el('span',{class:'flag'},'pulls back: '+p.sg.dropped.map(i=>SAFEGUARDS[i].split(' — ')[0]).join(', ')) : ''),
+      el('td',{}, p.sg.learn.map(i=>el('span',{class:'flag'}, SAFEGUARDS[i].split(' — ')[0])))))
+    : [el('tr',{}, el('td',{colspan:4,class:'muted'}, `Levers are individual results — only counts in the export: ${people.filter(p=>p.sg.levers&&p.sg.levers.length).length} with a lever, ${people.filter(p=>p.sg.hold).length} principle hold${people.filter(p=>p.sg.hold).length===1?'':'s'}, ${people.filter(p=>Object.values(p.sg.inconsistent).some(Boolean)).length} inconsistent`))];
+  const learn = SAFEGUARDS.map((s,i)=> i? [s.split(' — ')[0], people.filter(p=>p.sg.learn.includes(i)).length] : null).filter(Boolean).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
+  return el('div',{},
+    el('div',{class:'card'}, el('h2',{},'What the team accepts instead of reading AI\'s output'),
+      el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Safeguard'), el('th',{class:'num'},'Today'), el('th',{class:'num'},'6 months — me'), el('th',{class:'num'},'6 months — team should'), el('th',{},'Reading'))), el('tbody',{}, ...rows)),
+      el('p',{class:'note'}, `A "draft norm" is any safeguard at least ${maj} of ${n} say the team should accept. Read against Trust and Autonomy together — the same list answers both.`)),
+    el('div',{class:'card'}, el('h2',{},'Levers, holds and flags'),
+      el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Person'), el('th',{},'Lever (accepts in 6 months, not today)'), el('th',{},'Line'), el('th',{},'Wants to know more about'))), el('tbody',{}, ...leverRows)),
+      el('p',{class:'note'},'A lever is derived by subtraction — never asked. A principle hold is a position, not an obstacle. An inconsistent answer is a conversation, not a formula.')),
+    learn.length ? el('div',{class:'card'}, el('h2',{},'Learning interest (team counts)'), el('div',{class:'chips'}, ...learn.map(([s,c])=>el('span',{class:'chip static'}, `${s} · ${c}`)))) : null);
+}
+
+// 4.9 Craft lens — Craft values vs Comfort per person (the fog candidate). Export: a count grid.
+function CraftScatter(people, S){
+  const W=420, H=380, L=50, R=400, T=20, B=340, X=v=>L+(v-1)/4*(R-L), Y=v=>B-(v-1)/4*(B-T);
+  const k = S.pass==='cur'?'cur':S.pass; const lab = PASS[k];
+  const svg = el('svg:svg',{viewBox:`0 0 ${W} ${H}`,class:'chart',style:'max-width:520px'});
+  for (let v=1;v<=5;v++){ svg.append(el('svg:line',{x1:X(v),x2:X(v),y1:T,y2:B,class:'grid'}), el('svg:line',{x1:L,x2:R,y1:Y(v),y2:Y(v),class:'grid'}), el('svg:text',{x:X(v),y:B+18,class:'axis','text-anchor':'middle'},v), el('svg:text',{x:L-10,y:Y(v)+4,class:'axis','text-anchor':'end'},v)); }
+  svg.append(el('svg:text',{x:(L+R)/2,y:H-4,class:'lbl','text-anchor':'middle'}, `Comfort — ${lab}`), el('svg:text',{x:12,y:(T+B)/2,class:'lbl','text-anchor':'middle',transform:`rotate(-90 12 ${(T+B)/2})`}, `Craft values — ${lab}`));
+  if (S.view==='internal'){
+    for (const p of people){ const x=X(p.scores.comfort[k]), y=Y(p.scores.craft[k]);
+      svg.append(tip(el('svg:circle',{cx:x,cy:y,r:6,fill:'var(--s1)',stroke:'var(--surface)','stroke-width':2}), `<b>${p.name}</b> Comfort ${f1(p.scores.comfort[k])} · Craft values ${f1(p.scores.craft[k])}`), el('svg:text',{x:x+9,y:y+4,class:'name'}, p.name.split(' ')[0])); }
+  } else {
+    const grid={}; for (const p of people){ const key=`${label(p.scores.comfort[k])},${label(p.scores.craft[k])}`; grid[key]=(grid[key]||0)+1; }
+    for (const [key,c] of Object.entries(grid)){ const [cx,cy]=key.split(',').map(Number); svg.append(el('svg:rect',{x:X(cx)-16,y:Y(cy)-16,width:32,height:32,rx:4,fill:`var(--q${Math.min(8,c+1)})`}), el('svg:text',{x:X(cx),y:Y(cy)+4,class:'name','text-anchor':'middle'}, c)); }
+  }
+  return el('div',{}, el('div',{class:'seg',style:'margin-bottom:8px'}, ...PASSES.map(([pk,l])=>el('button',{class:S.pass===pk?'on':'', onclick:()=>{S.pass=pk; render();}}, l))), svg,
+    el('p',{class:'note'},'Candidate cross-view from the map\'s fog: does Craft values need to be read against Comfort per person? High craft + high comfort is a different team from high craft + low comfort.'));
+}
+
+// 4.9b Team histogram for a Dimension: counts per nearest level, three passes side by side.
+//      Always unnamed — a count is a team fact — so it renders identically in both views.
+const SERIES = [['cur','Today','var(--s1)'],['fp','In 6 months — me','var(--s2)'],['ft','In 6 months — team should','var(--s3)']];
+function Columns(labels, seriesCounts, tipFor){
+  const W=560, L=16, R=16, T=22, B=118, H=B+24, bw=12, g=2, ncol=labels.length, colW=(W-L-R)/ncol;
+  const maxC = Math.max(1, ...seriesCounts.flatMap(s=>s.counts));
+  const yS = c => B - c/maxC*(B-T);
+  const svg = el('svg:svg',{viewBox:`0 0 ${W} ${H}`,class:'chart'});
+  svg.append(el('svg:line',{x1:L,x2:W-R,y1:B,y2:B,stroke:'var(--axis)','stroke-width':1}));
+  labels.forEach((lab,li)=>{
+    const cx = L + li*colW + colW/2, x0 = cx - (3*bw+2*g)/2;
+    svg.append(el('svg:text',{x:cx,y:B+16,class:'axis','text-anchor':'middle'}, lab));
+    seriesCounts.forEach((s,j)=>{ const c=s.counts[li]; if(!c) return; const x=x0+j*(bw+g), y=yS(c);
+      const r = el('svg:rect',{x,y,width:bw,height:B-y,rx:3,fill:s.color});
+      svg.append(el('svg:rect',{x,y:B-2,width:bw,height:2,fill:s.color}), tip(r, tipFor(li,s,c)), el('svg:text',{x:x+bw/2,y:y-4,class:'lbl','text-anchor':'middle'}, c)); });
+  });
+  return svg;
+}
+function DimHistogram(d, people, S){
+  const t = teamDim(d, people);
+  const series = SERIES.map(([k,l,c])=>({k,label:l,color:c,counts:t[k].counts}));
+  return el('div',{}, Columns(['1','2','3','4','5'], series, (li,s,c)=>`<b>${c}</b> at level ${li+1} — ${s.label}<br><span style="opacity:.8">${d.levels[li]}</span>`),
+    el('div',{class:'legend'}, ...SERIES.map(([k,l,c])=>el('span',{}, el('i',{style:`background:${c}`}), l)), el('span',{class:'muted'},'counts per nearest level (a landmark, not the score)')));
+}
+function AreaHistogram(a, people, S){
+  const t = teamArea(a, people);
+  const series = SERIES.map(([k,l,c])=>({k,label:l,color:c,counts:[...t[k].dist, t[k].na]}));
+  return el('div',{}, Columns([...LEVELS.map((l,i)=>`${i+1}`),'N/A'], series, (li,s,c)=> li<6 ? `<b>${c}</b> at ${li+1} ${LEVELS[li]} — ${s.label}<br><span style="opacity:.8">${anchor(a.i,li+1)}</span>` : `<b>${c}</b> don't do this work — ${s.label}`),
+    el('div',{class:'legend'}, ...SERIES.map(([k,l,c])=>el('span',{}, el('i',{style:`background:${c}`}), l)), el('span',{class:'muted'},'1 None → 6 System-verified; the distribution is the profile')));
+}
+
+// 4.9c Team overview — the manager-facing page. Always unnamed, whatever the view toggle says.
+// A labelled mean axis: 1–5 scale under it, every value written next to its mark.
+function MeanAxis(t){
+  const W=300, L=22, R=262, X=v=>L+(v-1)/4*(R-L), y=36, svg=el('svg:svg',{viewBox:`0 0 ${W} 72`,class:'chart',style:'width:300px'});
+  for(let v=1;v<=5;v++){ svg.append(el('svg:line',{x1:X(v),x2:X(v),y1:y-8,y2:y+8,class:'grid'})); svg.append(el('svg:text',{x:X(v),y:70,class:'axis','text-anchor':'middle'}, v)); }
+  svg.append(el('svg:line',{x1:L,x2:R,y1:y,y2:y,class:'hair'}));
+  svg.append(el('svg:line',{x1:X(t.cur.mean),x2:X(t.fp.mean),y1:y,y2:y,stroke:'var(--axis)','stroke-width':2}));
+  svg.append(el('svg:rect',{x:X(t.ft.mean)-1.5,y:y-9,width:3,height:18,fill:'var(--s3)'}));
+  svg.append(el('svg:circle',{cx:X(t.cur.mean),cy:y,r:5,fill:'var(--s1)',stroke:'var(--surface)','stroke-width':2}), el('svg:circle',{cx:X(t.fp.mean),cy:y,r:5,fill:'var(--s2)',stroke:'var(--surface)','stroke-width':2}));
+  // value labels on three separate lines so they can never collide: team-should top, today above the dot, 6-months below it
+  svg.append(el('svg:text',{x:X(t.ft.mean),y:y-24,class:'lbl','text-anchor':'middle'}, `team should ${f1(t.ft.mean)}`));
+  svg.append(el('svg:line',{x1:X(t.ft.mean),x2:X(t.ft.mean),y1:y-21,y2:y-10,stroke:'var(--s3)','stroke-width':1}));
+  svg.append(el('svg:text',{x:X(t.cur.mean),y:y-11,class:'lbl','text-anchor':'middle'}, `today ${f1(t.cur.mean)}`));
+  svg.append(el('svg:text',{x:X(t.fp.mean),y:y+19,class:'lbl','text-anchor':'middle'}, `6 months ${f1(t.fp.mean)}`));
+  return tip(svg, `team mean today <b>${f1(t.cur.mean)}</b> → in 6 months (me) <b>${f1(t.fp.mean)}</b> · team-stance target <b>${f1(t.ft.mean)}</b>, on the 1–5 scale`);
+}
+// A labelled count table: one row per pass, one column per level, the number in every cell, shaded by size.
+function LevelTable(rows, levels, opts={}){
+  const ramp = c => c===0 ? 'transparent' : `var(--q${Math.min(8, c+1)})`;
+  return el('table',{class:'lvl'},
+    el('thead',{}, el('tr',{}, el('th',{}), ...levels.map((l,i)=> el('th',{}, opts.tips ? tip(el('span',{}, l), opts.tips[i]) : l)))),
+    el('tbody',{}, ...rows.map(r => el('tr',{}, el('td',{class:'r'}, r.label),
+      ...r.counts.map((c,i)=> { const na = opts.na && i===r.counts.length-1; const isMed = r.median===i+1;
+        return tip(el('td',{class:'c'+(isMed?' mdn':'')+(na?' na':''), style:`background:${na?'transparent':ramp(c)}`}, c||el('span',{class:'muted'},'·')), `<b>${c}</b> ${c===1?'person':'people'} — ${r.label}, ${na?'don\'t do this work':'level '+(i+1)+(opts.names?' '+opts.names[i]:'')}${isMed?'<br>median level':''}`); })))));
+}
+function TeamOverview(people){
+  const S2 = {...S, view:'export'};
+  const n = people.length;
+  const stanceSplit = d => { const neg=people.filter(p=>p.scores[d.key].stance<-0.29).length, pos=people.filter(p=>p.scores[d.key].stance>0.29).length; return {neg,pos,al:n-neg-pos}; };
+  const dimRows = DIMS.map(d=>{ const t=teamDim(d,people), st=stanceSplit(d);
+    return el('tr',{}, el('td',{}, el('b',{}, d.name), d.note? el('div',{class:'note'}, d.note):null),
+      el('td',{}, LevelTable([{label:'Today',counts:t.cur.counts},{label:'6 mo — me',counts:t.fp.counts},{label:'Team should',counts:t.ft.counts}], ['1','2','3','4','5'], {tips:d.levels.map((l,i)=>`<b>level ${i+1}</b><br>${l}`)})),
+      el('td',{}, MeanAxis(t)),
+      el('td',{class:'num'}, f1(t.cur.mean), el('div',{class:'note'}, `range ${f1(t.cur.range)}`)), el('td',{class:'num'}, sgn(t.gap), d.soft? el('div',{class:'note'},'softer'):null), el('td',{class:'num'}, sgn(t.norm)),
+      el('td',{class:'small',style:'white-space:nowrap'}, tip(el('span',{}, el('span',{class:'sq',style:'background:var(--div-neg)'}), st.neg, ' · ', el('span',{class:'sq',style:'background:var(--axis)'}), st.al, ' · ', el('span',{class:'sq',style:'background:var(--div-pos)'}), st.pos), `${st.neg} would go further than the team should · ${st.al} aligned · ${st.pos} think the team should go further than they would`))); });
+  let g=null; const areaRows=[];
+  for (const a of AREAS){ const t=teamArea(a,people);
+    if (a.group!==g){ g=a.group; areaRows.push(el('tr',{class:'groupname'}, el('td',{colspan:7}, g))); }
+    const move = t.gap.median==null ? '—' : `${t.gap.median>0?'+':''}${t.gap.median}`;
+    areaRows.push(el('tr',{}, el('td',{}, a.name, a.hs? tip(el('span',{class:'muted'},' ◆'),'high-stakes area'):null),
+      el('td',{}, LevelTable([{label:'Today',counts:[...t.cur.dist,t.cur.na],median:t.cur.median},{label:'6 mo — me',counts:[...t.fp.dist,t.fp.na],median:t.fp.median},{label:'Team should',counts:[...t.ft.dist,t.ft.na],median:t.ft.median}], ['1','2','3','4','5','6','N/A'], {na:true, names:LEVELS, tips:[...LEVELS.map((l,i)=>`<b>${i+1} — ${l}</b><br>${anchor(a.i,i+1)}`),'Don\'t do this work — excluded from the profile, counted']})),
+      el('td',{class:'num'}, t.cur.median==null?'—':`${t.cur.median} ${LEVELS[t.cur.median-1]}`), el('td',{class:'num'}, t.ft.median==null?'—':`${t.ft.median} ${LEVELS[t.ft.median-1]}`),
+      el('td',{class:'num'}, move), el('td',{class:'num muted'}, t.cur.na||''))); }
+  const maj = Math.ceil(n/2);
+  const norms = SAFEGUARDS.map((s,i)=>({s,i,c:people.filter(p=>p.safe.ft.includes(i)).length})).filter(x=>x.i>0 && x.c>=maj).sort((a,b)=>b.c-a.c);
+  const holds = people.filter(p=>p.safe.ft.includes(0)).length;
+  const edgeRows = PROBES.map(pr=>{ const c = st=>people.filter(p=>p.edges[pr.id]===st).length; const tot=c('both')+c('me')+c('team'); return tot? el('tr',{}, el('td',{}, `${DIM[pr.dim].name} probe (${pr.pole})`), el('td',{class:'num'},c('both')||''), el('td',{class:'num'},c('me')||''), el('td',{class:'num'},c('team')||'')) : null; }).filter(Boolean);
+  const covEdges = AREAS.filter(a=>a.hs).map(a=>{ const t=teamArea(a,people); const byPass = k=>t.edges.filter(e=>e.pass===k).length; return (t.edges.length) ? el('tr',{}, el('td',{}, `${a.name} at System-verified`), el('td',{class:'num'}, byPass('cur')||''), el('td',{class:'num'}, byPass('fp')||''), el('td',{class:'num'}, byPass('ft')||'')) : null; }).filter(Boolean);
+  return el('div',{},
+    el('div',{class:'banner'}, el('b',{},'Team overview — the page that goes upward. '), `No names anywhere: every figure is a count, a mean, a range or a median over n=${n}. At n=5–9 an unnamed distribution is partially re-identifiable by anyone who knows the team.`),
+    KpiRow(people,S2),
+    el('div',{class:'card'}, el('h2',{},'Dimensions'),
+      el('p',{class:'note'},'Every Dimension is scored 1–5 in its natural direction. ', el('b',{},'How many people at each level'),' counts the team by nearest level for each of the three questions asked. ', el('b',{},'Team mean on the 1–5 scale'),' shows where the team average sits today, where people individually want to be in 6 months, and where they say the team should be.'),
+      el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Dimension'), el('th',{},'How many people at each level (1 low → 5 high)'), el('th',{},'Team mean on the 1–5 scale'), el('th',{class:'num'},'Mean today'), el('th',{class:'num'}, tip(el('span',{},'Gap'),'6 months (me) − today: how far people individually want to move')), el('th',{class:'num'}, tip(el('span',{},'Norm gap'),'team should − today: how far people think the team should move')), el('th',{}, tip(el('span',{},'Stance split'),'people who would go further than the team should · aligned (within 0.3) · people who think the team should go further than they would')))), el('tbody',{}, ...dimRows)),
+      el('div',{class:'legend'}, el('span',{}, el('i',{style:'background:var(--s1)'}),'team mean today'), el('span',{}, el('i',{style:'background:var(--s2)'}),'team mean, in 6 months (me)'), el('span',{}, el('b',{style:'background:var(--s3)'}),'team-stance target (team should)'), el('span',{}, el('span',{class:'sq',style:'background:var(--div-neg)'}),'would go further than the team should'), el('span',{}, el('span',{class:'sq',style:'background:var(--axis)'}),'aligned'), el('span',{}, el('span',{class:'sq',style:'background:var(--div-pos)'}),'team should go further than they would'))),
+    el('div',{class:'card'}, el('h2',{},'Coverage by area group'),
+      el('p',{class:'note'}, el('b',{},'Involvement levels: '), LEVELS.map((l,i)=>`${i+1} ${l}`).join(' · '), ' · N/A don\'t do this work. Each cell counts how many people put themselves at that level for that area; the ', el('b',{},'bold underlined'),' cell is the median (lower middle at even n).'),
+      el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Development area'), el('th',{},'How many people at each Involvement level'), el('th',{class:'num'},'Median today'), el('th',{class:'num'},'Median team should'), el('th',{class:'num'}, tip(el('span',{},'Gap (levels)'),'median of each person\'s own move, today → 6 months (me), in levels')), el('th',{class:'num'}, tip(el('span',{},'N/A'),'people who don\'t do this work today')))), el('tbody',{}, ...areaRows)),
+      el('p',{class:'note'},'Gap = median of within-person moves today → 6 months (me). No number is ever averaged across areas — read each row on its own. ◆ high-stakes area.')),
+    el('div',{class:'row'},
+      el('div',{class:'card'}, el('h2',{},'Draft six-month norms'), el('p',{class:'note'}, `Safeguards at least ${maj} of ${n} say the team should accept instead of an individual reading AI\'s output.`),
+        norms.length ? el('ul',{class:'small',style:'padding-left:18px;margin:0'}, ...norms.map(x=>el('li',{}, x.s, ' ', el('span',{class:'cnt'}, `${x.c}/${n}`)))) : el('p',{class:'muted'},'none reach a majority'),
+        holds ? el('p',{class:'note'}, `${holds} would hold the line at "an individual reads it" for the team.`) : null),
+      el('div',{class:'card'}, el('h2',{},'Edge markers'), el('p',{class:'note'},'Positions at the poles — counts only. A marker locates a position; it does not report a fault.'),
+        el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Probe'), el('th',{class:'num'},'both stances'), el('th',{class:'num'},'me only'), el('th',{class:'num'},'team only'))), el('tbody',{}, ...edgeRows)),
+        covEdges.length ? el('table',{style:'margin-top:8px'}, el('thead',{}, el('tr',{}, el('th',{},'High-stakes area'), el('th',{class:'num'},'today'), el('th',{class:'num'},'6 mo — me'), el('th',{class:'num'},'team should'))), el('tbody',{}, ...covEdges)) : null)));
+}
+
+// 4.10 KPI row — the headline numbers a session could open with
+function KpiRow(people, S){
+  const byRange = DIMS.map(d=>({d,t:teamDim(d,people)})).sort((a,b)=>b.t.cur.range-a.t.cur.range)[0];
+  const byGap = DIMS.map(d=>({d,t:teamDim(d,people)})).sort((a,b)=>Math.abs(b.t.gap)-Math.abs(a.t.gap))[0];
+  const byNorm = DIMS.map(d=>({d,t:teamDim(d,people)})).sort((a,b)=>Math.abs(b.t.norm)-Math.abs(a.t.norm))[0];
+  const edges = people.reduce((s,p)=> s + Object.values(p.edges).filter(Boolean).length + p.covEdges.length, 0);
+  const tile = (l,v,d) => el('div',{class:'stat'}, el('div',{class:'l'},l), el('div',{class:'v'},v), el('div',{class:'d'},d));
+  return el('div',{class:'stats',style:'margin-bottom:14px'},
+    tile('Respondents', `${people.length}`, S.lensTool!=null ? 'after lens' : 'of 7 submitted'),
+    tile('Most disagreement today', byRange.d.name, `range ${f1(byRange.t.cur.range)}`),
+    tile('Biggest personal Gap', byGap.d.name, `${sgn(byGap.t.gap)}${byGap.d.soft?' (softer)':''}`),
+    tile('Biggest norm gap', byNorm.d.name, sgn(byNorm.t.norm)),
+    tile('Edge markers', `${edges}`, 'positions, not faults'));
+}
+
+/* ============================================================
+   5. FILTER ROW + STATE
+   ============================================================ */
+const ALL = generate().map(scorePerson);
+const S = { variant:'C', view:'internal', compare:'cur-fp', lensTool:null, lensState:null, pass:'cur', tab:'dims', dim:'trust', area:13, person:0, topic:'overview', open:{} };
+function filtered(){ return ALL.filter(p => S.lensTool==null || S.lensState==null || p.tools[S.lensTool]===S.lensState); }
+
+function FilterRow(){
+  const sel = (opts, cur, on) => el('select',{onchange:e=>{ on(e.target.value===''?null:+e.target.value); render(); }}, el('option',{value:''},'Any'), ...opts.map((o,i)=>el('option',{value:i, selected:cur===i||null}, o)));
+  return el('div',{class:'filters'},
+    el('span',{}, el('label',{},'Lens: tool'), sel(TOOLS, S.lensTool, v=>S.lensTool=v), ' ', el('label',{},'state'), sel(TOOL_STATES, S.lensState, v=>S.lensState=v===null?null:v+1)),
+    el('span',{}, el('label',{},'View'), el('span',{class:'seg'}, el('button',{class:S.view==='internal'?'on':'', onclick:()=>{S.view='internal';render();}},'Internal (named)'), el('button',{class:S.view==='export'?'on':'', onclick:()=>{S.view='export';render();}},'Exported team view'))),
+    el('span',{}, el('label',{},'Connector'), el('span',{class:'seg'}, el('button',{class:S.compare==='cur-fp'?'on':'', onclick:()=>{S.compare='cur-fp';render();}},'Today → 6 months (me)'), el('button',{class:S.compare==='fp-ft'?'on':'', onclick:()=>{S.compare='fp-ft';render();}},'Me → team should'))),
+    el('span',{class:'note'}, `n = ${filtered().length}`));
+}
+function Banner(){ return S.view==='export' ? el('div',{class:'banner'}, el('b',{},'Exported team view — may reach the manager. '), 'Names removed; distributions shown as unnamed counts per level. At n=5–9 an unnamed distribution is partially re-identifiable by anyone who knows the team — stated, not hidden (scoring rules §4.1).') : document.createDocumentFragment(); }
+function Header(sub){ return el('div',{}, el('div',{class:'hdr'}, el('h1',{},'AI-Dev-Survey — results', el('span',{class:'proto'},'PROTOTYPE · FAKE DATA')), el('span',{class:'sub'}, sub)), ReactSheet()); }
+function ReactSheet(){
+  const li = (...k) => el('li',{}, ...k);
+  return el('details',{class:'card',style:'padding:8px 16px;margin-bottom:12px'}, el('summary',{style:'cursor:pointer;font-weight:600'},'What to react to — the candidate Slices and the open questions (ticket #11)'),
+    el('div',{class:'row',style:'margin-top:8px'},
+      el('div',{}, el('h3',{},'Candidate views in this prototype'), el('ol',{class:'small',style:'padding-left:18px;margin:0'},
+        li(el('b',{},'Dimension — Layered view.'),' One named row per person: Today → 6 months (me) as a dumbbell, the person\'s "team should" as a tick, three team lines (mean today, mean 6 months, team-stance target), Edge marker diamonds. Export: unnamed counts per nearest level.'),
+        li(el('b',{},'Dimension — team stats.'),' Mean · range · n per pass, personal Gap, norm gap, and the rubric landmark sentence for the team mean.'),
+        li(el('b',{},'Dimension strip'),' (B only): everyone on one line with initials, for the all-seven overview.'),
+        li(el('b',{},'Area — Layered view.'),' Three passes × six levels + N/A; people as chips (export: counts); median outlined; Coverage Gap as median steps; N/A↔level pairs flagged; level-6 Edge markers on high-stakes areas.'),
+        li(el('b',{},'Coverage heatmap.'),' All 19 areas × levels as counts for one pass, median outlined, Gap and mixed-pair columns.'),
+        li(el('b',{},'Person profile.'),' Seven mini dumbbells against the team mean, the 3×19 Coverage strip, safeguards → Levers / principle hold / inconsistency flag / learning interest, Edge markers, tools lens. Hidden in export.'),
+        li(el('b',{},'Stance.'),' Stance gap per person as a diverging bar per Dimension (export: counts of three states) + the probe table with its three Edge states.'),
+        li(el('b',{},'Safeguards.'),' The team-norm matrix (today / me / team should, "draft norm" at majority), Levers per person, learning-interest counts.'),
+        li(el('b',{},'Craft × Comfort'),' scatter — the cross-view from the map\'s fog. Export: a count grid.'),
+        li(el('b',{},'Team histogram'),' (C, added on reaction): counts per level for the three passes on every Dimension and area topic.'),
+        li(el('b',{},'Team overview'),' (C, added on reaction): the manager page — always unnamed; Dimensions with per-level squares, mean movement and stance split; Coverage by area group with medians; draft norms; Edge-marker counts.'),
+        li(el('b',{},'KPI row'),' (B only): n, most disagreement, biggest Gap, biggest norm gap, Edge-marker count.'),
+        li(el('b',{},'Filter row'),' (all): Context lens (tool × state), Internal / Exported team view, connector = personal Gap or Stance gap.'))),
+      el('div',{}, el('h3',{},'Open questions'), el('ul',{class:'small',style:'padding-left:18px;margin:0'},
+        li('Which shell — A tabs, B wall, C explorer — or which parts of each?'),
+        li('Layered view: rows per person (A/C) or everyone on one line (B strip)? Should the connector default to the personal Gap?'),
+        li('The team-stance target is the mean of everyone\'s "team should". Is a line enough, with each person\'s own tick on their row?'),
+        li('Export: Dimension counts are bucketed by nearest level. Is that the "unnamed counts per value" §4.1 means — or should the export drop the distribution?'),
+        li('Edge markers as quiet diamonds beside the row — too quiet, too loud, or right for "a position, not a fault"?'),
+        li('Coverage: does heatmap + area detail make "the distribution is the profile" readable, or does the eye still hunt for a mean?'),
+        li('KPI row: it names a "biggest" — does that fight the spec\'s refusal to summarise, or is it the right opener for a session?'),
+        li('Craft × Comfort: keep as a view, or drop?'),
+        li('Safeguards\' home: own tab (A), on the wall (B), or beside Trust and Autonomy (C)?'),
+        li('Stance gap uses the blue/red diverging pair — does red read as "bad"?'),
+        li('Person profiles vanish entirely in export. Right?')))));
+}
+const dimChips = () => el('div',{class:'chips',style:'margin-bottom:10px'}, ...DIMS.map(d=>el('button',{class:'chip '+(S.dim===d.key?'on':''), onclick:()=>{S.dim=d.key;render();}}, d.name)));
+
+/* ============================================================
+   6. VARIANT A — Slice tabs
+   ============================================================ */
+function VariantA(root){
+  const people = filtered();
+  const TABS = [['dims','Dimensions'],['cov','Coverage'],['people','People'],['stance','Stance'],['safe','Safeguards & edges'],['craft','Craft lens']];
+  root.append(Header('A — one Slice at a time'), FilterRow(), Banner(),
+    el('div',{class:'tabs'}, ...TABS.map(([k,l])=>el('button',{class:S.tab===k?'on':'', onclick:()=>{S.tab=k;render();}}, l))));
+  if (S.tab==='dims'){ const d=DIM[S.dim];
+    root.append(dimChips(), el('div',{class:'grid2'}, el('div',{class:'card'}, el('h2',{}, `${d.name} — Layered view`), LayeredDimension(d,people,S)), el('div',{class:'card'}, el('h2',{},'Team'), DimStats(d,people))));
+  }
+  if (S.tab==='cov'){ const a=AREAS[S.area];
+    root.append(el('div',{class:'grid2'}, el('div',{class:'card'}, el('h2',{},'All 19 areas'), CoverageHeatmap(people,S,i=>{S.area=i;render();},S.area)), el('div',{class:'card'}, el('h2',{}, a.name), el('div',{class:'note',style:'margin-bottom:8px'}, a.group), LayeredArea(a,people,S))));
+  }
+  if (S.tab==='people'){
+    root.append(el('div',{class:'chips',style:'margin-bottom:10px'}, ...ALL.map(p=>el('button',{class:'chip '+(S.person===p.id?'on':''), onclick:()=>{S.person=p.id;render();}}, S.view==='internal'?p.name:'—'))), PersonProfile(ALL[S.person], people, S));
+  }
+  if (S.tab==='stance') root.append(StanceView(people,S));
+  if (S.tab==='safe') root.append(SafeguardsView(people,S));
+  if (S.tab==='craft') root.append(el('div',{class:'card'}, el('h2',{},'Craft values × Comfort'), CraftScatter(people,S)));
+}
+
+/* ============================================================
+   7. VARIANT B — Overview wall
+   ============================================================ */
+function VariantB(root){
+  const people = filtered();
+  root.append(Header('B — everything on one page, expand in place'), FilterRow(), Banner(), KpiRow(people,S));
+  // Dimensions as small multiples
+  const strips = el('div',{class:'card'}, el('h2',{},'Seven Dimensions — where everyone is today'),
+    el('p',{class:'note'},'Click a strip to open its Layered view in place.'),
+    ...DIMS.map(d=> el('div',{}, el('div',{class:'expand',onclick:()=>{S.open[d.key]=!S.open[d.key];render();}}, DimensionStrip(d,people,S)), S.open[d.key] ? el('div',{style:'padding:6px 0 14px'}, LayeredDimension(d,people,S), DimStats(d,people)) : null)),
+    el('div',{class:'legend'}, el('span',{}, el('span',{class:'ln',style:'border-color:var(--s1)'}),'team mean today'), el('span',{}, el('span',{class:'ln',style:'border-color:var(--s2)'}),'team mean, 6 months (me)'), el('span',{}, el('span',{class:'ln',style:'border-color:var(--s3)'}),'team-stance target')));
+  root.append(strips);
+  // Coverage
+  root.append(el('div',{class:'card'}, el('h2',{},'Coverage — 19 Development areas'), CoverageHeatmap(people,S,i=>{S.open['area']=S.open['area']===i?null:i;render();},S.open['area']),
+    S.open['area']!=null ? el('div',{style:'margin-top:12px;padding-top:12px;border-top:1px solid var(--grid)'}, el('h2',{}, AREAS[S.open['area']].name), LayeredArea(AREAS[S.open['area']],people,S)) : null));
+  // People
+  root.append(el('div',{}, el('h2',{},'People'), S.view==='internal' ? el('div',{class:'persongrid'}, ...ALL.map(p=>el('div',{class:'card expand',onclick:()=>{S.open['p'+p.id]=!S.open['p'+p.id];render();}}, el('b',{},p.name), ' ', el('span',{class:'note'}, DIMS.map(d=>`${d.name.split(' ')[0]} ${f1(p.scores[d.key].cur)}`).join(' · ')), S.open['p'+p.id] ? PersonProfile(p,people,S) : null))) : el('p',{class:'note card'},'Individual results are not part of the exported team view.')));
+  // Non-scoring
+  root.append(el('h2',{},'Stance'), StanceView(people,S), el('h2',{},'Safeguards'), SafeguardsView(people,S), el('div',{class:'card'}, el('h2',{},'Craft values × Comfort'), CraftScatter(people,S)));
+}
+
+/* ============================================================
+   8. VARIANT C — Explorer: "where do we disagree" list + one topic
+   ============================================================ */
+function VariantC(root){
+  const people = filtered();
+  root.append(Header('C — pick the topic; the list is ordered by disagreement'), FilterRow(), Banner());
+  const topics = [
+    ...DIMS.map(d=>{ const t=teamDim(d,people); return {key:'dim:'+d.key, kind:'Dimension', name:d.name, spread:t.cur.range, max:4, gap:sgn(t.gap)}; }),
+    ...AREAS.map(a=>{ const t=teamArea(a,people); return {key:'area:'+a.i, kind:a.group, name:a.name, spread:t.cur.range, max:5, gap: t.gap.median==null?'—':(t.gap.median>0?'+':'')+t.gap.median+' lv'}; }),
+  ].sort((a,b)=> (b.spread/b.max)-(a.spread/a.max));
+  const list = el('div',{class:'card',style:'padding:8px'},
+    el('div',{class:'topic '+(S.topic==='overview'?'on':''), style:'margin-bottom:6px', onclick:()=>{S.topic='overview';render();}}, el('div',{}, el('div',{class:'kind'},'At a glance'), el('b',{},'Team overview'), el('div',{class:'note',style:S.topic==='overview'?'color:inherit;opacity:.7':''},'unnamed — the manager page'))),
+    el('h3',{style:'padding:4px 8px'},'Topics — most disagreement first'),
+    ...topics.map(t=> el('div',{class:'topic '+(S.topic===t.key?'on':''), onclick:()=>{S.topic=t.key;render();}}, el('div',{}, el('div',{class:'kind'},t.kind), t.name), el('div',{class:'bar'}, el('i',{style:`width:${t.spread/t.max*100}%`})), el('div',{class:'num small'}, t.gap))),
+    el('p',{class:'note',style:'padding:4px 8px'},'bar = range today (Dimension: max − min score; area: max − min level). Gap = team personal Gap.'),
+    el('h3',{style:'padding:10px 8px 4px'},'Also'), ...[['stance','Stance gaps & probes'],['safe','Safeguards'],['craft','Craft lens']].map(([k,l])=>el('div',{class:'topic '+(S.topic===k?'on':''), onclick:()=>{S.topic=k;render();}}, el('div',{}, l))));
+  let detail;
+  if (S.topic.startsWith('dim:')){ const d=DIM[S.topic.slice(4)];
+    const who = S.view==='internal' ? el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Person'), el('th',{class:'num'},'Today'), el('th',{class:'num'},'6 mo — me'), el('th',{class:'num'},'Team should'), el('th',{class:'num'},'Gap'), el('th',{class:'num'},'Stance gap'), el('th',{},'Edge'))),
+      el('tbody',{}, ...[...people].sort((a,b)=>b.scores[d.key].cur-a.scores[d.key].cur).map(p=>{ const s=p.scores[d.key]; return el('tr',{}, el('td',{}, el('a',{href:'#',onclick:e=>{e.preventDefault();S.person=p.id;S.topic='person';render();}}, p.name)), el('td',{class:'num'},f1(s.cur)), el('td',{class:'num'},f1(s.fp)), el('td',{class:'num'},f1(s.ft)), el('td',{class:'num'},sgn(s.gap)), el('td',{class:'num'},sgn(s.stance)), el('td',{}, d.probe&&p.edges[d.probe] ? el('i',{class:'mark '+(p.edges[d.probe]==='both'?'full':p.edges[d.probe]==='me'?'half':'')}) : '')); }))) : null;
+    detail = el('div',{}, el('div',{class:'card'}, el('h2',{}, `${d.name} — Layered view`), LayeredDimension(d,people,S)),
+      el('div',{class:'grid2'}, el('div',{class:'card'}, el('h2',{},'Team — how many at each level'), DimHistogram(d,people,S)), el('div',{class:'card'}, el('h2',{},'Team'), DimStats(d,people))),
+      who ? el('div',{class:'card'}, el('h2',{},'Who is where'), who) : null,
+      (d.key==='trust'||d.key==='autonomy') ? el('div',{}, el('h3',{},'Read with the Safeguards'), SafeguardsView(people,S)) : null);
+  } else if (S.topic.startsWith('area:')){ const a=AREAS[+S.topic.slice(5)];
+    detail = el('div',{}, el('div',{class:'card'}, el('h2',{}, a.name), el('div',{class:'note',style:'margin-bottom:8px'}, a.group), LayeredArea(a,people,S)),
+      el('div',{class:'card'}, el('h2',{},'Team — how many at each level'), AreaHistogram(a,people,S)),
+      el('div',{class:'card'}, el('h2',{},'In context — all areas'), CoverageHeatmap(people,S,i=>{S.topic='area:'+i;render();},a.i)));
+  } else if (S.topic==='overview') detail = TeamOverview(people);
+  else if (S.topic==='person') detail = el('div',{}, el('a',{href:'#',class:'note',onclick:e=>{e.preventDefault();S.topic='dim:'+S.dim;render();}},'← back'), PersonProfile(ALL[S.person],people,S));
+  else if (S.topic==='stance') detail = StanceView(people,S);
+  else if (S.topic==='safe') detail = SafeguardsView(people,S);
+  else detail = el('div',{class:'card'}, el('h2',{},'Craft values × Comfort'), CraftScatter(people,S));
+  root.append(el('div',{class:'side'}, list, detail));
+}
+
+/* ============================================================
+   9. SWITCHER + RENDER
+   ============================================================ */
+const VARIANTS = {A:['Slice tabs',VariantA], B:['Overview wall',VariantB], C:['Explorer',VariantC]};
+function readVariant(){ const q=new URLSearchParams(location.search).get('variant'); const h=location.hash.replace('#','').replace('variant=',''); const v=(q||h||'C').toUpperCase(); return VARIANTS[v]?v:'C'; }
+function setVariant(v){ S.variant=v; try { const u=new URL(location.href); u.searchParams.set('variant',v); history.replaceState(null,'',u); } catch(e){ location.hash='variant='+v; } render(); }
+function render(){
+  const y = scrollY; const root = document.getElementById('app'); root.replaceChildren();
+  VARIANTS[S.variant][1](root);
+  const keys = Object.keys(VARIANTS), i = keys.indexOf(S.variant);
+  document.getElementById('switcher').replaceChildren(
+    el('button',{onclick:()=>setVariant(keys[(i+keys.length-1)%keys.length]),title:'previous (←)'},'‹'),
+    el('span',{}, `${S.variant} — ${VARIANTS[S.variant][0]}`, el('span',{style:'opacity:.6'}, ` (${i+1}/${keys.length})`)),
+    el('button',{onclick:()=>setVariant(keys[(i+1)%keys.length]),title:'next (→)'},'›'));
+  scrollTo(0,y);
+}
+addEventListener('keydown', e=>{ if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return; const keys=Object.keys(VARIANTS), i=keys.indexOf(S.variant); if (e.key==='ArrowRight') setVariant(keys[(i+1)%keys.length]); if (e.key==='ArrowLeft') setVariant(keys[(i+keys.length-1)%keys.length]); });
+S.variant = readVariant();
+{ const q = new URLSearchParams(location.search); if (q.get('view')==='export') S.view='export'; if (q.get('tab')) S.tab=q.get('tab'); if (q.get('topic')) S.topic=q.get('topic'); }
+render();
+</script>
+</body>
+</html>
