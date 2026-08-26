@@ -31,7 +31,7 @@ Ubiquitous language for the team AI-adoption survey and its rubric. Glossary onl
 - **Concern** — Perceived risk: security, IP/licensing, skill atrophy, job impact, maintainability. High = more concerned.
 - **Autonomy** — How unsupervised AI may act on the Respondent's behalf: autocomplete → chat → supervised agent → autonomous agent.
 - **Coverage** — Not a single score but a *profile*: an **Involvement level** per **Development area** (see below), current and future, personal and team.
-- **Involvement level** — The 1–6 scale used only by the Coverage grid: 1 No AI · 2 AI explains/looks up, I do the work · 3 AI drafts, I rework every line · 4 AI does it, I review the result · 5 AI does it, I spot-check · 6 **System-verified**: AI does it all, no individual spot-check, automated checks and validation catch errors. Areas may carry custom anchor wording where it makes the question clearer.
+- **Involvement level** — The 1–6 scale used only by the Coverage grid, plus an N/A escape: 1 **None** (no AI) · 2 **Advisor** (AI explains, I do the work) · 3 **Drafter** (AI drafts, I rework every line) · 4 **Doer, reviewed** (AI does it, I review the result) · 5 **Doer, spot-checked** (AI does it, I spot-check) · 6 **System-verified** (AI does it end-to-end; automated checks catch errors, no individual looks) · **N/A** (I don't do this work — excluded from the profile). Four areas carry custom anchor wording: Code review, Incident response, Security review, Learning new tech. Full text in `survey/coverage-grid.md`.
 - **Craft values** — Weight placed on general development principles (understanding every line, tests, review, ownership). A lens for interpreting the other Dimensions, not an adoption metric in itself.
 
 ## Development areas
