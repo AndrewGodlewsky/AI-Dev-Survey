@@ -53,14 +53,14 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 17 of 19 tickets resolved.
+**Map progress:** 18 of 19 tickets resolved.
 
 ### Deliverables
 
 - [x] Survey document — `survey/SURVEY.md`
 - [x] Coverage grid — `survey/coverage-grid.md`
 - [x] Rubric — `rubric/RUBRIC.md`
-- [ ] Scoring sheet (Excel) — `scoring/scoring.xlsx`
+- [x] Scoring sheet (Excel) — `scoring/scoring.xlsx`
 - [x] Dashboard (HTML) — `dashboard/index.html`
 - [x] How to read the results — `docs/HOW-TO-READ.md`
 
@@ -79,6 +79,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12)
 - [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13)
 - [Assemble the Rubric document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/14)
+- [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15)
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16)
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17)
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
@@ -86,7 +87,6 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 ### Still open
 
-- [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
 
 <!-- progress:end -->
