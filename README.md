@@ -30,6 +30,11 @@ There is no single "AI adoption level." Each dimension stands on its own, and th
 Coverage grid uses its own 1–6 *Involvement level* scale (None → Advisor → Drafter →
 Doer, reviewed → Doer, spot-checked → System-verified).
 
+**Getting started:** open [`docs/SETUP.html`](docs/SETUP.html) in a browser. It is the
+step-by-step runbook — building the form in Microsoft Forms, piloting it, exporting the
+responses, loading them into the scoring sheet, saving the scored CSV, and opening it in
+the dashboard — with a troubleshooting table and a file map.
+
 ## Repository layout
 
 | Path | What it is |
@@ -39,7 +44,7 @@ Doer, reviewed → Doer, spot-checked → System-verified).
 | `rubric/` | The rubric: what each score means and how answers become scores. |
 | `scoring/` | Excel scoring sheet (formulas only, no macros). |
 | `dashboard/` | Single-file HTML dashboard; opens from disk, loads the scored CSV. |
-| `docs/` | Agent configuration (`docs/agents/`), ADRs, and the results guide. |
+| `docs/` | `SETUP.html` (the setup and results runbook), `HOW-TO-READ.md` (the results guide), agent configuration (`docs/agents/`), grilling records and research. |
 | `scripts/` | Repo upkeep, e.g. `update-readme.py`. |
 
 ## How the project is being built
