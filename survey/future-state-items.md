@@ -21,6 +21,18 @@ Every item is one Likert block with two rows, both on the Desirability scale fix
 Items below are written as **stems** that complete both rows. Where a stem needs different
 wording per stance, both are given.
 
+> **⚠ The two-row block above is the logical design, not the Forms implementation.**
+> [#10](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10) found that a Likert
+> question's *parent text is not exported* — only the statement (row) text. Built literally,
+> this section would export 60 columns headed nothing but `For me` / `For the team`, with no
+> way to tell which item each belongs to. It has to be built as **two Likert blocks, one per
+> stance, whose statements are the stems**, and because statement text is the only identifier
+> in the workbook, **every statement in the whole form must be unique** — so the stance is
+> carried inside the statement (`[Me] …use AI in most development work.`). Details and the
+> sample header row: [`docs/research/microsoft-forms-export.md`](../docs/research/microsoft-forms-export.md).
+> The items themselves are unchanged; this is a build constraint for
+> [#13](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13).
+
 **R** = reverse-keyed, scored `6 − answer`, same as its Current-state twin.
 
 ---
