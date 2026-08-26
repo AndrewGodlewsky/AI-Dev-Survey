@@ -53,7 +53,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 3 of 17 tickets resolved.
+**Map progress:** 4 of 18 tickets resolved.
 
 ### Deliverables
 
@@ -69,12 +69,12 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Item scale semantics for Dimension items](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/2)
 - [Coverage grid: Involvement level anchor text per Development area](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/3)
 - [Rubric: what 1–5 means in words for each Dimension](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/4)
+- [Context items: which Respondent attributes to collect](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/7)
 
 ### Still open
 
 - [Item bank: Current-state section](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/5) _(prototype)_
 - [Item bank: Future-state section (Personal + Team stance)](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6) _(prototype)_
-- [Context items: which Respondent attributes to collect](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/7) _(grilling)_
 - [Probe items: definition, count and scoring rule](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/8) _(grilling)_
 - [Scoring rules: items → Dimension scores, grid → Coverage profile, gaps](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/9) _(grilling)_
 - [Microsoft Forms export: column layout for Likert and grid questions](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10) _(research)_
@@ -86,6 +86,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16) _(task)_
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
+- [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19) _(grilling)_
 
 <!-- progress:end -->
 
