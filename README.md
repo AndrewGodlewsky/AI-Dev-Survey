@@ -53,7 +53,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 13 of 19 tickets resolved.
+**Map progress:** 14 of 19 tickets resolved.
 
 ### Deliverables
 
@@ -61,7 +61,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [x] Coverage grid — `survey/coverage-grid.md`
 - [x] Rubric — `rubric/RUBRIC.md`
 - [ ] Scoring sheet (Excel) — `scoring/scoring.xlsx`
-- [ ] Dashboard (HTML) — `dashboard/index.html`
+- [x] Dashboard (HTML) — `dashboard/index.html`
 - [ ] How to read the results — `docs/HOW-TO-READ.md`
 
 ### Decided
@@ -78,13 +78,13 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Dashboard prototype: the Slices and the Layered view with fake data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/11)
 - [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12)
 - [Assemble the Rubric document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/14)
+- [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16)
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
 
 ### Still open
 
 - [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13) _(task)_
 - [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15) _(task)_
-- [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16) _(task)_
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
 - [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20) _(grilling)_
