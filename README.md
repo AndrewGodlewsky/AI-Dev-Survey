@@ -53,7 +53,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 2 of 17 tickets resolved.
+**Map progress:** 3 of 17 tickets resolved.
 
 ### Deliverables
 
@@ -68,10 +68,10 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 - [Item scale semantics for Dimension items](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/2)
 - [Coverage grid: Involvement level anchor text per Development area](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/3)
+- [Rubric: what 1–5 means in words for each Dimension](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/4)
 
 ### Still open
 
-- [Rubric: what 1–5 means in words for each Dimension](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/4) _(prototype)_
 - [Item bank: Current-state section](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/5) _(prototype)_
 - [Item bank: Future-state section (Personal + Team stance)](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6) _(prototype)_
 - [Context items: which Respondent attributes to collect](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/7) _(grilling)_
