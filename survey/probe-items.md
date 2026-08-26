@@ -41,8 +41,17 @@ are the decision; these sentences are not.
 | **Comfort** | low | …be happy working with no AI tooling at all, the way I worked before it existed. | …be fine going back to working with no AI tooling at all. |
 | **Trust** | high | …merge AI-written code I had not read line by line, as long as the tests pass. | …merge AI-written code nobody has read line by line, as long as the tests pass. |
 | **Autonomy** | high | …let an agent work unsupervised for an hour and only look at the final result. | …let agents work unsupervised for an hour and only review the final result. |
-| **Concern** | high | …want there to be work here that AI is not allowed to touch at all. | …keep areas where AI is not allowed to be used at all. |
+| **Concern** | high | …slow down how fast I adopt AI, because the risks outweigh what I'd gain. | …slow down how fast we adopt AI, because the risks outweigh what we'd gain. |
 | **Craft values** | high | …expect to be able to explain every line of code that ships under my name. | …expect everyone to be able to explain every line that ships under their name. |
+
+> **Amended by [#6](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6), 2026-08-26 —
+> the Concern probe only.** It originally read *"…want there to be work here that AI is not
+> allowed to touch at all."* Once the Future-state bank was drafted, that sentence sat rows
+> away from a **scored** Guardrails item (FG3, "…keep parts of our work where AI isn't used at
+> all") on the same scale in the same block — near-identical wording, one of the two slots
+> wasted, and a Respondent certain to notice. The probe moved to the risk-appetite pole
+> instead, which is sharper Concern anyway. Every rule on this page stands unchanged: still
+> five probes, one pole each, Concern still high.
 
 Note the shape of the set: four probes sit at the **high** pole and only Comfort sits low.
 The team's current position *is* the low end, so a low-pole probe mostly measures "normal".
