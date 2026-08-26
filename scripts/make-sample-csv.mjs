@@ -1,5 +1,5 @@
 // Generates scoring/scored-sample.csv — the fixture for the dashboard (#16) and the worked
-// example for scoring/scored-csv-schema.md (#12). Seven FAKE personas; names are invented.
+// example for scoring/scored-csv-schema.md (#12). Eight FAKE personas; names are invented.
 //
 //   node scripts/make-sample-csv.mjs
 //
@@ -7,7 +7,8 @@
 // reference implementation of scoring/scoring-rules.md. The personas and the scoring below are
 // lifted from the throwaway prototype for #11 so the sample exercises every column family:
 // a NA, a mixed N/A pair, an inconsistent safeguard answer, Edge markers in all three states,
-// Levers, a principle hold, and a malformed (blank) item.
+// Levers, a principle hold, a malformed (blank) item, and (#20) a flat-lined + block-copied
+// Future section that trips the Pattern flags.
 
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -56,7 +57,21 @@ const PERSONAS = [
   { name: "Aisha Bello",     completed: "2026-09-17", tools: [3, 1, 4, 1, 1], dims: { comfort: [3.1, 4.0, 4.0], trust: [2.9, 3.4, 3.5], fluency: [2.0, 4.4, 4.2], guardrails: [3.3, 3.3, 3.4], concern: [2.7, 2.7, 2.9], autonomy: [2.0, 3.2, 3.3], "craft-values": [3.4, 3.6, 3.6] },
     probes: { P1: [2, 2], P2: [2, 2], P3: [2, 3], P4: [2, 2], P5: [3, 3] }, cov: { base: [2, 1, 1, 3], dMe: 1, dTeam: 1, over: { 16: [3, 4, 4] }, na: [9, 10, 12, 13] }, safe: { cur: [0], fp: [1, 2], ft: [1, 2], learn: [2, 4, 6] },
     blank: "N3" }, // one malformed item, so the sample shows #N/A + flag.malformed
+  // #20: a tired respondent — considered Current answers, then a flat "Probably" down the [Me] block and the
+  // [Team] block copied from it. Trips flag.flat-future-personal, flag.flat-future-team and flag.stance-identical;
+  // his Current block stays clean. Appended LAST so the seven rows above are unchanged (the RNG is sequential).
+  { name: "Jonas Weber",     completed: "2026-09-18", tools: [3, 1, 2, 1, 1], dims: { comfort: [3.4, 4, 4], trust: [3.0, 4, 4], fluency: [3.3, 4, 4], guardrails: [3.1, 4, 4], concern: [2.9, 4, 4], autonomy: [2.8, 4, 4], "craft-values": [3.6, 4, 4] },
+    probes: { P1: [4, 4], P2: [4, 4], P3: [4, 4], P4: [4, 4], P5: [4, 4] }, cov: { base: [3, 2, 2, 3], dMe: 1, dTeam: 1, over: {}, na: [10] }, safe: { cur: [2], fp: [2, 3], ft: [2, 3], learn: [4] },
+    flat: { "future-personal": 4, copyTeam: true } },
 ];
+
+// ---- #20 Pattern flags: the blocks the rule reads (scoring/scoring-rules.md §6.1) -------------------
+// current = the 17 Attitude-scale items (the 9 Behaviour items are on another scale and carry only two
+// reverse-keys); future-* = the 25 items + 5 probes of one stance block. Probes count as rows but are never
+// reverse-keyed, so they sit in the modal share and outside the reverse-key agreement.
+const ATTITUDE = ["C3", "T1", "T3", "F3", "G1", "G2", "G4", "G5", "G6", "N1", "N2", "N3", "N4", "N5", "V1", "V2", "V3"];
+const FUT_ITEMS = DIMS.flatMap(d => d.fut);
+const THRESH = { reverseSlack: 1, modalShare: 0.90, stanceIdentical: 28 }; // the sheet's three input cells
 
 // ---- deterministic item generation ------------------------------------------------------------
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -71,6 +86,7 @@ function generate(P) {
     for (const f of d.fut) { const v1 = clamp(Math.round(tp + noise()), 1, 5), v2 = clamp(Math.round(tt + noise()), 1, 5); item[f] = { "future-personal": REV.has(f) ? 6 - v1 : v1, "future-team": REV.has(f) ? 6 - v2 : v2 }; }
   }
   if (P.blank) item[P.blank].current = null;
+  if (P.flat) { for (const f of FUT_ITEMS) { if (P.flat["future-personal"]) item[f]["future-personal"] = P.flat["future-personal"]; if (P.flat.copyTeam) item[f]["future-team"] = item[f]["future-personal"]; } }
   const area = AREAS.map((_, i) => {
     if (P.cov.na.includes(i)) return { current: null, "future-personal": null, "future-team": null };
     if (P.cov.over[i]) { const [c, p, t] = P.cov.over[i]; return { current: c, "future-personal": p, "future-team": t }; }
@@ -102,6 +118,8 @@ const header = ["schema", "respondent", "completed", "roster_n",
   ...SAFEGUARDS.slice(1).map(s => `learn.${s}`),
   ...SAFEGUARDS.slice(1).map(s => `interest.${s}`),
   "flag.malformed", "flag.inconsistent-current", "flag.inconsistent-future-personal", "flag.inconsistent-future-team", "flag.hold",
+  "flag.flat-current", "flag.flat-future-personal", "flag.flat-future-team", "flag.stance-identical",
+  ...PASSES.map(p => `pattern.mode.${p}`), ...PASSES.map(p => `pattern.modal-share.${p}`), ...PASSES.map(p => `pattern.reverse-agree.${p}`), "pattern.stance-identical",
   ...DIMS.flatMap(d => d.cur.flat().map(f => `item.${f}.current`)),
   ...DIMS.flatMap(d => d.fut.flatMap(f => [`item.${f}.future-personal`, `item.${f}.future-team`])),
   ...PROBES.flatMap(p => [`probe.${p}.future-personal`, `probe.${p}.future-team`]),
@@ -134,6 +152,37 @@ const rows = PERSONAS.map(P => {
   row["flag.malformed"] = P.blank ? P.blank : 0;
   row["flag.inconsistent-current"] = incCur ? 1 : 0; row["flag.inconsistent-future-personal"] = incFp ? 1 : 0; row["flag.inconsistent-future-team"] = incFt ? 1 : 0;
   row["flag.hold"] = (P.safe.fp.includes(0) && !incFp) ? 1 : 0;
+  // #20 Pattern flags — raw answers, before reverse-keying. A block = its answered rows.
+  // rows = every answered row of the block (incl. reversed items and probes) · rev = its reverse-keyed rows · plain = the rest
+  const block = (ids, pass, probeIdx) => {
+    const rows = [...ids.map(f => item[f][pass]), ...(probeIdx == null ? [] : PROBES.map(p => P.probes[p][probeIdx]))];
+    const rev = ids.filter(f => REV.has(f)).map(f => item[f][pass]);
+    const plain = [...ids.filter(f => !REV.has(f)).map(f => item[f][pass]), ...(probeIdx == null ? [] : PROBES.map(p => P.probes[p][probeIdx]))];
+    return { rows, rev, plain };
+  };
+  const blocks = { current: block(ATTITUDE, "current", null), "future-personal": block(FUT_ITEMS, "future-personal", 0), "future-team": block(FUT_ITEMS, "future-team", 1) };
+  const countIf = (xs, v) => xs.filter(x => x === v).length;
+  for (const p of PASSES) {
+    const rows = blocks[p].rows.filter(x => x != null), rev = blocks[p].rev.filter(x => x != null);
+    const share = Math.max(...[1, 2, 3, 4, 5].map(v => countIf(rows, v))) / rows.length;                       // modal share of the WHOLE block (sees the midpoint case)
+    // Mode of the NON-reversed rows — what the person says when not reversed. (Taking the mode over the whole block lets
+    // a genuine "mostly 4" person's reversed rows at 2 *become* the mode and then trivially agree with it.)
+    const plain = blocks[p].plain.filter(x => x != null);
+    const topP = Math.max(...[1, 2, 3, 4, 5].map(v => countIf(plain, v)));
+    const modes = [1, 2, 3, 4, 5].filter(v => countIf(plain, v) === topP);
+    // Reversed rows answered at that mode. Not evidence at the midpoint (6 − 3 = 3: a genuine moderate answers the reversed
+    // rows at 3 too), so 3 is skipped when tied with another value; ties → the tied mode with the SMALLER agreement (conservative).
+    const cands = modes.length > 1 ? modes.filter(v => v !== 3) : modes;
+    const mode = cands.sort((a, b) => countIf(rev, a) - countIf(rev, b))[0];
+    const agree = countIf(rev, mode);
+    row[`pattern.mode.${p}`] = mode;
+    row[`pattern.modal-share.${p}`] = Number(share.toFixed(4));
+    row[`pattern.reverse-agree.${p}`] = agree;
+    row[`flag.flat-${p}`] = ((mode !== 3 && agree >= rev.length - THRESH.reverseSlack) || share >= THRESH.modalShare) ? 1 : 0;
+  }
+  const pairs = [...FUT_ITEMS.map(f => [item[f]["future-personal"], item[f]["future-team"]]), ...PROBES.map(p => P.probes[p])].filter(([a, b]) => a != null && b != null);
+  row["pattern.stance-identical"] = pairs.filter(([a, b]) => a === b).length;
+  row["flag.stance-identical"] = row["pattern.stance-identical"] >= THRESH.stanceIdentical ? 1 : 0;
   for (const d of DIMS) { for (const f of d.cur.flat()) row[`item.${f}.current`] = item[f].current ?? ""; for (const f of d.fut) { row[`item.${f}.future-personal`] = item[f]["future-personal"]; row[`item.${f}.future-team`] = item[f]["future-team"]; } }
   PROBES.forEach(p => { row[`probe.${p}.future-personal`] = P.probes[p][0]; row[`probe.${p}.future-team`] = P.probes[p][1]; });
   return row;

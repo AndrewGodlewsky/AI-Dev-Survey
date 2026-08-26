@@ -53,7 +53,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 15 of 19 tickets resolved.
+**Map progress:** 16 of 19 tickets resolved.
 
 ### Deliverables
 
@@ -81,13 +81,13 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16)
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17)
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
+- [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20)
 
 ### Still open
 
 - [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13) _(task)_
 - [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
-- [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20) _(grilling)_
 
 <!-- progress:end -->
 

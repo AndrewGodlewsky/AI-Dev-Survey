@@ -52,6 +52,7 @@ a position on a scale that runs in its natural direction; none is a grade.
 | **A level 6 on a ◆ high-stakes area** | Someone runs — or wants to run — AI end-to-end with only automated checks on Code review, CI/CD, IaC, Incident response, SQL/data migrations or Security review. Labelled with its pass: today and six months are different statements. | *Which checks would have to exist for that to be acceptable to the rest of us — and do they exist?* |
 | **A principle hold** ("I'd read it myself" in six months) | The line does not move for this person. A real constraint on the plan, not an obstacle. | *Does the draft norm leave room for it?* |
 | **An inconsistent Safeguard answer** or a **malformed** row | Not a result. Levers are not computed for that person; the Dimension reads `#N/A`. | *Go and ask them.* |
+| **A Pattern flag** (internal view only; the banner says *resolve before exporting*) | A block of answers follows a pattern the reverse-keyed items don't support — the same answer down a block, or the *team should* block answered as a copy of *6 months (me)*. The numbers are untouched; the reverse-keys dampen a tired block but can't read it, so this is the reader. | *Have the conversation before printing: "does this block say what you meant?" If not, they re-take it. Never a fault.* |
 
 ## 5. Two things to say out loud before sharing
 

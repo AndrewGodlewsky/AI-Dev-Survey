@@ -207,6 +207,66 @@ Recorded here so the Scoring sheet knows what to compute; all decided elsewhere.
 | **Inconsistency flag** | "I'd read it myself" ticked **alongside** another safeguard. Flagged, excluded from the Lever calculation, never resolved by rule. | [#19](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19) |
 | **Context tools matrix** | Unscored. A Slice and a lens only. | [#7](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/7) |
 
+### 6.1 Pattern flags
+
+Decided in [#20](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20); grilling record
+[`docs/grilling/issue-20-straight-lining.md`](../docs/grilling/issue-20-straight-lining.md).
+
+A **Pattern flag** is raised when a block of answers follows a pattern its reverse-keyed items
+do not support. Non-scoring, per-Respondent, *go and ask*. **The numbers are untouched**: a
+formula never decides that a named colleague was not paying attention. If the conversation
+confirms it, the person re-takes the block or a human leaves them out — the malformed path.
+
+**Why a rule and not an item.** The reverse-keys *dampen* a flat-liner but *detect* nothing: a
+flat *Probably* down a 30-row Future block scores 3.3 on every three-facet Dimension, a flat
+*Unsure* scores 3.0 and — since `6 − 3 = 3` — is invisible to reverse-keying altogether. And
+because Forms forces the Future section into two 30-row stance blocks ([#10](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10)),
+answering the `[Team]` block as a copy of the `[Me]` block yields a Stance gap of exactly 0 on
+every Dimension — the headline reading, faked, with no visible defect. A planted or repeated
+item was rejected: it leads (the non-leading rule), cannot be a true repeat (#10's uniqueness
+rule), costs rows at the 152-of-200 ceiling, and reads as distrust on a named survey. The
+contradiction already exists at raw-item level; this rule is the reader.
+
+**Blocks read** — raw answers, *before* reverse-keying; blank rows excluded:
+
+| Block | Rows | Reverse-keyed rows |
+|---|---|---|
+| `current` | the 17 Attitude-scale items: C3 T1 T3 F3 G1 G2 G4 G5 G6 N1 N2 N3 N4 N5 V1 V2 V3 | 5 — C3 F3 G6 N4 V2 |
+| `future-personal` | the 25 `[Me]` items + 5 probes = 30 | 7 — FC3 FT2 FF3 FG5 FN4 FA2 FV2 |
+| `future-team` | the 25 `[Team]` items + 5 probes = 30 | 7 — same stems |
+
+Not read: the 9 Behaviour-scale items (a different scale, two reverse-keys — weak evidence) and
+the Coverage grids (no reverse-keys, and a flat Involvement profile is a real position).
+
+**Statistics per block** (exported, so the flag travels with its evidence):
+
+| Statistic | Rule |
+|---|---|
+| **modal share** | the block's most frequent raw answer ÷ rows answered, over the **whole** block. The only statistic that sees the midpoint case. |
+| **mode** | the most frequent raw answer among the block's **non-reversed** rows — what the person says when not reversed. (Taken over the whole block, a genuine "mostly 4" person's reversed rows at 2 can *become* the mode and then trivially agree with it.) |
+| **reverse-key agreement** | reverse-keyed rows answered *at that mode*. A person who genuinely holds the block's modal position answers the reversed rows away from it (a *Probably* adopter answers "…keep doing things by hand" with *Probably not*); agreement means they were not read. **Not evidence at the midpoint**: when the mode is 3, a genuine moderate answers the reversed rows at 3 too, so the criterion is skipped. Tied modes: drop 3 if another value ties with it, then take the tied value with the **smaller** agreement — conservative, because a flag on a named colleague should need every reading to point the same way. |
+| **stance-identical** | of the 30 Future stems, how many received the same answer in both stance blocks (pairs with a blank side excluded) |
+
+**Flags.** The three thresholds are **named input cells** on the Scoring sheet, tunable after
+the pilot without touching formulas; defaults below.
+
+| Flag | Raised when |
+|---|---|
+| `flag.flat-<pass>` | mode ≠ 3 **and** reverse-key agreement ≥ (reverse-keyed rows − **1**) — i.e. ≥ 6 of 7, ≥ 4 of 5 — **or** modal share ≥ **0.90** |
+| `flag.stance-identical` | stance-identical ≥ **28** of 30 |
+
+Worked cases, 30-row block: flat *Probably* → share 1.00, agreement 7/7, flagged. Flat *Unsure*
+→ share 1.00, mode 3, flagged on share alone. A genuine strong adopter — 23 rows *Definitely*, 7
+reversed rows *Definitely not* — share 0.77, agreement 0/7, **not** flagged. A moderate whose
+block modes at 3 with 4 of 5 reversed rows also at 3 — **not** flagged (midpoint).
+
+**Where it shows.** Internal view only: the People page with the statistics, a marker beside
+the person in the Layered view and on the Stance page, and a banner while any flag is unresolved
+— *resolve before exporting*. Nothing on the Team overview or in the exported view. Wording
+follows [#17](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17): *answers follow a
+pattern the reverse-keyed items don't support — worth a conversation before the results go
+upward.* Never "straight-lined".
+
 ## 7. Two Gaps are softer than the rest
 
 Current **F3** and **V2** could not be mirrored into the Future section — on a Desirability

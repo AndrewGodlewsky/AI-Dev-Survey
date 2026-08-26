@@ -22,6 +22,7 @@ is "good" or "bad". Nothing in this rubric ranks a person.
 | **Probe items** (5, Future-state only) | **Edge markers** — a person endorsed an extreme, per stance | Never scored — §6.1 |
 | **Safeguard items** (asked three times + learning interest) | Accepted safeguards, **Levers**, principle hold, inconsistency flag | Never scored — §6.2 |
 | **Context item** (tools matrix) | A lens for reading the rest | Never scored — §6.3 |
+| **Answer patterns** (three item blocks) | **Pattern flags** — a block answered flat, or the Team block copied from the Me block | Never scored — §6.4 |
 
 ## 2. The answer scales and their numbers
 
@@ -388,6 +389,32 @@ One required matrix, first in the survey: *Which of these AI tools do you use in
 Microsoft 365 Copilot · Azure AI Foundry · Another AI tool not on this list. Columns: the Tool-use scale (§2). **A lens, never a metric** — a
 cautious Autonomy score reads differently from someone whose only exposure is inline completion than from someone running agents in Foundry.
 The "another tool" row is a signal about the estate, not the person, and has no follow-up.
+
+### 6.4 Answer patterns → Pattern flags
+
+The reverse-keyed items only *dampen* an unread block — a flat *Probably* down the 30-row `[Me]` block still scores a plausible 3.3
+everywhere, and a flat *Unsure* scores 3.0 and is invisible, because `6 − 3 = 3`. And a `[Team]` block copied from the `[Me]` block
+produces a Stance gap of 0 on every Dimension. So the hand-scorer reads three blocks for a pattern, on the **raw answers, before
+reverse-keying**, blanks left out:
+
+| Block | Rows | Reverse-keyed rows |
+|---|---|---|
+| Current — the 17 Attitude-scale items | C3 T1 T3 F3 G1 G2 G4 G5 G6 N1–N5 V1 V2 V3 | C3 F3 G6 N4 V2 (5) |
+| Future `[Me]` | 25 items + 5 probes | FC3 FT2 FF3 FG5 FN4 FA2 FV2 (7) |
+| Future `[Team]` | 25 items + 5 probes | same stems (7) |
+
+For each block find the **modal share** (the most frequent answer's share of all answered rows), then the **mode of the
+non-reversed rows only** (what the person says when not reversed — if two values tie, drop 3 and take the one fewer reversed rows
+sit at), and count the reverse-keyed rows answered **at that mode**. Then:
+
+- **Flat** — raise the flag if the mode is not 3 *and* all but at most one of the reverse-keyed rows sit at the mode (≥ 6 of 7; ≥ 4 of 5),
+  **or** if the modal share is ≥ 0.90 whatever the mode. (At a mode of 3 the reversed rows *belong* at the mode, so that count is not evidence.)
+- **Stance-identical** — count the 30 Future stems answered the same in both blocks; raise the flag at ≥ 28.
+
+A Pattern flag **changes no number**. It is a conversation to have before the results go upward: *"your answers follow a pattern the
+reverse-keyed items don't support"* — never "you straight-lined". If the person confirms it, they re-take the block, or a human leaves
+them out the way a blank would (§3 step 0). The Scoring sheet keeps the three thresholds in input cells; these are the defaults.
+Rules and rationale: `scoring/scoring-rules.md` §6.1.
 
 ## 7. Reading one person's numbers
 

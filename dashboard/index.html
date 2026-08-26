@@ -252,7 +252,7 @@ function loadRespondents(parsed){
     ...AREAS.flatMap(a=>['current','future-personal','future-team'].map(p=>`area.${a.slug}.${p}`))];
   const missing = need.filter(c=>!have.has(c));
   if (missing.length) throw new Error(`This file is missing ${missing.length} required column${missing.length>1?'s':''}: ${missing.slice(0,6).join(', ')}${missing.length>6?', …':''}. Expected the Scored CSV described in scoring/scored-csv-schema.md.`);
-  const optionalMissing = header.length < 279 ? `${279-header.length} of the 279 columns absent — some views may be empty.` : null;
+  const optionalMissing = header.length < 293 ? `${293-header.length} of the 293 columns absent — some views may be empty.` : null;
   const bad = records.filter(r=>r.schema!==SCHEMA);
   if (bad.length) throw new Error(`Schema version ${[...new Set(bad.map(r=>r.schema||'(blank)'))].join(', ')} — this dashboard reads schema ${SCHEMA}.`);
   const people = records.map((r,idx)=>{
@@ -260,6 +260,11 @@ function loadRespondents(parsed){
     p.ini = p.name.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase() || String(idx+1);
     p.tools = TOOLS.map(([slug])=> num(r[`context.${slug}`]));
     p.malformed = (r['flag.malformed']&&r['flag.malformed']!=='0') ? r['flag.malformed'].split(/[;,]\s*/).filter(Boolean) : [];
+    // #20 Pattern flags — computed by the sheet (scoring-rules.md §6.1); read here, never re-derived. Internal view only.
+    const pp = (fam,k) => ({cur:num(r[`${fam}.${k}.current`]), fp:num(r[`${fam}.${k}.future-personal`]), ft:num(r[`${fam}.${k}.future-team`])});
+    p.pattern = { flags:{cur:r['flag.flat-current']==='1', fp:r['flag.flat-future-personal']==='1', ft:r['flag.flat-future-team']==='1', copy:r['flag.stance-identical']==='1'},
+      mode:pp('pattern','mode'), share:pp('pattern','modal-share'), agree:pp('pattern','reverse-agree'), identical:num(r['pattern.stance-identical']) };
+    p.pattern.any = Object.values(p.pattern.flags).some(Boolean);
     p.scores = {};
     for (const d of DIMS){
       const s = {cur:num(r[`dimension.${d.key}.current`]), fp:num(r[`dimension.${d.key}.future-personal`]), ft:num(r[`dimension.${d.key}.future-team`]),
@@ -354,6 +359,7 @@ function LayeredDimension(d, people, S){
     sorted.forEach((p,i)=>{
       const y = top + i*rh + rh/2, s = p.scores[d.key], g = el('svg:g',{});
       g.append(el('svg:line',{x1:L,x2:R,y1:y,y2:y,class:'hair'}), el('svg:text',{x:L-12,y:y+4,class:'name','text-anchor':'end'}, p.name));
+      if (p.pattern.any) g.append(tip(el('svg:text',{x:2,y:y+4,class:'lbl'},'⚑'), `<b>Pattern flag</b> — ${p.name}: ${PatternDetail(p)}<br>Numbers untouched; have the conversation before exporting.`));
       if (s.malformed){ g.append(tip(el('svg:text',{x:L+8,y:y+4,class:'lbl'}, `malformed — ${p.malformed.join(', ')||'blank item'}`), 'A blank Dimension item: the score is #N/A and is not averaged around. Go and ask.')); svg.append(g); return; }
       g.append(el('svg:line',{x1:X(s[ka]),x2:X(s[kb]),y1:y,y2:y,stroke:'var(--axis)','stroke-width':2}));
       g.append(tip(el('svg:rect',{x:X(s.ft)-1.5,y:y-8,width:3,height:16,fill:color.ft,rx:1}), `<b>${p.name}</b> · team should be at <b>${f1(s.ft)}</b> on ${d.name}`));
@@ -444,6 +450,11 @@ function CoverageHeatmap(people, S, onPick, selected){
     el('table',{class:'heat'}, el('thead',{}, el('tr',{}, el('th',{},'Development area'), ...LEVELS.map((l,i)=>el('th',{style:'text-align:center'}, `${i+1}`, el('div',{class:'muted',style:'font-weight:400;font-size:10px'}, l))), el('th',{style:'text-align:center'},'N/A'), el('th',{class:'num'},'Gap'), el('th',{class:'num'},'mixed'))), el('tbody',{}, ...rows)),
     el('p',{class:'note'},'Each cell is a count of people; outlined cell = median. Gap = median of within-person moves (Today → 6 months, me), in levels. "mixed" counts N/A↔level pairs, which have no Gap. Click a row to open it.'));
 }
+// #20 — the evidence behind a Pattern flag, in words (the sheet computed it; this only reads it)
+function PatternDetail(p){ const P=p.pattern, REVN={cur:5,fp:7,ft:7}, NAME={cur:'Current (attitude items)',fp:'6 months — me',ft:'team should'}; const parts=[];
+  for (const k of ['cur','fp','ft']) if (P.flags[k]) parts.push(`${NAME[k]}: ${isNum(P.share[k])?Math.round(P.share[k]*100)+'%':'?'} of rows at one answer; ${P.agree[k]??'?'} of ${REVN[k]} reverse-keyed rows at the mode (${P.mode[k]??'?'})${P.mode[k]===3?' — midpoint, not evidence':''}`);
+  if (P.flags.copy) parts.push(`${P.identical??'?'} of 30 Future stems answered identically for me and for the team`);
+  return parts.join(' · '); }
 function PersonProfile(p, people, S){
   if (S.view!=='internal') return el('div',{class:'card'}, el('h2',{},'Individual results'), el('p',{class:'note'},'Not part of the exported team view. Switch to Internal to see per-person profiles.'));
   const W=560, L=10, R=550, X=v=>L+(v-1)/4*(R-L);
@@ -467,6 +478,7 @@ function PersonProfile(p, people, S){
     el('div',{style:'display:flex;gap:10px;align-items:baseline;flex-wrap:wrap'}, el('h2',{}, p.name), p.completed ? el('span',{class:'note'}, `completed ${p.completed}`) : null,
       el('span',{class:'chips'}, ...TOOLS.map(([,t],i)=> p.tools[i]>=3 ? el('span',{class:'chip static'}, `${t}: ${TOOL_STATES[p.tools[i]-1].toLowerCase()}`) : null), ...TOOLS.map(([,t],i)=> p.tools[i]===2 ? el('span',{class:'chip static muted'}, `${t}: tried, stopped`) : null))),
     p.malformed.length ? el('p',{class:'note'}, el('span',{class:'flag bad'}, `malformed export — blank item${p.malformed.length>1?'s':''}: ${p.malformed.join(', ')}`), ' Affected Dimension scores read #N/A. Recovery is a conversation, not a formula.') : null,
+    p.pattern.any ? el('p',{class:'note'}, el('span',{class:'flag bad'},'Pattern flag'), ' Answers follow a pattern the reverse-keyed items don\'t support — worth a conversation before the results go upward. Numbers untouched; not a fault. ', el('span',{class:'muted'}, PatternDetail(p))) : null,
     el('div',{class:'row',style:'margin-top:8px'},
       el('div',{}, el('h3',{},'Dimensions'), dims, el('div',{class:'legend'}, el('span',{}, el('i',{style:'background:var(--s1)'}),'today'), el('span',{}, el('i',{style:'background:var(--s2)'}),'6 months — me'), el('span',{}, el('b',{style:'background:var(--s3)'}),'team should'), el('span',{}, el('span',{class:'ln',style:'border-color:var(--axis)'}),'team mean today'))),
       el('div',{}, el('h3',{},'Coverage profile'), cov, el('div',{class:'legend'}, el('span',{class:'muted'},'1 None → 6 System-verified · darker = more AI · outlined = Edge marker')))),
@@ -485,7 +497,7 @@ function StanceView(people, S){
       [...valid].sort((a,b)=>a.scores[d.key].stance-b.scores[d.key].stance).forEach((p,i)=>{ const v=p.scores[d.key].stance, y=i*20+4;
         const bar = el('svg:rect',{x:Math.min(C,X(v)),y,width:Math.abs(X(v)-C),height:12,rx:3,fill: v<0?'var(--div-neg)':'var(--div-pos)'});
         tip(bar, `<b>${p.name}</b> Stance gap on ${d.name}: <b>${sgn(v)}</b><br>${v<-0.29?'"I\'d go further than the team should"': v>0.29?'"the team should go further than I would"':'aligned'}`);
-        svg.append(bar, el('svg:text',{x: v<0? X(v)-6 : X(v)+6, y:y+10, class:'lbl','text-anchor': v<0?'end':'start'}, p.ini)); });
+        svg.append(bar, el('svg:text',{x: v<0? X(v)-6 : X(v)+6, y:y+10, class:'lbl','text-anchor': v<0?'end':'start'}, p.ini + (p.pattern.flags.copy ? ' ⚑' : ''))); });
     } else {
       const n = k => valid.filter(p=> k==='neg'? p.scores[d.key].stance<-0.29 : k==='pos'? p.scores[d.key].stance>0.29 : Math.abs(p.scores[d.key].stance)<=0.29).length;
       [['neg','would go further than the team should'],['aligned','aligned (within 0.3)'],['pos','think the team should go further than they would']].forEach(([k,l],i)=>{ const c=n(k), y=i*20+4;
@@ -498,7 +510,7 @@ function StanceView(people, S){
     ...(S.view==='internal' ? people.map(p=> el('td',{style:'text-align:center'}, p.edges[pr.id] ? tip(el('i',{class:'mark '+(p.edges[pr.id]==='both'?'full':p.edges[pr.id]==='me'?'half':'')}), `${p.name}: ${p.edges[pr.id]}`) : el('span',{class:'muted'},'·')))
       : ['both','me','team'].map(st=> el('td',{class:'num'}, people.filter(p=>p.edges[pr.id]===st).length||'')))));
   return el('div',{},
-    el('p',{class:'note'}, el('span',{class:'sq',style:'background:var(--div-neg)'}),' "I\'d go further than the team should" (team-should below me) · ', el('span',{class:'sq',style:'background:var(--div-pos)'}),' "the team should go further than I would". Both ends are the same person\'s own answers, so this is a real quantity. Threshold for "aligned": 0.3.'),
+    el('p',{class:'note'}, el('span',{class:'sq',style:'background:var(--div-neg)'}),' "I\'d go further than the team should" (team-should below me) · ', el('span',{class:'sq',style:'background:var(--div-pos)'}),' "the team should go further than I would". Both ends are the same person\'s own answers, so this is a real quantity. Threshold for "aligned": 0.3.' + (S.view==='internal' ? ' ⚑ = Pattern flag: the two stance blocks were answered near-identically — read that person\'s page before reading their Stance gap.' : '')),
     el('div',{class:'persongrid'}, ...blocks),
     el('div',{class:'card'}, el('h2',{},'Probe items — Edge markers per stance'),
       el('table',{}, el('thead',{}, el('tr',{}, el('th',{},'Probe'), ...(S.view==='internal'? people.map(p=>el('th',{style:'text-align:center'}, p.ini)) : [el('th',{class:'num'},'accelerator (both)'), el('th',{class:'num'},'"I\'d go, but we shouldn\'t"'), el('th',{class:'num'},'"the team should, but not me"')]))), el('tbody',{}, ...probeRows)),
@@ -622,7 +634,11 @@ function FilterRow(){
     el('span',{class:'note'}, `n = ${filtered().length} of ${S.data.roster}`),
     el('button',{class:'btn',style:'margin-left:auto',onclick:()=>{S.data=null;S.error=null;render();}},'Load another file'));
 }
-function Banner(){ return S.view==='export' ? el('div',{class:'banner'}, el('b',{},'Exported team view — may reach the manager. '), 'Names removed; distributions shown as unnamed counts per level. At n=5–9 an unnamed distribution is partially re-identifiable by anyone who knows the team — stated, not hidden.') : document.createDocumentFragment(); }
+function Banner(){
+  if (S.view==='export') return el('div',{class:'banner'}, el('b',{},'Exported team view — may reach the manager. '), 'Names removed; distributions shown as unnamed counts per level. At n=5–9 an unnamed distribution is partially re-identifiable by anyone who knows the team — stated, not hidden.');
+  // #20 — internal view only: while any Pattern flag is unresolved, say so. Nothing about it reaches the exported view or the Team overview.
+  const flagged = S.data.people.filter(p=>p.pattern.any);
+  return flagged.length ? el('div',{class:'banner'}, el('b',{},'Resolve before exporting. '), `${flagged.length} response${flagged.length>1?'s':''} carr${flagged.length>1?'y':'ies'} a Pattern flag — answers that follow a pattern the reverse-keyed items don't support (${flagged.map(p=>p.name).join(', ')}). Numbers are untouched; have the conversation, then re-take the block or leave the row out by hand. The exported view does not mention this.`) : document.createDocumentFragment(); }
 
 function LoadScreen(root){
   const drop = el('div',{class:'drop'},
