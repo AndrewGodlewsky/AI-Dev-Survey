@@ -53,11 +53,11 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 16 of 19 tickets resolved.
+**Map progress:** 17 of 19 tickets resolved.
 
 ### Deliverables
 
-- [ ] Survey document — `survey/SURVEY.md`
+- [x] Survey document — `survey/SURVEY.md`
 - [x] Coverage grid — `survey/coverage-grid.md`
 - [x] Rubric — `rubric/RUBRIC.md`
 - [ ] Scoring sheet (Excel) — `scoring/scoring.xlsx`
@@ -77,6 +77,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Microsoft Forms export: column layout for Likert and grid questions](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/10)
 - [Dashboard prototype: the Slices and the Layered view with fake data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/11)
 - [Scored CSV schema: the contract between the Scoring sheet and the dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/12)
+- [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13)
 - [Assemble the Rubric document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/14)
 - [Build the HTML dashboard](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/16)
 - [Write the one-page 'How to read the results'](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/17)
@@ -85,7 +86,6 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 ### Still open
 
-- [Assemble the Survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13) _(task)_
 - [Build the Excel Scoring sheet](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/15) _(task)_
 - [Pilot the survey with 1–2 people](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/18) _(task)_
 

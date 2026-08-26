@@ -36,6 +36,8 @@ Microsoft Forms exports the **label**; scoring uses the **number**. These are th
 | **Involvement level** | Coverage grid, all three passes | None | Advisor | Drafter | Doer, reviewed | Doer, spot-checked | System-verified |
 | **Tool use** | Context item | Never used | Tried it, not using it now | Use it occasionally | Use it regularly | — | — |
 
+In the form itself ([#13](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/13), `survey/SURVEY.md`) every option label is prefixed with its
+number — `4 – Often`, `3 – Unsure`, `N/A – I don't do this work` — so an exported cell already shows the value to use; the words are the same.
 The Involvement scale also has **N/A — I don't do this work**, which is not a number (§5.3). Dimension items have no N/A: every one is
 required, and a blank is a defect, not an answer (§3, step 0).
 
