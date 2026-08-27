@@ -108,8 +108,8 @@ alternatives.
 | Dimension items | 50 (25 × 2 stances) | **20** |
 | Probe items | 10 (5 × 2) | **5** |
 | Safeguard askings | 3 | **2** (the team one moved to the Team section) |
-| Coverage grid, forward | 19 + 19 | [#25](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25) decides |
-| **Answers in this section** | 81 (+19 team grid) | **27** (+ whatever #25 keeps) |
+| Coverage grid, forward | 19 + 19 | **19** — the Direction pass, decided in [#25](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25) |
+| **Answers in this section** | 81 (+19 team grid) | **27** (+19 for the Direction pass = 46) |
 
 Whole survey: v1 152 → v2 **103–122** answers, ~22–33 minutes. *"The team shrinkage is
 enough … If we do [need more], I'll come back and we'll address it later."*
