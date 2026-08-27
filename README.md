@@ -68,7 +68,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 21 of 29 tickets resolved.
+**Map progress:** 22 of 31 tickets resolved.
 
 ### Deliverables
 
@@ -102,10 +102,10 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20)
 - [Item framing rule: what replaces the non-leading rule](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/22)
 - [Team section: what it measures, and is it scored](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23)
+- [Forward personal block: from prediction to direction](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24)
 
 ### Still open
 
-- [Forward personal block: from prediction to direction](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24) _(grilling)_
 - [Coverage grid: what replaces the six-month pass](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25) _(grilling)_
 - [Local app: architecture, launch, and how index.html is fed](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26) _(prototype)_
 - [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27) _(grilling)_
@@ -113,6 +113,8 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) _(task)_
 - [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
 - [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) _(prototype)_
+- [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32) _(prototype)_
+- [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) _(task)_
 
 <!-- progress:end -->
 

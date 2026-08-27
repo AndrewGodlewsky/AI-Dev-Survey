@@ -24,6 +24,8 @@ conditional answer without ever putting a conditional question in front of anyon
 > AI doing X?"* is a threshold item and stays banned. The three mechanics below were written
 > for this item and are now general rules for every option list in the survey.
 
+> **v2, [#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24):** the seven-option list below leaned — one way to read, six ways not to — and is replaced by a **symmetric list** used by all three askings, with **Holds** as the twin of Levers and a narrower inconsistency rule. See [`direction-section.md`](direction-section.md). The item texts and the reading table below are v1's.
+
 Three mechanics keep the Safeguard item neutral:
 
 1. **Ask twice, subtract.** Current and Future are both plain descriptions. The difference

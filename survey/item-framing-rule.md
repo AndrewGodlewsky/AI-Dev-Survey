@@ -90,12 +90,13 @@ scale (1 *None* → 6 *System-verified*) and every Likert scale pass. The check 
 
 ## Option lists
 
-Three mechanics, originally written for the Safeguard item, now general for every Checklist
+Four mechanics, the first three originally written for the Safeguard item, now general for every Checklist
 item and option list in the survey:
 
 1. **The principle answer comes first**, not last. Trailing six alternatives with *"Nothing — I'd read it myself"* makes it the odd one out, and people avoid being the odd one out in a survey their team reads.
 2. **The list is not ordered as a ramp.**
 3. **Ticking the same boxes in two askings is a valid answer.** It says the line doesn't move.
+4. **The list is symmetric.** Both sides of the position are real options — never one escape and six alternatives. A list where every option but one moves the same way says which side is normal by its count. *(Added by [#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24) as a consequence of the rule, not a change to it; with a symmetric list the "principle answer first" slot in mechanic 1 stops being special — reading is an option like any other.)*
 
 ## The bank
 
@@ -111,7 +112,7 @@ exists for the same reason. A strawman less-AI item is itself a pointer; the fli
 ## What survives from v1, and why
 
 - **Probe items** survive as a form because they already satisfy the rule — an extreme concrete world, answered on the same scale as its neighbours, whose flip is a normal thing to want. Their **count, placement and tense** are decided by the block tickets; the five in `probe-items.md` are worded for a *prediction* block and need re-tensing to present-tense scenarios.
-- **Levers stay derived by subtraction, never asked.** The direct question is a Threshold item. Whether the future-personal Safeguard asking survives is [#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24)'s decision; if it does not, Levers go with it — they cannot be replaced by a question.
+- **Levers stay derived by subtraction, never asked.** The direct question is a Threshold item. [#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24) kept the Direction-section asking on a symmetric list, so Levers survive and gain a twin, the **Hold** (`survey/direction-section.md`).
 - **The three option-list mechanics** survive because they follow from the rule, not out of loyalty to the old one.
 
 ## What this hands downstream
