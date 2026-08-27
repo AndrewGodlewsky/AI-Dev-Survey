@@ -16,12 +16,13 @@ conditional answer without ever putting a conditional question in front of anyon
 
 ---
 
-## The non-leading rule
+## Framing
 
-The survey must not push anyone toward a position. *"What would have to be true for you to
-accept AI doing X?"* presupposes that accepting X is a destination and invites the
-Respondent to negotiate themselves toward yes — someone whose honest answer is *"nothing,
-and I don't want there to be"* has to argue with the question before they can answer it.
+> **v2:** the non-leading rule that used to live here is replaced by the
+> [**Framing rule**](item-framing-rule.md) ([#22](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/22)).
+> This is a **Checklist item** under that rule; *"what would have to be true for you to accept
+> AI doing X?"* is a threshold item and stays banned. The three mechanics below were written
+> for this item and are now general rules for every option list in the survey.
 
 Three mechanics keep the Safeguard item neutral:
 
