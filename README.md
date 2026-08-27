@@ -24,6 +24,15 @@ so the conversation about "how much AI, where" is grounded in data.
    and for the team.
 3. **Read it** — open the HTML dashboard on the scored CSV to see every slice: per
    dimension, per development area, current vs. future, personal vs. team, and per person.
+
+> **v2 is being designed** and replaces v1 in place. What the author's pilot kept: the
+> Current-state section and the "today" Coverage grid, verbatim. What changes: the
+> future block asks about *direction* rather than predicting a six-month state; the
+> mirrored "the team should" pass is replaced by a **Team section** — asked once, in team
+> voice, scored on five new Team Dimensions (Transparency, Verification, Agent latitude,
+> Pace, Shared practice; `survey/team-section.md`); every item is written to the
+> **Framing rule** (`survey/item-framing-rule.md`); and scoring moves from the Excel
+> sheet into a local Python app that reads the raw Forms export and serves the dashboard.
    The one-page *How to read the results* explains what a big gap or a wide spread means.
 
 There is no single "AI adoption level." Each dimension stands on its own, and the
@@ -49,8 +58,9 @@ the dashboard — with a troubleshooting table and a file map.
 
 ## How the project is being built
 
-Design decisions are worked through one at a time as GitHub issues under the
-[wayfinder map](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/1). Each ticket
+Design decisions are worked through one at a time as GitHub issues under a wayfinder
+map — [Map v2](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/21) is live;
+[the v1 map](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/1) is complete. Each ticket
 resolves one question (a decision, a draft to react to, or a piece of research); its
 answer lives in the issue's resolution comment and is indexed on the map. The block below
 is regenerated from GitHub whenever a ticket is closed — run
@@ -108,4 +118,6 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 ## Status
 
-Early — the survey design is still being decided. Nothing here is ready to run yet.
+v1 is built end to end and was piloted by the author (one response). It is not being run
+on the team; v2 — the survey overhaul and the local Python app — is being designed on
+Map v2 and replaces it.
