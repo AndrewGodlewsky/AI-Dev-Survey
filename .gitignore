@@ -2,3 +2,8 @@
 # Only the fake-persona sample is committed.
 scoring/*.csv
 !scoring/scored-sample.csv
+
+# Real Forms exports, wherever they land.
+Excel Example/
+*.xlsx
+!scoring/scoring.xlsx
