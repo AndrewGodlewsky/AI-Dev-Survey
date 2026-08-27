@@ -46,3 +46,27 @@ Canonical names: `needs-triage`, `needs-info`, `ready-for-agent`,
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root.
 See `docs/agents/domain.md`.
+
+### Grilling records
+
+**Never grill in chat.** Every `/grilling` round is written to a file the user
+answers inline — don't wait to be asked. Existing records in `docs/grilling/`
+are the reference; match them.
+
+- **One file per ticket or effort**, reused across rounds:
+  `docs/grilling/issue-<n>-<slug>.md` for a wayfinder ticket,
+  `docs/grilling/<effort>-round-<n>.md` for a charting round.
+- **Header:** ticket link, map link, `**Round:** N of ~M`, and a `How to use`
+  line telling the user to answer inline and say when it's ready.
+- **Then** a *What is already settled coming in* section, and a *What this round
+  holds back* section naming the questions deferred to the next round and why.
+- **Each question** is `## Qn — <title>` with, in order: `### What this is`,
+  `### Why it matters`, `### Options` (a pros/cons table), `### My
+  recommendation` (always give one, and say when it's a close call), and an
+  empty `### Your answer` ending in `:`.
+- Close with an `## Anything else` question, same empty `### Your answer`.
+- Ask the **whole frontier** in one round — every question whose prerequisites
+  are settled. A question that depends on another still open in this round
+  belongs to the next round, not this one.
+- After the user answers: read it back, append the next round to the **same
+  file**, and link the record from the ticket's resolution comment.
