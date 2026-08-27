@@ -58,7 +58,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 20 of 27 tickets resolved.
+**Map progress:** 21 of 29 tickets resolved.
 
 ### Deliverables
 
@@ -91,16 +91,18 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Conditional items: locating where a Respondent's line moves](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/19)
 - [Straight-lining: does the survey need attention checks, and where?](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20)
 - [Item framing rule: what replaces the non-leading rule](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/22)
+- [Team section: what it measures, and is it scored](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23)
 
 ### Still open
 
-- [Team section: what it measures, and is it scored](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23) _(grilling)_
 - [Forward personal block: from prediction to direction](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24) _(grilling)_
 - [Coverage grid: what replaces the six-month pass](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25) _(grilling)_
 - [Local app: architecture, launch, and how index.html is fed](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26) _(prototype)_
 - [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27) _(grilling)_
 - [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) _(grilling)_
 - [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) _(task)_
+- [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
+- [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) _(prototype)_
 
 <!-- progress:end -->
 
