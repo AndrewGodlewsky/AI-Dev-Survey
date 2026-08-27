@@ -44,7 +44,7 @@ Tell me which, plus: who took it (you alone / you + one other), whether the **Re
 
 ### Your answer
 
-: 
+: I ended up doing the full round trip. I did it all, and it worked totally fine. 
 
 <!-- If the export exists, paste the headers that failed to match (if any) and the dashboard's "n of roster_n" line. -->
 
@@ -74,7 +74,8 @@ Answer with numbers where you have them and the *one* place it dragged most. My 
 
 ### Your answer
 
-: 
+: Ultimately, here's how I felt taking the survey. The team part of the survey didn't really make sense because we were basically re-answering all the questions just in a slightly different frame of mind. I'm really hoping we can revamp that section to have fewer questions and have those questions be different and more team-oriented, maybe a little bit broader and wider in scope. They should be more about development practices as a team and the future of multiple developers developing in parallel or developing as a team using AI. 
+I really loved the self-reflective session that was about the now. I thought that was perfect, and we probably shouldn't change any of that, but the session that was about me within six months did feel a little repetitive to fill out. I'm hoping we can put a spin on that, maybe shorten some of the questions, as in, not have quite as many, but have them be more perceptive, trying to glean insights about how personal development might change and how you would be comfortable with it changing in the future The idea here would be to be able to understand each person's core values and principles without directly asking them for it. 
 
 <!-- Did you time sections, or only the whole? Did the Coverage grids (19 rows × 3 passes) feel like one long thing or three short ones? -->
 
@@ -106,7 +107,7 @@ Answer all three parts separately, naming items where you can. If (c) felt redun
 
 ### Your answer
 
-: 
+: This felt really, really good. I liked this a lot. I definitely want to keep this part, especially for the now section for me. 
 
 <!-- Also: did you notice the reverse-keyed items (C3, T2, F3, G6, N4, A2, V2 / FC3, FT2, FF3, FG5, FN4, FA2, FV2) as "trick" items, or did they read naturally? -->
 
@@ -137,7 +138,7 @@ Don't polish; a rough list now beats a complete one later. If nothing was ambigu
 
 ### Your answer
 
-: 
+: I don't think there was anything I had to reread. All the questions were very clear and to the point, so I was very happy with that. They were easy to read, easy to follow, so that was very nice. 
 
 <!-- If you didn't read the grid description: would a one-line reminder in each row ("Drafter = AI writes, I rework") have helped, or is the scale self-explanatory? -->
 
@@ -167,7 +168,9 @@ Two things. **(a) The survey:** run it on the team as-is, fix then run, or pilot
 
 ### Your answer
 
-: 
+: I think, going forward, other than some of the other things I mentioned in previous questions, one of the major changes that I want to completely overhaul about this project is the dashboard itself. I really hated the process of having to take that data and paste it in, and it was very, very clunky.
+
+What my ideal scenario will be and what I want to create for this project is that I will export the Excel file from the Microsoft Teams forms. That Excel file will be an input for a local host dashboard that I can just spin up. It uses Python on the backend and some sort of JavaScript or something simple, easy, and maintainable on the frontend. But to be clear, I don't really want to change how the dashboard looks. I was very happy with the prototyping we did. Just how it actually works and how I can spin it up is what I'm looking to change. 
 
 <!-- Part (b) is the "changes I want to make going forward" you asked for — be blunt; it becomes memory, not a ticket. -->
 
