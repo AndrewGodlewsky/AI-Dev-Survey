@@ -166,7 +166,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 29 of 32 tickets resolved.
+**Map progress:** 30 of 32 tickets resolved.
 
 ### Deliverables
 
@@ -206,12 +206,12 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27)
 - [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)
 - [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29)
+- [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)
 - [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
 - [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)
 
 ### Still open
 
-- [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
 - [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) _(task)_
 - [Build the five-questions dashboard on real data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34) _(task)_
 

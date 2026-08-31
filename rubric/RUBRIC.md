@@ -262,6 +262,84 @@ named survey). The Craft values Gap is **softer**, like Fluency's. The Future sc
 | 4 | Understanding, tests, review, and ownership are non-negotiable for anything that reaches production. |
 | 5 | Craft is the point: nothing ships that its author cannot explain line by line, and depth of understanding is defended even at real cost to speed. |
 
+### 4.8 The Team Dimensions (v2)
+
+Added by wayfinder ticket [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30); construct decided in
+[#23](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23) ([`survey/team-section.md`](../survey/team-section.md), items in
+[`survey/team-items.md`](../survey/team-items.md)). Five Team Dimensions, measured **once**, in team voice, on the Agreement scale.
+Unlike §§4.1–4.7 there is no Current/Future pair: each Respondent gets one **Norm score** per Team Dimension — the norm they would
+set — and the Team score is the aggregate plus spread; spread is the finding.
+
+**Level text is worded as the norm in force** — the way of working the team requires at that level — so the same words read
+correctly as one person's Norm score (*the norm I'd set*) and as the Team score (*the norm we'd collectively set*). As everywhere
+in this rubric, both ends are positions a team can hold; level 1 is never a deficiency, and the direction is a direction, not the
+good direction. A two-facet Dimension gets **one level text spanning both facets**, because the number being located is the
+Dimension mean; where the facets pull apart, the facet view (scoring rules v2 §facets) is the read, not the mean.
+
+#### Transparency — how much the team requires AI's role in work to be visible and personally owned
+
+*Facets: Disclosure & provenance · Ownership & accountability.*
+
+| Level | Norm in force |
+|---|---|
+| 1 | Work is judged as work: nobody is asked to say what AI wrote, and merged code is owned the way the team owns anything — collectively, through the system that shipped it. |
+| 2 | Disclosure is a courtesy, not a rule: people mention AI involvement when it seems relevant, and ownership follows the ordinary review trail. |
+| 3 | AI involvement is visible at the level of the change — a PR says AI played a part — and whoever merges it answers for it; saying *which parts* is not required. |
+| 4 | AI-written parts are identified within a change, and whoever merges is expected to be able to explain them. |
+| 5 | Every AI contribution is labelled — which parts, produced how — and recorded beyond the PR; whoever merges owns it personally, line by line. |
+
+#### Verification — how much human review the team requires of AI output
+
+*Facet: Reviewing AI-assisted work (the Safeguard checklist sits here, unscored).*
+
+| Level | Norm in force |
+|---|---|
+| 1 | Automated checks are the gate: when tests and CI pass, AI output can merge without any person reading it. |
+| 2 | AI output gets a human glance — a skim, a spot-check of the risky parts — but the checks carry the weight; full reading is not required. |
+| 3 | AI-assisted work goes through the team's normal review: a person reads it and judges it as they would any change, with no extra ceremony for its origin. |
+| 4 | AI-heavy changes get deliberate extra care: the author reads the AI-written parts before asking for review, and a reviewer who didn't run the agent reads them again. |
+| 5 | A human reads every line of AI output before it ships, under review at least as demanding as for human-written work; no check stands in for reading. |
+
+#### Agent latitude — how freely agents may act in the shared codebase
+
+*Facets: Parallel development with agents · Limits — and they run **opposite ways**: more parallel agent work is more latitude,
+more limits is less. The level text spans both, so the* Limits *half runs backwards down the table (broad no-go zones at 1, none
+at 5). A **flat 3 is ambiguous by construction** — indistinguishable from "agents everywhere in the day-to-day code, and nowhere
+near production data", a coherent position — so the facet view is this Dimension's primary read; the mean locates nobody on its
+own.*
+
+| Level | Norm in force |
+|---|---|
+| 1 | Agents work in personal sandboxes only, and whole kinds of work — production data, secrets, releases, named areas — are off-limits to AI as team policy. |
+| 2 | Agents may touch shared code, but only on a personal branch a person cleans up before it goes anywhere, and the off-limits list stays broad. |
+| 3 | Several agents working in the shared codebase at once is normal, on branches, with a short explicit list of no-go areas still standing. |
+| 4 | Agents act on shared code freely and may run against `main`; limits are a few named exclusions, not a posture of restraint. |
+| 5 | Agents act anywhere in the shared codebase, including against `main`, with no standing no-go zones: what contains them is verification, not territory. |
+
+#### Pace — how fast the team adopts, and who sets that pace
+
+*Facet: Pace & risk appetite.*
+
+| Level | Norm in force |
+|---|---|
+| 1 | The team moves at the pace of its most cautious member: nothing is adopted until everyone is ready, and evidence from elsewhere comes first. |
+| 2 | Adoption is collective and deliberate: the team follows once a practice has proved itself elsewhere, and the hesitant set the schedule. |
+| 3 | Individuals adopt tools for their own work as they see fit; anything team-wide waits for team agreement. |
+| 4 | The keen run ahead by default: new tools are tried as they appear, and caution has to make its case tool by tool. |
+| 5 | The team moves at the pace of its keenest member: it tries things first, budgets for failures, and treats waiting as the cost rather than the safety. |
+
+#### Shared practice — how much the team invests in shared AI setup and in keeping everyone able to work without AI
+
+*Facets: Shared conventions & tooling · Learning & skill.*
+
+| Level | Norm in force |
+|---|---|
+| 1 | AI setup is personal: each person picks their own tools and instructions, and staying able to work without AI is each person's own business. |
+| 2 | Conventions spread informally — a shared config here, tips at standup — but nothing is maintained on purpose, and skills look after themselves. |
+| 3 | A shared baseline exists — common instruction files in the repo, agreed core tools — with personal variation on top; skill-sharing happens, unscheduled. |
+| 4 | The shared setup is maintained like code and has an owner; the team deliberately teaches each other and keeps an eye on skill atrophy. |
+| 5 | One shared, maintained setup is how the team works, and keeping everyone able to work without AI is an explicit, practised team investment. |
+
 ## 5. Coverage — the Involvement profile
 
 Coverage is not a score. Per person it is **the raw Involvement level per Development area**, for each of three passes — *Today*,
