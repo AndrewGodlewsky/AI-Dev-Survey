@@ -80,7 +80,7 @@ Coverage grid's today pass. Both are frozen.
 | Every question asked twice — *for me* and *the team should* | *"Re-answering all the questions just in a slightly different frame of mind."* 152 answers, most of them duplicated. | The **Team section** asks different questions entirely, once, on five new Team Dimensions. **Stance, the Stance gap and the norm gap are deleted** — an accepted cost, not an oversight. |
 | A *non-leading rule* banning one sentence shape | It banned a shape, not a lean. Items and copy could still point. | The **[Framing rule](survey/item-framing-rule.md)** — no implied destination, symmetric, governing everything the Respondent reads. Five item forms, a five-check test, a balance floor per block. |
 | A Safeguard list with one way to read and six ways not to | The option count itself said which side was normal. | A **symmetric eight-option list**, interleaved, identical across all four askings — which is what makes Levers and **Holds** computable. |
-| An Excel sheet with 5,224 formulas, feeding a self-contained HTML file from disk | *"Very, very clunky."* Paste, delete surplus rows, save as CSV UTF-8, drop on an HTML file. | A **local Python app** that reads the raw Forms export and serves the dashboard on `localhost`. `dashboard/index.html` becomes the template. |
+| An Excel sheet with 5,224 formulas, feeding a self-contained HTML file from disk | *"Very, very clunky."* Paste, delete surplus rows, save as CSV UTF-8, drop on an HTML file. | A **local Python app** that reads the raw Forms export and serves the dashboard on `localhost`. The dashboard itself is simplified to the **five-questions** page (`dashboard/prototype-simple.html`), light-themed only — v1's `index.html` layout was "far too busy" and is retired with the sheet. |
 
 **The items themselves were settled on 2026-08-30** by
 [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) and
@@ -113,7 +113,7 @@ the local app lands.
 | `survey/` | The survey text. See the file map below. |
 | `rubric/` | `RUBRIC.md` — what each score means, and how answers become scores. Being rewritten for v2 ([#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33), [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)). |
 | `scoring/` | v1's Excel sheet and scoring rules. **Retired once the Python app scores** — a reference, not something to extend. |
-| `dashboard/` | `index.html` — v1's self-contained dashboard, and v2's **rendering template**. |
+| `dashboard/` | `index.html` — v1's self-contained dashboard (reference). `prototype-simple.html` — the **five-questions** page, v2's rendering template (light-only). |
 | `app/` | The local Python app. *Does not exist yet* — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26). |
 | `docs/` | `HOW-TO-READ.md` (results guide), `SETUP.html` (v1 runbook), `v2-item-banks-explained.md`, `adr/` (decision records), `agents/` (agent configuration), `grilling/` (the working behind every decision). |
 | `scripts/` | Repo upkeep, e.g. `update-readme.py`, which regenerates the progress block below. |
