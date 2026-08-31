@@ -2,8 +2,15 @@
 
 **Ticket:** [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
 **Map:** [Map v2: Survey overhaul & local dashboard app](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/21)
-**Round:** 1 of ~2 — six questions *(round 2 applies your answers to the spec files)*
+**Round:** 1 of 2 — six questions. **✅ Answered 2026-08-30.**
 **How to use:** the draft bank is [`survey/team-items.md`](../../survey/team-items.md) — read that first, it is the thing being reacted to. Then answer inline under each `### Your answer` heading below. Free text is fine; you don't have to pick a listed option. Tell me when it's ready and I'll read it back.
+
+> **✅ Resolved — every recommendation below was accepted as drafted.** The answers, the file
+> changes they produced and the constraints handed downstream are in
+> **[`issue-31-32-item-banks-resolution.md`](issue-31-32-item-banks-resolution.md)** — a joint
+> round 2 covering this record and its sibling, because five of the thirteen questions crossed
+> between the two banks. The `### Your answer` headings below are left empty on purpose: this
+> record is the *working*, kept for the options and the alternatives that were rejected.
 
 > **Sibling ticket:** [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32) is drafted and waiting on [`issue-32-direction-item-bank.md`](issue-32-direction-item-bank.md). **Q3 and Q5 below touch both banks** — if you'd rather answer the two records together, that's the cheaper order.
 

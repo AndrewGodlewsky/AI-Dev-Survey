@@ -36,12 +36,19 @@ Wording is a draft for the Future-state item bank
 ([#6](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6)) to polish. The rules above
 are the decision; these sentences are not.
 
+> **v2 — the live probe wording is in [`direction-items.md`](direction-items.md).** The five
+> probes are **re-tensed from forecasts to present-tense worlds** and asked on a **single row**
+> (Stance is dead, so the *For the team* column below no longer exists), per
+> [`direction-section.md`](direction-section.md) rule 7. Rules 1–7 above stand unchanged, except
+> that rule 3 now reads *Direction section only* and rule 6's **per-stance tracking is gone** —
+> an Edge marker is one per Respondent per probe. The table below is v1's record.
+
 | Dimension | Pole | *For me* — "In six months, I would…" | *For the team* — "In six months, the team should…" |
 |---|---|---|---|
 | **Comfort** | low | …be happy working with no AI tooling at all, the way I worked before it existed. | …be fine going back to working with no AI tooling at all. |
 | **Trust** | high | …merge AI-written code I had not read line by line, as long as the tests pass. | …merge AI-written code nobody has read line by line, as long as the tests pass. |
 | **Autonomy** | high | …let an agent work unsupervised for an hour and only look at the final result. | …let agents work unsupervised for an hour and only review the final result. |
-| **Concern** | high | …slow down how fast I adopt AI, because the risks outweigh what I'd gain. | …slow down how fast we adopt AI, because the risks outweigh what we'd gain. |
+| **Concern** | high | …hold back on AI, because the risks outweigh what I'd gain. | …hold back on AI, because the risks outweigh what we'd gain. |
 | **Craft values** | high | …expect to be able to explain every line of code that ships under my name. | …expect everyone to be able to explain every line that ships under their name. |
 
 > **Amended by [#6](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/6), 2026-08-26 —
@@ -52,6 +59,19 @@ are the decision; these sentences are not.
 > wasted, and a Respondent certain to notice. The probe moved to the risk-appetite pole
 > instead, which is sharper Concern anyway. Every rule on this page stands unchanged: still
 > five probes, one pole each, Concern still high.
+
+> **Amended a second time by the item banks' joint resolution, 2026-08-30 — the Concern probe
+> again** ([#32](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32) Q7;
+> [`issue-31-32-item-banks-resolution.md`](../docs/grilling/issue-31-32-item-banks-resolution.md)).
+> The risk-appetite wording above read *"…**slow down** how fast I adopt AI"* — a **comparative
+> against the Respondent's present pace**, which the [Framing rule](item-framing-rule.md) bans
+> outright as ramp vocabulary. *Hold back* states the position without measuring it against
+> today. Every rule on this page still stands: five probes, one pole each, Concern still high.
+>
+> Two rewrites of one sentence is a signal, not a coincidence — Concern's high pole is hard to
+> state concretely without either naming a no-go area (Guardrails' ground) or naming a pace (a
+> comparative). If the pilot finds *hold back* reads wrong too, the honest answer is that
+> Concern's probe wants a **different pole** rather than a third rewording.
 
 Note the shape of the set: four probes sit at the **high** pole and only Comfort sits low.
 The team's current position *is* the low end, so a low-pole probe mostly measures "normal".

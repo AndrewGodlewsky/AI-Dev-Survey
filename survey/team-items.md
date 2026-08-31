@@ -1,7 +1,14 @@
 # Team item bank
 
-**DRAFT for reaction** — wayfinder ticket [#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31).
-Grilling record: [`docs/grilling/issue-31-team-item-bank.md`](../docs/grilling/issue-31-team-item-bank.md).
+**Decided** — wayfinder ticket [#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31).
+Grilling record: [`docs/grilling/issue-31-team-item-bank.md`](../docs/grilling/issue-31-team-item-bank.md)
+(round 1, the working) → [`issue-31-32-item-banks-resolution.md`](../docs/grilling/issue-31-32-item-banks-resolution.md)
+(the decision).
+
+> **All six questions resolved 2026-08-30 — every recommendation accepted as drafted.** No item
+> text moved. Q1 narrowed `team-section.md` rule 7 to the two usable forms; Q4 corrected rule 6
+> three ways; Q2, Q3, Q5 and Q6 confirmed the draft. The `Qn` markers below are kept as pointers
+> into the round-1 record, which holds the options and the rejected alternatives.
 
 The items for the **Team section**, specified by [`team-section.md`](team-section.md)
 ([#23](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23)) and governed by the
@@ -108,6 +115,17 @@ facet's reviewer-load topic without restating an item that already exists twice 
 **VE3 is the closest cross-section echo in the whole survey** — the Trust probe P2 is *"I merge
 AI-written code I have not read line by line, as long as the tests pass."* **Q3.**
 
+> **Resolved (Q3, 2026-08-30): both kept, with an instruction to
+> [#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) — VE3 and P2 sit in different
+> sections, far apart.** Same proposition (*do passing checks stand in for reading?*) asked once
+> as a team norm on the Agreement scale and once as a personal edge on the Desirability scale.
+> Keeping both is what makes *"I'd merge unread, but the team shouldn't"* visible, and that
+> divergence is the single most valuable disagreement the instrument can surface — it cannot be
+> surfaced without asking both. Rewording VE3 onto review *depth* was rejected as vaguer than the
+> rest of the bank; dropping P2 would reopen
+> [#8](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/8). Note VE3 is also
+> **Verification's only reverse-keyed item**, so removing it would have cost a reword elsewhere.
+
 ## Agent latitude
 
 *How freely agents may act in the shared codebase.*
@@ -138,6 +156,19 @@ same ground personally. Naming the areas makes it a different sentence and a sha
 construction: more limits is less latitude. The block is balanced 3 high / 3 low, which is where
 this section's balance floor is met. **Q2** asks whether that makes Agent latitude one Dimension
 or two.
+
+> **Resolved (Q2, 2026-08-30): one Dimension, and the facet view is its primary read.** Concern
+> is the precedent — five risks under one mean, read separately as well as as a mean — and it
+> works. Splitting into *Agent reach* and *Limits* would give six Team Dimensions and reopen
+> [#23](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23)'s construct; re-keying the
+> *Limits* items to run with the Dimension would be dishonest. **The cost is accepted and must be
+> stated, not hidden: a flat 3 on Agent latitude is ambiguous by construction** — it cannot be
+> told apart from *"agents everywhere in the day-to-day code, and absolutely nowhere near
+> production data"*, a coherent and common position. Two instructions follow: the one-pager says
+> to read this Dimension's facets, and
+> [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)'s level text must run
+> **opposite** for *Limits*. This was the closest call in either bank and is cheapest to revisit
+> after the pilot.
 
 ## Pace
 
@@ -245,8 +276,8 @@ willingness askings. It is a standalone team norm.
 
 ## What this hands downstream
 
-- **[Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29)** — 24 Likert rows on the Agreement scale plus 1 checkbox question; the section description above; block structure and checklist placement.
+- **[Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29)** — 24 Likert rows on the Agreement scale plus 1 checkbox question; the section description above; block structure and checklist placement. **One hard placement constraint from the resolution: VE3 and the personal probe P2 sit in different sections, far apart (Q3).**
 - **[Scoring rules v2](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)** — Norm score = mean of facets, facets averaged first, over **8 facets in 5 bundles** (Transparency 2, Verification 1, Agent latitude 2, Pace 1, Shared practice 2). Reverse-keys: TR3, TR6, VE3, AL3, AL4, AL6, PA2, SP3, SP6. Nothing here is a Gap. The Safeguard team asking is counted, never scored, and is **not** part of Lever/Hold.
-- **[Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)** — the facet content each level must span is fixed here; note that *Limits* points against Agent latitude, so its level text runs the opposite way from *Parallel development*.
+- **[Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)** — the facet content each level must span is fixed here. **Two instructions from the resolution (Q2): *Limits* points against Agent latitude, so its level text runs the opposite way from *Parallel development*; and the level text must not claim the Agent latitude mean says more than it does — a flat 3 there is ambiguous by construction, and the facet view is the primary read.**
 - **[Local app](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26)** — a team panel: five Team Dimensions, mean + spread + per-person by initials, drilling down to 8 facets; the Safeguard team norm is a separate count, not a score.
-- **[`team-section.md`](team-section.md)** — rule 6 corrected (three ways, table above) and rule 7 narrowed (two usable forms, not five). Apply once **Q1** and **Q4** are answered.
+- **[`team-section.md`](team-section.md)** — rule 6 corrected (three ways, table above) and rule 7 narrowed (two usable forms, not five). ✅ **Applied 2026-08-30** (Q1, Q4).

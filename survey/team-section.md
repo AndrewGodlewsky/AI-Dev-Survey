@@ -33,13 +33,38 @@ principles for us as a team."*
 5. **No Probe items and no Edge markers** in this section. On a named, scored Team Dimension a
    *Strongly agree* on the highest-pole item is already the visible sentence somebody owns. A
    probe can be added as one row later if results show the team wants a named edge.
-6. **The Safeguard checklist is re-homed here**, once, under *Verification*: *"which of these
-   should the team accept as enough, without an individual reading the output?"* — same seven
-   options, same mechanics (principle answer first, not ramp-ordered), **never scored**. It is
-   a standalone team norm, not the cut third pass of the personal item.
-7. **The Framing rule applies in full.** All five forms are legal here, and this is the
-   **only** block where a **Value item** — a principle stated flat as a proposed norm — is
-   legal. The balance floor is met by the low-pole items on *Agent latitude* and *Pace*.
+6. **The Safeguard checklist is re-homed here**, once, under *Verification*:
+   *"For AI-written output, which of these should count, for this team, as enough?"* — the
+   **symmetric eight-option list** shared by all four askings, in the same interleaved order,
+   **never scored**. It is a standalone team norm, not the cut third pass of the personal item.
+
+   > **Corrected three ways by the item banks' joint resolution, 2026-08-30**
+   > ([#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) Q4;
+   > [`issue-31-32-item-banks-resolution.md`](../docs/grilling/issue-31-32-item-banks-resolution.md)).
+   > This rule was written before [#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24)
+   > landed and said *seven* options, *principle answer first*, and the stem *"…as enough,
+   > **without an individual reading the output**?"*. All three are superseded: #24 replaced the
+   > leaning seven with the symmetric eight; with a symmetric list reading is an option like any
+   > other rather than a special first slot; and the old stem excluded reading from a question
+   > whose list now offers three ways of reading. All four askings must be identical or the team
+   > norm is not comparable with the personal ones. The list lives in
+   > [`direction-section.md`](direction-section.md), the wording in [`team-items.md`](team-items.md).
+
+7. **The Framing rule applies in full**, and this is the **only** block where a **Value item** —
+   a principle stated flat as a proposed norm — is legal. **Two forms are usable here: Direction
+   items and Value items**, plus the one Checklist. The balance floor is met by the low-pole
+   items on *Agent latitude* and *Pace*.
+
+   > **Narrowed by the item banks' joint resolution, 2026-08-30**
+   > ([#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) Q1). This rule originally
+   > read *"All five forms are legal here."* They remain legal under the
+   > [Framing rule](item-framing-rule.md) — but the **Agreement scale removes two of them in
+   > practice**. A **Scenario item** is a present-tense world answered on the *Desirability*
+   > scale (*would you want to work this way*); put the same sentence on an Agreement scale and
+   > agreeing means *this is already how things are* — a current-state question, which breaks
+   > rule 1's single-norm pass. **Probe items** are excluded outright by rule 5. Nothing in the
+   > bank moved either way: this states what the scale already forced, so a future drafter does
+   > not reach for a form this block cannot carry.
 
 ## The five Team Dimensions
 
@@ -54,6 +79,17 @@ positions a team can hold; the direction is a direction, not the good direction 
 | **Agent latitude** | Parallel development with agents · Limits | Agents work only in personal sandboxes and broad areas are written off-limits | Agents act on shared code anywhere, including against `main`, with no no-go zones | more freedom for agents in the shared codebase |
 | **Pace** | Pace & risk appetite | The team moves at the pace of its most cautious member and waits for evidence | The team moves at the pace of its keenest member and tries things first | faster adoption as a team |
 | **Shared practice** | Shared conventions & tooling · Learning & skill | Everyone picks their own tools and instructions; skill without AI is each person's own business | One shared, maintained setup; the team deliberately keeps everyone able to work without AI | more investment in shared capability |
+
+> **Agent latitude nets two facets that run opposite ways**, and the **facet view is its primary
+> read** — decided in the item banks' joint resolution, 2026-08-30
+> ([#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) Q2). *Parallel development
+> with agents* runs with the Dimension (more of it, more latitude); *Limits* runs against it
+> (more of it, less latitude), which is why three of that Dimension's six items are
+> reverse-keyed. A **flat 3 is therefore ambiguous by construction** — it cannot be told apart
+> from *"agents everywhere in the day-to-day code, and absolutely nowhere near production
+> data"*, which is a coherent and common position. Concern is the precedent: five risks under
+> one mean, read separately as well as as a mean. Splitting this into two Team Dimensions was
+> considered and rejected as the more expensive fix; it stays revisitable after the pilot.
 
 ### What each facet covers
 

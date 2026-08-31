@@ -37,7 +37,7 @@ Three things follow directly and are part of the rule, not commentary on it:
 |---|---|---|
 | **Current-state section** (me, today) | Frozen — 26 items and the 19-row Coverage grid stand verbatim. | Only the surrounding copy is checked (point 2 above). |
 | **Forward personal block** (me, six months as a direction) | **Concrete only**: Scenario, Direction, Probe and Checklist items. **No Value items.** | Personal values are read *off* reactions to concrete situations, never asked flat. *"Understand each person's core values and principles without directly asking them for it."* |
-| **Team section** | **All five forms**, including Value items stated flat as proposed team norms. | A team-level value is a norm being proposed, not a self-report, so it does not collapse into its Current-state twin. |
+| **Team section** | **All five forms**, including Value items stated flat as proposed team norms. | A team-level value is a norm being proposed, not a self-report, so it does not collapse into its Current-state twin. ⚠️ **Legal is not the same as usable:** the section's Agreement scale leaves only **Direction and Value items** workable in practice — see [`team-section.md`](team-section.md) rule 7. |
 
 ## The forms — a closed catalogue
 

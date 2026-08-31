@@ -68,7 +68,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 23 of 31 tickets resolved.
+**Map progress:** 25 of 31 tickets resolved.
 
 ### Deliverables
 
@@ -104,6 +104,8 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Team section: what it measures, and is it scored](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/23)
 - [Forward personal block: from prediction to direction](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24)
 - [Coverage grid: what replaces the six-month pass](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25)
+- [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
+- [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)
 
 ### Still open
 
@@ -112,8 +114,6 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) _(grilling)_
 - [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) _(task)_
 - [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
-- [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) _(prototype)_
-- [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32) _(prototype)_
 - [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) _(task)_
 
 <!-- progress:end -->

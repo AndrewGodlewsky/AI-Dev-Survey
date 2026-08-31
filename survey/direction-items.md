@@ -1,7 +1,14 @@
 # Direction item bank
 
-**DRAFT for reaction** — wayfinder ticket [#32](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32).
-Grilling record: [`docs/grilling/issue-32-direction-item-bank.md`](../docs/grilling/issue-32-direction-item-bank.md).
+**Decided** — wayfinder ticket [#32](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32).
+Grilling record: [`docs/grilling/issue-32-direction-item-bank.md`](../docs/grilling/issue-32-direction-item-bank.md)
+(round 1, the working) → [`issue-31-32-item-banks-resolution.md`](../docs/grilling/issue-31-32-item-banks-resolution.md)
+(the decision).
+
+> **All seven questions resolved 2026-08-30 — every recommendation accepted as drafted.** No item
+> text moved. Q1, Q3, Q4, Q5, Q6 and Q7 confirmed the draft; Q2 kept both Fluency items and
+> flagged the Dimension to the pilot. The `Qn` markers below are kept as pointers into the
+> round-1 record, which holds the options and the rejected alternatives.
 
 The items for the **Direction section**, specified by
 [`direction-section.md`](direction-section.md) ([#24](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/24))
@@ -49,9 +56,20 @@ Draft. Checked against the Framing rule's point 2 (*everything the Respondent re
 > None of these is a prediction and none is a recommendation. Some describe a great deal of AI
 > in the work, some describe very little, and both are real answers. There is no right column.
 >
+> Some of these describe how a team works rather than something you do alone. Answer those the
+> same way: as a world you would or would not want to work in.
+>
 > We use the answers to plan the next six months.
 
 The horizon is named **once**, here, and appears in no item.
+
+**The team-voice line is Q5's answer**, added 2026-08-30. D-G4 and D-G5 are collectively voiced
+because enforcement and pipeline are properties of a shared environment — you cannot have a
+personal CI policy — and re-voicing them to first person would have softened the Gap on two of
+Guardrails' five facets. The line resolves the ambiguity in copy instead. Checked against the
+Framing rule's point 2: no implied destination, no ramp vocabulary, and it restates the section's
+own question rather than adding a second one. Working in
+[`issue-31-32-item-banks-resolution.md`](../docs/grilling/issue-31-32-item-banks-resolution.md).
 
 ---
 
@@ -97,6 +115,14 @@ confused, so the reverse-key would hand Fluency a constant. v1 found this and re
 FF3; that replacement carries into D-F2 unchanged in substance. The two items sit on adjacent
 axes — per-task context against tool setup — which is a real overlap. **Q2.**
 
+> **Resolved (Q2, 2026-08-30): both kept, and Fluency is flagged to the pilot as the Dimension
+> most likely to need a third item.** The two alternatives were worse — a tool-breadth item
+> (*"agents and custom rules, not just chat and autocomplete"*) trades this overlap for one with
+> Autonomy's D-A1, and a failure-mode item re-runs the exact floor F3 already hit. **Fluency is
+> the thinnest personal Dimension in v2**: if D-F1 and D-F2 never diverge, its Direction score is
+> one item doubled, and ±0.5 on a two-item Dimension is one item moving a point. The one-pager
+> must say so, and the pilot should look specifically at whether these two answers move together.
+
 ## Guardrails — how much review, disclosure, testing and policy I want
 
 Five items, one per facet, matching the Current bank's **five** facets with G2 and G3 collapsed
@@ -121,6 +147,16 @@ they do not trespass on the Team section. **Q5.**
 **D-G1 and D-G5 are near-inverses**, inherited from G1/G6 — a known v1 shape the pilot ticket
 already flagged to watch. It cannot be fixed by dropping one: both are named facets the Gap
 needs. **Q4.**
+
+> **Resolved (Q4, 2026-08-30): kept as drafted, with an instruction to
+> [#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) — put distance between D-G1
+> and D-G5 in the assembled form.** The pair is structural: the frozen Current bank has the same
+> G1/G6 shape, so removing it forward would make Guardrails' Gap subtract two different things.
+> Rewording D-G5 onto *cost* was rejected for drifting off its facet toward Concern. Wording
+> separation (review-and-test against pipeline, different nouns) is done; **placement separation
+> is #29's half of the fix**, and without it a Respondent who spots the pair may answer the
+> second from the first — a soft form of the straight-lining
+> [#20](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/20) exists to catch.
 
 ## Concern — perceived risk from AI-assisted development
 
@@ -280,9 +316,9 @@ normal thing to want, which is the check that catches a strawman less-AI item.
 
 ## What this hands downstream
 
-- **[#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) Assemble** — 25 Likert rows plus 2 checkbox questions; the section description above; block structure and probe placement; **and the Current-state section's Safeguard item 1 stem and option list change**, per the table above.
+- **[#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) Assemble** — 25 Likert rows plus 2 checkbox questions; the section description above; block structure and probe placement; **and the Current-state section's Safeguard item 1 stem and option list change**, per the table above. **Two hard placement constraints from the resolution: put distance between D-G1 and D-G5 (Q4), and keep D-T2 clear of probe P2 and of the Team section's VE3 (Q1, and #31 Q3).**
 - **[#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) Scoring rules** — Direction score over the facets above: Comfort/Trust/Fluency/Autonomy/Craft **2 items** each against Current's **3**, Concern 5, Guardrails 5 with G2+G3 collapsed first. Reverse-keys: D-C2, D-T2, D-F2, D-G5, D-N4, D-A2, D-V2. **Three Gaps are facet-matched rather than word-matched and read softer than the rest — Fluency (F3→D-F2), Autonomy (A2→D-A2), Concern's job-impact facet (N5→D-N5)** — on top of #24's ruling that *every* Gap is now the softer kind.
 - **[#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) Rubric v2** — §6.2's symmetric list and its ordering are fixed here; the three stems above are the ones the Lever/Hold subtraction runs on.
-- **[`probe-items.md`](probe-items.md)** — P4's wording amended a second time (ramp vocabulary); all five re-tensed to the present. Apply once **Q7** is answered.
-- **[`safeguard-items.md`](safeguard-items.md)** — asking 1's stem and the option list are superseded by this file. Apply once **Q6** is answered.
+- **[`probe-items.md`](probe-items.md)** — P4's wording amended a second time (ramp vocabulary); all five re-tensed to the present. ✅ **Applied 2026-08-30** (Q7).
+- **[`safeguard-items.md`](safeguard-items.md)** — asking 1's stem and the option list are superseded by this file. ✅ **Applied 2026-08-30** (Q6).
 - **[#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26) Local app** — the Safeguard panel needs Holds beside Levers, and the probe table loses its per-stance split.
