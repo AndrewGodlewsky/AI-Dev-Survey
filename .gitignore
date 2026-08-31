@@ -3,7 +3,9 @@
 scoring/*.csv
 !scoring/scored-sample.csv
 
-# Real Forms exports, wherever they land.
-Excel Example/
+# Real Forms exports, wherever they land. Real data lives ONLY in data/ (#27);
+# the two exceptions are committed artifacts that contain no real data.
+data/
 *.xlsx
 !scoring/scoring.xlsx
+!app/sample-export.xlsx

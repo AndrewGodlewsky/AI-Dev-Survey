@@ -40,10 +40,10 @@ def find_export(argv):
     DATA.mkdir(exist_ok=True)
     files = sorted(DATA.glob("*.xlsx"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not files:
-        fallback = sorted((ROOT / "Excel Example").glob("*.xlsx"))
-        if fallback:
-            print(f"  data/ is empty - falling back to the v1 fixture in 'Excel Example/'.")
-            return fallback[0]
+        fixture = ROOT / "app" / "sample-export.xlsx"
+        if fixture.is_file():
+            print("  data/ is empty - falling back to the committed FAKE fixture (app/sample-export.xlsx).")
+            return fixture
         fail(f"no .xlsx found. Drop the raw Forms export into {DATA} and run again.")
     if len(files) > 1:
         print(f"  {len(files)} .xlsx files in data/ - using the newest, ignoring: "
@@ -61,6 +61,9 @@ def cell_ref_to_col(ref):
 def parse_export(path):
     try:
         z = zipfile.ZipFile(path)
+        for part in ("xl/sharedStrings.xml", "xl/worksheets/sheet1.xml"):
+            if b"<!DOCTYPE" in z.read(part)[:1024]:
+                fail(f"{path.name} contains a DTD - not a Forms export.")
         shared = [ "".join(t.text or "" for t in si.findall(".//m:t", NS))
                    for si in ET.fromstring(z.read("xl/sharedStrings.xml")).findall("m:si", NS) ]
         sheet = ET.fromstring(z.read("xl/worksheets/sheet1.xml"))
