@@ -2,7 +2,7 @@
 
 **Ticket:** [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27)
 **Map:** [Map v2: Survey overhaul & local dashboard app](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/21)
-**Round:** 1 of ~2 — four questions.
+**Round:** 1 of 2 — four questions. **Answered 2026-08-31; resolved in Round 2 below.**
 **How to use:** answer inline under each `### Your answer` heading. Free text is fine; you don't have to pick a listed option. Tell me when it's ready and I'll read it back.
 
 ---
@@ -197,3 +197,52 @@ stop assuming.
 ### Your answer
 
 :
+
+---
+
+# Round 2 — the read-back and resolution
+
+**Answered:** 2026-08-31. Three recommendations accepted; Q3 went the other way,
+and that decision reshaped how Q4's guard is weighted. No open questions remain;
+this round is the record of what was decided and what was done.
+
+## The decisions
+
+1. **Q1 — Identity: initials everywhere, full name on hover** (rec accepted).
+   Collisions disambiguate by extending from the surname. Inherited by the
+   five-questions build ticket (#34); HOW-TO-READ v2 states initials are a
+   display choice, not anonymity.
+2. **Q2 — v1's Internal/Exported machinery is deleted entirely** (rec accepted).
+   One view; screenshots are the only thing that travels to the manager.
+   The Internal/Exported toggle, exported team view, Print/PDF path and their
+   HOW-TO-READ section all die with the v1 dashboard layout.
+3. **Q3 — Real data lives in gitignored `data/` inside the repo** (user chose
+   **B** over the recommended outside-the-repo folder). Everything in one
+   place; the accepted Q4 guard becomes the real protection rather than an
+   extra layer. The app's default stays `data/`; the path argument remains.
+4. **Q4 — Housekeeping + guard, all accepted:** the real pilot export moved out
+   of the tree-root hazard into `data/`; `Excel Example/` is deleted; a fully
+   fake committed fixture exists; the pre-commit guard is armed.
+
+## What was done (same session)
+
+- Real export moved to `data/`; `Excel Example/` removed. `.gitignore` now
+  ignores `data/` explicitly (plus `*.xlsx`), with committed exceptions for
+  `scoring/scoring.xlsx` and the fixture.
+- `app/make_fixture.py` generates `app/sample-export.xlsx` — 7 invented
+  respondents (`*@example.invalid`), real header row, deterministic answers;
+  verified to contain no real name/email. `app/serve.py` falls back to it when
+  `data/` is empty, and refuses DTD-bearing files.
+- `.githooks/pre-commit` blocks staged `data/*` (even `git add -f`), any
+  non-allowlisted `.xlsx`, and any CSV whose header contains `Email`;
+  `core.hooksPath` points at it, so it also runs on the on-issue-close
+  auto-commit. Verified in a throwaway repo: legit commit passes, all three
+  block cases block. Fresh clones re-arm with
+  `git config core.hooksPath .githooks` (noted in `CLAUDE.md`).
+
+## Handed downstream
+
+- **#34 (five-questions build):** initials everywhere, full name on hover,
+  surname-extension for collisions; no export machinery of any kind.
+- **HOW-TO-READ v2** (destination item 4): two lines — initials are display,
+  not anonymity; screenshots are the only export.

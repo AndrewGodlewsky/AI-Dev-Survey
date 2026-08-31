@@ -1,0 +1,21 @@
+#!/bin/sh
+# Pre-commit guard (#27): this is a PUBLIC repo and real survey exports are named
+# personal data. Block anything that looks like real data from ever being committed,
+# including via `git add -f` and the on-issue-close auto-commit hook.
+# Allowed .xlsx: scoring/scoring.xlsx (v1 sheet), app/sample-export.xlsx (fake fixture).
+fail=0
+for f in $(git diff --cached --name-only --diff-filter=ACR); do
+  case "$f" in
+    data/*)
+      echo "BLOCKED: '$f' - nothing under data/ may be committed (real survey data lives there)."; fail=1 ;;
+    scoring/scoring.xlsx|app/sample-export.xlsx) ;;
+    *.xlsx)
+      echo "BLOCKED: '$f' - .xlsx files are presumed real Forms exports (see .githooks/pre-commit)."; fail=1 ;;
+    *.csv)
+      if git show ":$f" 2>/dev/null | head -1 | grep -qiE '(^|,)"?email"?(,|$)'; then
+        echo "BLOCKED: '$f' - CSV with an Email column looks like a real export."; fail=1
+      fi ;;
+  esac
+done
+[ $fail -eq 0 ] || echo "Nothing was committed. Unstage the file(s) or adjust .githooks/pre-commit if this is wrong."
+exit $fail

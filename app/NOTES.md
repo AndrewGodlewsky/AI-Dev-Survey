@@ -4,7 +4,7 @@
 how does it launch, and where does the Python/browser seam go?
 
 **Run it:** `python app/serve.py` — finds the newest `.xlsx` in `data/`
-(falls back to the v1 fixture in `Excel Example/`), prints a parse summary,
+(falls back to the fake fixture `app/sample-export.xlsx`), prints a parse summary,
 serves the dashboard at `http://localhost:8737/`, opens the browser. Ctrl+C stops.
 
 ## Proposed answer (react, then fill the verdict)

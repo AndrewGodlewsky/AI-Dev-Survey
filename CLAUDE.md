@@ -31,6 +31,11 @@ base to extend. See the map below.
   applies. Still no external CDNs — it runs locally and offline.
 - Responses are named and shared openly; horizon is 6 months; Dimension
   scales keep their natural direction.
+- **Real survey data lives only in `data/` (gitignored) and is never committed**
+  (#27). Dev and tests use the fake fixture `app/sample-export.xlsx`
+  (regenerate: `python app/make_fixture.py`). A pre-commit guard blocks `.xlsx`,
+  `data/*`, and Email-headed CSVs — after a fresh clone, re-arm it with
+  `git config core.hooksPath .githooks`.
 - Git writes (commit/push/etc.) are the user's — never run them.
 
 ## Agent skills
