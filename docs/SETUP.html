@@ -96,19 +96,17 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
     <div class="eyebrow">Contents</div>
     <ol>
       <li><a href="#overview">Overview</a></li>
-      <li class="part eyebrow">Part A · Set up</li>
+      <li class="part">Part A — Set up</li>
       <li><a href="#s1">1 Get the files</a></li>
       <li><a href="#s2">2 Build the form</a></li>
       <li><a href="#s3">3 Pre-flight checks</a></li>
-      <li><a href="#s4">4 Pilot with 1–2 people</a></li>
+      <li><a href="#s4">4 Pilot</a></li>
       <li><a href="#s5">5 Send it to the team</a></li>
-      <li class="part eyebrow">Part B · Results → dashboard</li>
+      <li class="part">Part B — Results</li>
       <li><a href="#s6">6 Export from Forms</a></li>
-      <li><a href="#s7">7 Load the scoring sheet</a></li>
-      <li><a href="#s8">8 Save the scored CSV</a></li>
-      <li><a href="#s9">9 Open the dashboard</a></li>
-      <li><a href="#s10">10 Read and share</a></li>
-      <li class="part eyebrow">Reference</li>
+      <li><a href="#s7">7 Run the app</a></li>
+      <li><a href="#s8">8 Read and share</a></li>
+      <li class="part">Reference</li>
       <li><a href="#trouble">Troubleshooting</a></li>
       <li><a href="#files">File map</a></li>
     </ol>
@@ -117,32 +115,30 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
 
   <main class="main">
     <header class="hero">
-      <div class="eyebrow">AI-Dev-Survey · runbook</div>
-      <h1>From a folder of files to a team picture on screen</h1>
-      <p class="lede">Ten steps, in order: build the survey in Microsoft Forms, run it, and turn the responses into the dashboard. Nothing here needs a decision — every choice was made in the repo's tickets; this page just walks the route.</p>
+      <div class="eyebrow">AI-Dev-Survey · v2 runbook</div>
+      <h1>From survey text to a dashboard the team can argue with</h1>
+      <p class="lede">Build the form once, pilot it, send it, then: drop the export in a folder, run one command, read the results on <code>localhost</code>. No Excel, no installs, no dependencies.</p>
     </header>
 
     <section id="overview">
       <h2>Overview</h2>
-      <p>The whole pipeline is five hand-offs. Each box is a file or an app you will touch; the highlighted ones are yours.</p>
-      <div class="flow" aria-label="Pipeline">
+      <div class="flow">
         <span class="node"><span class="path">survey/SURVEY.md</span></span><span class="arrow">→</span>
-        <span class="node hot">Microsoft Forms</span><span class="arrow">→</span>
-        <span class="node">responses <span class="path">.xlsx</span></span><span class="arrow">→</span>
-        <span class="node hot"><span class="path">scoring/scoring.xlsx</span></span><span class="arrow">→</span>
-        <span class="node">scored <span class="path">.csv</span></span><span class="arrow">→</span>
-        <span class="node hot"><span class="path">dashboard/index.html</span></span><span class="arrow">→</span>
-        <span class="node">Team overview PDF</span>
+        <span class="node">Microsoft Forms</span><span class="arrow">→</span>
+        <span class="node">the team answers</span><span class="arrow">→</span>
+        <span class="node">.xlsx export → <span class="path">data/</span></span><span class="arrow">→</span>
+        <span class="node hot"><span class="path">python app/serve.py</span></span><span class="arrow">→</span>
+        <span class="node">dashboard on localhost</span>
       </div>
       <h3>What you need</h3>
-      <ul>
+      <ol class="do">
         <li>A <strong>Microsoft Forms</strong> account in your organisation (the form must record names, so it has to be an org-internal form).</li>
-        <li><strong>Excel desktop, 2019 or Microsoft 365.</strong> The scoring sheet uses <code>TEXTJOIN</code> and <code>AGGREGATE</code>; Excel 2016 shows <code>#NAME?</code>. Excel on the web is fine for viewing, but do the paste and the CSV save in desktop Excel.</li>
-        <li>A current browser (Edge or Chrome) for the dashboard. It runs from disk — nothing is uploaded anywhere.</li>
-        <li>About <strong>90 minutes</strong> to build the form once, then <strong>35–40 minutes</strong> per person to answer it, then about <strong>15 minutes</strong> to score and load the results.</li>
-      </ul>
+        <li><strong>Python 3</strong> — any recent version; the app uses only the standard library.</li>
+        <li>A current browser (Edge or Chrome). The dashboard is served on <code>localhost</code>; nothing is uploaded anywhere.</li>
+        <li>About <strong>90 minutes</strong> to build the form once, then <strong>about 30 minutes</strong> per person to answer it, then about <strong>2 minutes</strong> to see results.</li>
+      </ol>
       <div class="callout care"><span class="tag">Careful</span><div>
-        <p>Responses are <strong>named</strong>, by decision. Two rules follow from that and come up again below: the Forms export and the scored CSV are personal data and <strong>live outside the repository</strong>; and the manager gets the <strong>Team overview as a PDF</strong>, never a file with rows in it.</p>
+        <p>This repository is <strong>public</strong> and a real Forms export carries every respondent's name and email. Real exports live only in the gitignored <span class="path">data/</span> folder; a pre-commit guard blocks them from ever being committed. After a fresh clone, re-arm the guard once: <code>git config core.hooksPath .githooks</code>.</p>
       </div></div>
     </section>
 
@@ -151,13 +147,12 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
     <section class="step" id="s1">
       <div class="head"><div class="num">1</div><div><h3 style="margin:0">Get the files</h3><p class="meta">5 minutes · once</p></div></div>
       <ol class="do">
-        <li>Clone or download the repository (<span class="path">AndrewGodlewsky/AI-Dev-Survey</span>) somewhere you can open files from — Desktop or Documents is fine. It works from a synced OneDrive folder, but Excel is happier with the file downloaded locally rather than "online-only".</li>
-        <li>You will only ever open four things:
+        <li>Clone or download the repository (<span class="path">AndrewGodlewsky/AI-Dev-Survey</span>).</li>
+        <li>You will only ever open three things:
           <ul>
-            <li><span class="path">survey/SURVEY.md</span> — the exact text of the form, section by section, with a build checklist at the end.</li>
-            <li><span class="path">scoring/scoring.xlsx</span> — the scoring sheet. Formulas only, no macros, so Excel will not ask you to "enable content".</li>
-            <li><span class="path">dashboard/index.html</span> — the dashboard. One file; double-click it.</li>
-            <li><span class="path">docs/HOW-TO-READ.md</span> — the one-page guide to what the numbers mean. Share it with the team alongside the results.</li>
+            <li><span class="path">survey/SURVEY.md</span> — the exact text of the form, section by section, with a build checklist at the end (Appendix A).</li>
+            <li><span class="path">app/serve.py</span> — the app. You run it; you don't edit it.</li>
+            <li><span class="path">docs/HOW-TO-READ.md</span> — the guide to what the numbers mean. Share it with the team alongside the results.</li>
           </ul>
         </li>
         <li>Open <span class="path">survey/SURVEY.md</span> in something that renders Markdown tables (VS Code preview, GitHub, or Typora). You will be copying from it for the next hour, so a split screen with Forms is worth setting up.</li>
@@ -167,49 +162,48 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
 
     <section class="step" id="s2">
       <div class="head"><div class="num">2</div><div><h3 style="margin:0">Build the form in Microsoft Forms</h3><p class="meta">60–90 minutes · once · <span class="path">SURVEY.md</span> is the source; its Appendix A is the same checklist in short form</p></div></div>
-      <p>The form has <strong>11 sections and 15 questions</strong>. Every Likert statement counts against Forms' 200-question limit; this survey uses 152. Build it top to bottom, in the order the file gives — the order is the fatigue design.</p>
       <ol class="do">
         <li><strong>Create the form.</strong> forms.microsoft.com → New Form. Title and description: copy the two blocks under <em>Form title and description</em> in <span class="path">SURVEY.md</span>. The description is the only intro respondents see — it carries the named-responses statement, so paste all of it.</li>
         <li><strong>Settings first</strong> (⋯ top-right → Settings):
           <ul>
-            <li><em>Only people in my organization can respond</em> → tick <strong>Record name</strong> and <strong>One response per person</strong>. Anonymous mode empties the name column, and the name is how the dashboard joins everything.</li>
+            <li><em>Only people in my organization can respond</em> → tick <strong>Record name</strong> and <strong>One response per person</strong>. Anonymous mode empties the name column, and the name is how the app joins everything.</li>
             <li><em>Shuffle questions</em>: <strong>off</strong>. <em>Show progress bar</em>: <strong>on</strong>.</li>
-            <li>Set an end date about two weeks out. Customize the thank-you message with the text at the end of the survey file.</li>
+            <li>Set an end date about two weeks out. Customize the thank-you message with the text near the end of the survey file.</li>
           </ul>
         </li>
-        <li><strong>For each of the 11 sections</strong>: Add new → Section. Paste the section title and description. Sections 3, 7 and 10 (the Coverage grids) share one long description block — it holds the level meanings and the per-area examples; paste it in full each time, changing only the first sentence as the file shows.</li>
-        <li><strong>For each Likert question</strong> (Q1–Q5, Q7–Q9, Q11–Q13): Add new → Likert.
+        <li><strong>For each of the 9 sections</strong>: Add new → Section. Paste the section title and description. Sections 3 and 7 (the two Coverage passes) share one long description block — it holds the level meanings and the per-area examples; paste it in full both times, changing only the first line as the file shows.</li>
+        <li><strong>For each Likert question</strong> (Q1–Q5, Q7–Q9, Q12–Q13): Add new → Likert.
           <ul>
             <li>Paste the <em>Title</em> (and <em>Subtitle</em> where given — the ⋯ on the question → Subtitle).</li>
             <li><strong>Options</strong> = the scale's labels, verbatim from the scale table at the top of the file, in order — including the leading <code>1 –</code>, <code>2 –</code> … numbers. The Coverage grids use the 7-option Involvement scale with <code>N/A – I don't do this work</code> last.</li>
-            <li><strong>Statements</strong> = the rows of the question's table, one per line, in the order given. Forms starts a Likert with three placeholder statements — replace them, don't leave blanks. <em>Do not paste the ID column.</em></li>
+            <li><strong>Statements</strong> = the rows of the question's table, one per line, in the order given — the order carries deliberate placement, so don't resort it. <em>Do not paste the ID column.</em></li>
             <li>Toggle <strong>Required</strong> on.</li>
           </ul>
         </li>
-        <li><strong>For each Choice question</strong> (Q6, Q10, Q14, Q15): Add new → Choice. Paste the title; add the seven options verbatim; ⋯ → <strong>Multiple answers</strong> on; no "Other" option. Required on — except <strong>Q15</strong>, which is deliberately optional.</li>
-        <li><strong>Preview</strong> (top-right) and click through every section once. You are checking three things: every statement is present, no statement text is repeated anywhere in the form, and the option labels start with their number. The scoring sheet matches columns by that exact text.</li>
+        <li><strong>For each Choice question</strong> (Q6, Q10, Q11, Q14): Add new → Choice. Paste the title; add the <strong>eight</strong> options verbatim, in the interleaved order given — the same eight texts in the same order all four times; ⋯ → <strong>Multiple answers</strong> on; no "Other" option. Required on — except <strong>Q11</strong>, which is deliberately optional.</li>
+        <li><strong>Preview</strong> (top-right) and click through every section once. You are checking three things: every statement is present, no statement text is repeated anywhere in the form, and the option labels start with their number. The app matches columns by that exact text.</li>
       </ol>
       <div class="callout check"><span class="tag">Check</span><div>
-        <p>Count the statements: 5 + 9 + 19 + 9 + 8 + 15 + 15 + 19 + 15 + 15 + 19 = 148 Likert rows, plus 4 Choice questions. If Forms tells you the form is at its question limit, a section was pasted twice.</p>
+        <p>Count the statements: 5 + 9 + 19 + 9 + 8 + 13 + 19 + 12 + 12 + 12 = 118 Likert rows, plus 4 Choice questions — 122 answers in all.</p>
       </div></div>
       <div class="callout care"><span class="tag">Careful</span><div>
-        <p>If you need to reword anything, change it in <strong>three places</strong>: the form, <span class="path">survey/SURVEY.md</span>, and column F of the <em>Items</em> sheet in <span class="path">scoring.xlsx</span>. The statement text is the key that links a Forms column to a score — a wording change in only one place silently drops that column.</p>
+        <p>If you need to reword anything, change it in <strong>two places</strong>: the form and <span class="path">survey/SURVEY.md</span> (the app's items map is built from that file). The statement text is the key that links a Forms column to a score — a wording change in only one place silently drops that column.</p>
       </div></div>
       <label class="done"><input type="checkbox" data-step="s2"> Done</label>
     </section>
 
     <section class="step" id="s3">
-      <div class="head"><div class="num">3</div><div><h3 style="margin:0">Pre-flight checks with a throwaway form</h3><p class="meta">20 minutes · once · confirms four things the design assumes about how Forms exports</p></div></div>
-      <p>Four behaviours were verified by reading Microsoft's documentation, not by doing. One of them is load-bearing: the scoring treats a blank answer as a broken export, which is only true if <em>Required</em> actually stops a respondent submitting with one grid row unanswered.</p>
+      <div class="head"><div class="num">3</div><div><h3 style="margin:0">Pre-flight checks with a throwaway form</h3><p class="meta">20 minutes · once · confirms what the scoring assumes about how Forms exports</p></div></div>
+      <p>One behaviour is load-bearing: the scoring treats a blank answer as a broken export, which is only true if <em>Required</em> actually stops a respondent submitting with one grid row unanswered.</p>
       <ol class="do">
-        <li>Make a <strong>separate</strong> 3-question form (don't test on the real one — you can't delete a single test response later): one Likert with three statements using the Behaviour scale (<code>1 – Never</code> … <code>5 – Always</code>), Required; one Likert with two statements using the Involvement scale; one Choice question with <em>Multiple answers</em> on and the seven Safeguard options.</li>
+        <li>Make a <strong>separate</strong> 3-question form (don't test on the real one — you can't delete a single test response later): one Likert with three statements using the Behaviour scale, Required; one Likert with two statements using the Involvement scale; one Choice question with <em>Multiple answers</em> on and the eight Safeguard options.</li>
         <li>Submit it twice: once fully answered; once trying to leave one Likert row blank.</li>
         <li>Responses → <strong>Open in Excel</strong>. Look at the workbook and tick off:
           <ul>
-            <li><strong>Required per statement</strong> — the second submission was refused until every row had an answer. If it went through with a blank, the scoring sheet's "malformed" flag will do real work; nothing else changes.</li>
+            <li><strong>Required per statement</strong> — the second submission was refused until every row had an answer. If it went through with a blank, the app's "malformed" flag will do real work; nothing else changes.</li>
             <li><strong>Labels export in full</strong> — cells read <code>4 – Often</code> and <code>N/A – I don't do this work</code>, number and all.</li>
             <li><strong>One column per statement</strong>, headed by the statement text alone (not the question title).</li>
-            <li><strong>Multi-select</strong> lands in one cell as the option texts joined by a separator. Whichever separator it is, the scoring sheet copes — it searches for each option's text rather than splitting.</li>
+            <li><strong>Multi-select</strong> lands in one cell as the option texts joined by a separator. Whichever separator it is, the app copes — it searches for each option's text rather than splitting.</li>
           </ul>
         </li>
         <li>Delete the throwaway form.</li>
@@ -218,16 +212,14 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
     </section>
 
     <section class="step" id="s4">
-      <div class="head"><div class="num">4</div><div><h3 style="margin:0">Pilot with one or two people</h3><p class="meta">One day · ticket #18 — the last open item on the project map</p></div></div>
+      <div class="head"><div class="num">4</div><div><h3 style="margin:0">Pilot with one or two people</h3><p class="meta">One day · the last stop before the team round</p></div></div>
       <ol class="do">
-        <li>Ask one or two colleagues to take the real form and <strong>note the time per section</strong> (the progress bar makes section boundaries visible). The design budget is 35–40 minutes.</li>
+        <li>Ask one or two colleagues to take the real form and <strong>note the time per section</strong> (the progress bar makes section boundaries visible). The design budget is about 30 minutes.</li>
         <li>Ask them for anything that made them stop and think: an ambiguous statement, a grid description they skipped, a scale that didn't fit. That is the only free-text feedback the survey ever collects — it has no free-text questions of its own.</li>
-        <li>Run <strong>Part B (steps 6–9)</strong> on the pilot responses end to end. You are looking for: a header that failed to match (a score reads <code>#N/A</code> for everyone), a scale label that didn't convert (a <code>#VALUE!</code>), or the dashboard refusing the file.</li>
-        <li>Fix wording in the three places from step 2. If a pilot respondent's answers should not be in the real results, Forms → Responses → ⋯ → <em>Delete all responses</em> before the team round; there is no per-person delete.</li>
+        <li>Run <strong>Part B (steps 6–7)</strong> on the pilot responses end to end. You are looking for: a header that failed to match (a score reads <code>#N/A</code> for everyone), a label that didn't convert, or the app refusing the file.</li>
+        <li>Watch the v2 watch list from the item-bank tickets: Fluency's two Direction items answered identically, D-G1/D-G5 answered as a pair, and whether the section-6 description is read or skipped.</li>
+        <li>Fix wording in the two places from step 2. If a pilot respondent's answers should not be in the real results, Forms → Responses → ⋯ → <em>Delete all responses</em> before the team round; there is no per-person delete.</li>
       </ol>
-      <div class="callout check"><span class="tag">Check</span><div>
-        <p>After the pilot the dashboard's <em>Team overview</em> should render with "2 of 9 submitted" (or whatever your numbers are) and the internal view should show no <em>Pattern flag</em> banner. Two honest respondents should not trip it; if they do, the thresholds on the scoring sheet's <em>Config</em> tab are there to be tuned.</p>
-      </div></div>
       <label class="done"><input type="checkbox" data-step="s4"> Done</label>
     </section>
 
@@ -237,80 +229,48 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
         <li>Forms → <strong>Collect responses</strong> → copy the link. It only works for people in your organisation, which is what you want.</li>
         <li>Write the message. Three things to say, because the form's own intro says them too and people read the message first:
           <ul>
-            <li>It takes 35–40 minutes; do it in one sitting; answer on gut reaction.</li>
-            <li>Responses are named and everyone who takes it sees everyone's answers. The manager sees the combined picture only.</li>
+            <li>It takes about 30 minutes; do it in one sitting; answer on gut reaction.</li>
+            <li>Responses are named and everyone who takes it sees everyone's answers. Nothing leaves the team as a file.</li>
             <li>The deadline (the form's end date).</li>
           </ul>
         </li>
-        <li>Note the <strong>roster size</strong> — the number of people who <em>could</em> answer. You'll type it into the scoring sheet in step 7, and every team number on the dashboard is shown as "n of roster".</li>
+        <li>Note the <strong>roster size</strong> — the number of people who <em>could</em> answer. Every team number on the dashboard is shown as "n of roster".</li>
       </ol>
       <label class="done"><input type="checkbox" data-step="s5"> Done</label>
     </section>
 
     <div class="part-head"><span class="n">Part B</span><h2>Results → dashboard</h2></div>
-    <p>Do this once after the deadline (and once during the pilot). Fifteen minutes end to end.</p>
+    <p>Do this once after the deadline (and once during the pilot). Two minutes end to end.</p>
 
     <section class="step" id="s6">
       <div class="head"><div class="num">6</div><div><h3 style="margin:0">Export the responses from Forms</h3><p class="meta">2 minutes</p></div></div>
       <ol class="do">
-        <li>Open the form → <strong>Responses</strong> tab → <strong>Open in Excel</strong>. Forms downloads a workbook with one row per person: five built-in columns (Respondent ID, Start time, Completion time, Respondent name, Respondent email address) followed by one column per statement.</li>
-        <li>If the columns look shuffled relative to the form, that is a known Forms issue — use ⋯ → <strong>Sync all responses to a new workbook</strong> instead. Either way the scoring sheet matches columns by header text, so order never matters.</li>
-        <li>Save the workbook <strong>outside the repository</strong> — your team's SharePoint or a local folder such as <span class="path">Documents\AI-Dev-Survey-results\</span>. It has names in it.</li>
+        <li>Open the form → <strong>Responses</strong> tab → <strong>Open in Excel</strong>. Forms downloads a workbook with one row per person: the built-in columns (ID, times, name, email) followed by one column per statement.</li>
+        <li>If the columns look shuffled relative to the form, that is a known Forms issue — use ⋯ → <strong>Sync all responses to a new workbook</strong> instead. Either way the app matches columns by header text, so order never matters.</li>
+        <li>Save the workbook into the repo's <span class="path">data/</span> folder. It is gitignored, and the pre-commit guard refuses it even force-added — that folder is where real data is supposed to live, and the only place.</li>
       </ol>
       <label class="done"><input type="checkbox" data-step="s6"> Done</label>
     </section>
 
     <section class="step" id="s7">
-      <div class="head"><div class="num">7</div><div><h3 style="margin:0">Load the responses into the scoring sheet</h3><p class="meta">5 minutes · desktop Excel</p></div></div>
-      <p>The workbook ships filled with eight <em>fake</em> people so you can see what a working sheet looks like. You replace them.</p>
+      <div class="head"><div class="num">7</div><div><h3 style="margin:0">Run the app</h3><p class="meta">1 minute · replaces v1's scoring sheet, CSV export and file-drop entirely</p></div></div>
       <ol class="do">
-        <li>Open <span class="path">scoring/scoring.xlsx</span>. Read the <em>ReadMe</em> sheet once; it is this step in short.</li>
-        <li>Go to the <strong>Responses</strong> sheet. Click the corner above row 1 (select all) → <kbd>Delete</kbd>. The sample rows must go — a paste only overwrites the cells it covers.</li>
-        <li>In the Forms export, select all (<kbd>Ctrl</kbd>+<kbd>A</kbd>) and copy. Back in <em>Responses</em>, click <strong>A1</strong> and paste. The header row lands in row 1, people from row 2 down.</li>
-        <li>Make the calculated sheets the same height as your data. They ship with 8 rows (Values rows 7–14, Pattern and Export rows 2–9). If you have <strong>more</strong> responses: on each of <em>Values</em>, <em>Pattern</em> and <em>Export</em>, select the last filled row and drag its fill handle down until there is one row per response. If you have <strong>fewer</strong>: delete the surplus rows on those three sheets. Rows are 1:1 with Responses rows 2, 3, 4 …</li>
-        <li>On the <strong>Config</strong> sheet, set <code>roster_n</code> to the team size from step 5. Leave the three threshold cells at their defaults unless the pilot said otherwise.</li>
-        <li>Excel recalculates as you go. If it doesn't (Formulas → Calculation Options is set to Manual), press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F9</kbd>.</li>
+        <li>In a terminal at the repository root: <code>python app/serve.py</code></li>
+        <li>The terminal prints a parse summary (file found, respondents, columns matched) and your browser opens the dashboard at <code>http://localhost:8737/</code>. <kbd>Ctrl</kbd>+<kbd>C</kbd> stops it.</li>
+        <li>If <span class="path">data/</span> holds more than one export, the newest wins and the terminal says which it ignored. With no export at all, the app runs against the committed fake fixture so you can always see a working dashboard.</li>
+        <li>Want the numbers in a file? The dashboard offers a CSV download of everything it computed (scores, gaps, levels, markers, flags — no raw answers). That file is named data too; treat it like the export.</li>
       </ol>
-      <div class="callout check"><span class="tag">Check</span><div>
-        <p>On the <strong>Export</strong> sheet: column B lists every respondent's name; there is no <code>#NAME?</code> anywhere (if there is, you are in Excel 2016 or older — use a newer Excel); <code>#N/A</code> appears only in a row where someone left an item blank, and that row's <code>flag.malformed</code> column names the item. <code>flag.flat-…</code> and <code>flag.stance-identical</code> should be 0 for everyone — a 1 means <em>go and ask that person</em> before you share anything, not that the sheet is wrong.</p>
-      </div></div>
       <label class="done"><input type="checkbox" data-step="s7"> Done</label>
     </section>
 
     <section class="step" id="s8">
-      <div class="head"><div class="num">8</div><div><h3 style="margin:0">Save the scored CSV</h3><p class="meta">2 minutes · this is the one file the dashboard reads</p></div></div>
+      <div class="head"><div class="num">8</div><div><h3 style="margin:0">Read it, then share the right thing</h3><p class="meta">The team reads it together; anything that goes further is a screenshot</p></div></div>
       <ol class="do">
-        <li>Right-click the <strong>Export</strong> sheet tab → <strong>Move or Copy…</strong> → <em>To book:</em> <strong>(new book)</strong> → tick <strong>Create a copy</strong> → OK. A new workbook opens containing only the scored values. (Saving a sheet as CSV converts the whole workbook, so copying it out first keeps <span class="path">scoring.xlsx</span> intact.)</li>
-        <li>In that new workbook: File → <strong>Save As</strong> → choose the type <strong>CSV UTF-8 (Comma delimited) (*.csv)</strong>. Not plain "CSV (Comma delimited)" — that one loses accented names. Save it next to the Forms export from step 6, <strong>outside the repository</strong>. Name it something like <span class="path">scored-2026-09.csv</span>.</li>
-        <li>Close the new workbook without saving again. Close <span class="path">scoring.xlsx</span>; saving it is fine — it now holds your real responses, which is another reason it must stay out of any shared repo.</li>
+        <li><strong>For the team</strong> — look at the dashboard together. It is one page, five questions: <em>Where are we today? What do we want more of? Where would AI do the work? Where do we differ most? What norms would we set?</em> People appear as initials; hover shows the full name. Send <span class="path">docs/HOW-TO-READ.md</span> around first.</li>
+        <li>Initials are a display choice, not anonymity — at 5–9 people everyone knows who is who, and results are open within the team anyway. Say that out loud once.</li>
+        <li><strong>Beyond the team</strong> — nothing travels as a file. Screenshot the team-level pieces you choose to share, together, and send those. Never the export, never the CSV, never a hover.</li>
       </ol>
-      <div class="callout care"><span class="tag">Careful</span><div>
-        <p>Don't open the CSV in Excel afterwards "just to look" and save it — Excel will reformat numbers and dates on the way back out. If you want to look, look in a text editor. The dashboard is the viewer.</p>
-      </div></div>
       <label class="done"><input type="checkbox" data-step="s8"> Done</label>
-    </section>
-
-    <section class="step" id="s9">
-      <div class="head"><div class="num">9</div><div><h3 style="margin:0">Open the dashboard and load the CSV</h3><p class="meta">1 minute</p></div></div>
-      <ol class="do">
-        <li>Double-click <span class="path">dashboard/index.html</span>. It opens in your browser from disk; there is no server and nothing leaves your machine.</li>
-        <li>Drag the CSV from step 8 onto the page, or click the file picker. The <strong>Team overview</strong> appears.</li>
-        <li>Confirm the header line reads <em>"n of roster submitted"</em> with your numbers, and that the filter row's <em>n =</em> matches.</li>
-        <li>Look for a banner at the top saying <strong>Resolve before exporting</strong>. It appears only in the internal view, only when someone's answers follow a pattern the survey's built-in checks don't support. It names who. Have that conversation before step 10; the numbers are untouched either way.</li>
-      </ol>
-      <p>If the page refuses the file, it says why in the load box — see <a href="#trouble">Troubleshooting</a>; the three messages it can give all mean the CSV didn't come out of step 8 the way it should.</p>
-      <label class="done"><input type="checkbox" data-step="s9"> Done</label>
-    </section>
-
-    <section class="step" id="s10">
-      <div class="head"><div class="num">10</div><div><h3 style="margin:0">Read it, then share the right thing with the right people</h3><p class="meta">The team gets the internal view; the manager gets one PDF</p></div></div>
-      <ol class="do">
-        <li><strong>For the team</strong> — the whole survey group looks at the dashboard together, in the <em>Internal (named)</em> view. Send them <span class="path">docs/HOW-TO-READ.md</span> first; it is one page and explains each screen and what a big Gap, a wide spread, a Personal-vs-Team split and an Edge marker each mean.</li>
-        <li>Work down the left-hand list — topics are ordered by how much the team disagrees today — and use the <em>Lens</em> to filter by tool. Every team number shows its own <em>n</em>.</li>
-        <li><strong>For the manager</strong> — click <strong>Team overview</strong> at the top of the list, then the <strong>Print / save as PDF</strong> button in its banner. That page has no names anywhere: counts per level, means, ranges, medians. Send the PDF.</li>
-        <li>Never send the CSV, the Forms export, or a screenshot of the internal view upward. Say it out loud in the room: at 5–9 people, even an unnamed distribution is partly guessable by anyone who knows the team — the one-pager states that rather than hiding it.</li>
-      </ol>
-      <label class="done"><input type="checkbox" data-step="s10"> Done</label>
     </section>
 
     <div class="part-head"><span class="n">Reference</span><h2>Troubleshooting</h2></div>
@@ -319,16 +279,14 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
       <table>
         <thead><tr><th>You see</th><th>It means</th><th>Do</th></tr></thead>
         <tbody>
-          <tr><td>Export sheet shows <code>#NAME?</code> in <code>flag.malformed</code> or the Team sheet</td><td>Excel older than 2019 — no <code>TEXTJOIN</code>/<code>AGGREGATE</code>.</td><td>Open the workbook in Excel 2019 / Microsoft 365 desktop.</td></tr>
-          <tr><td>A whole column of <code>#N/A</code> for everyone on one Dimension</td><td>One of that Dimension's statements didn't match a Forms header — wording differs.</td><td>Compare the form's statement with <em>Items</em> sheet column F; fix column F to match the form exactly.</td></tr>
-          <tr><td><code>#VALUE!</code> in a Values cell</td><td>A label that doesn't start with a number (the option was typed without its <code>1 –</code> prefix in Forms).</td><td>Fix the option label in Forms for next time; for this run, find-and-replace the label in the Responses sheet to add the number.</td></tr>
-          <tr><td><code>#N/A</code> for one person on one Dimension, and <code>flag.malformed</code> names an item</td><td>That person's answer to that item is blank in the export.</td><td>Not a sheet problem. Ask them; if Required wasn't enforced per row (step 3), expect this occasionally.</td></tr>
-          <tr><td>Export rows are empty below the first few people</td><td>The calculated sheets weren't filled down to the number of responses.</td><td>Step 7, point 4.</td></tr>
-          <tr><td>Dashboard: "missing N required columns"</td><td>The CSV isn't the Export sheet (wrong sheet copied) or the header row was edited.</td><td>Redo step 8 from the <em>Export</em> tab.</td></tr>
-          <tr><td>Dashboard: "Schema version … — this dashboard reads schema 1"</td><td>Config!schema was changed, or the file is not from this workbook.</td><td>Set Config!schema back to 1 and re-export.</td></tr>
-          <tr><td>Dashboard: names show as "Respondent 1, 2 …"</td><td>The form was anonymous, so the name column was empty.</td><td>Step 2 settings — <em>Record name</em>. Responses already collected anonymously can't be recovered.</td></tr>
-          <tr><td>Dashboard shows fewer people than answered</td><td>Rows beyond the filled-down range, or a blank name row.</td><td>Step 7, point 4; check Responses column D has every name.</td></tr>
-          <tr><td>Accented names look wrong on the dashboard</td><td>Saved as plain CSV, not CSV UTF-8.</td><td>Step 8, point 2.</td></tr>
+          <tr><td>Terminal: "no .xlsx found"</td><td><span class="path">data/</span> is empty (and the fixture is missing).</td><td>Step 6 — save the Forms export into <span class="path">data/</span>.</td></tr>
+          <tr><td>Terminal: "is not a readable Forms export"</td><td>The file is corrupt, half-downloaded, or not an <code>.xlsx</code>.</td><td>Re-download from Forms (Responses → Open in Excel).</td></tr>
+          <tr><td>Terminal warns about duplicate statement headers</td><td>Two questions in the form share the same statement text.</td><td>Reword one in Forms <em>and</em> in <span class="path">SURVEY.md</span> — the text is the key.</td></tr>
+          <tr><td>A score reads <code>#N/A</code> for <em>everyone</em> on one Dimension</td><td>One of that Dimension's statements didn't match a Forms header — wording differs.</td><td>Compare the form's statement with <span class="path">SURVEY.md</span>; fix so both match exactly.</td></tr>
+          <tr><td><code>#N/A</code> for one person, malformed flag names an item</td><td>That person's answer to that item is blank in the export.</td><td>Not an app problem. Ask them; if Required wasn't enforced per row (step 3), expect this occasionally.</td></tr>
+          <tr><td>Dashboard shows a Pattern flag beside someone</td><td>Their answers follow a pattern the reverse-keyed items don't support.</td><td>Go and ask — it locates a conversation, never a fault. The numbers are untouched.</td></tr>
+          <tr><td>Names show as "Respondent 1, 2 …"</td><td>The form was anonymous, so the name column was empty.</td><td>Step 2 settings — <em>Record name</em>. Responses already collected anonymously can't be recovered.</td></tr>
+          <tr><td>Browser doesn't open</td><td>Headless environment or blocked default browser.</td><td>Open <code>http://localhost:8737/</code> yourself; the server is running either way.</td></tr>
         </tbody>
       </table>
       </div>
@@ -340,20 +298,19 @@ footer{margin-top:2.5rem;color:var(--muted);font-size:.84rem;border-top:1px soli
       <table class="files">
         <thead><tr><th>File</th><th>What it is</th><th>You edit it?</th></tr></thead>
         <tbody>
-          <tr><td><span class="path">survey/SURVEY.md</span></td><td>The form, verbatim, plus the build checklist. Source of every statement's text.</td><td>Only to reword — then also Forms and Items!F.</td></tr>
-          <tr><td><span class="path">scoring/scoring.xlsx</span></td><td>The scoring sheet. Paste responses into <em>Responses</em>; read <em>Export</em>; tune <em>Config</em>.</td><td>Yes — data and Config only. Never the formulas.</td></tr>
-          <tr><td><span class="path">scoring/scored-sample.csv</span></td><td>What a scored CSV looks like, for eight fake people. The dashboard loads it as a demo.</td><td>No.</td></tr>
-          <tr><td><span class="path">dashboard/index.html</span></td><td>The dashboard. Opens from disk; reads one CSV at a time.</td><td>No.</td></tr>
-          <tr><td><span class="path">docs/HOW-TO-READ.md</span></td><td>One page on what the numbers mean. Give it to the team with the results.</td><td>No.</td></tr>
-          <tr><td><span class="path">rubric/RUBRIC.md</span></td><td>How every score is computed, with a worked example. Score one person by hand from it if you ever doubt the sheet.</td><td>No.</td></tr>
-          <tr><td><span class="path">scoring/scoring-rules.md</span> · <span class="path">scored-csv-schema.md</span></td><td>The decision records behind the sheet and the CSV's 293 columns.</td><td>No.</td></tr>
-          <tr><td>Forms export <span class="path">.xlsx</span> · scored <span class="path">.csv</span></td><td>Your real data. Named.</td><td>Keep outside the repository. Never send upward.</td></tr>
+          <tr><td><span class="path">survey/SURVEY.md</span></td><td>The form, verbatim, plus the build checklist. Source of every statement's text.</td><td>Only to reword — then also Forms.</td></tr>
+          <tr><td><span class="path">app/serve.py</span></td><td>The app: finds the export in <span class="path">data/</span>, scores it, serves the dashboard.</td><td>No.</td></tr>
+          <tr><td><span class="path">app/sample-export.xlsx</span></td><td>A committed, fully fake export (invented people). The app's fallback; never real data.</td><td>Regenerate with <code>python app/make_fixture.py</code> when the survey changes.</td></tr>
+          <tr><td><span class="path">data/</span></td><td>Where real exports live. Gitignored; guarded by <span class="path">.githooks/pre-commit</span>.</td><td>You drop files in; nothing here is ever committed.</td></tr>
+          <tr><td><span class="path">docs/HOW-TO-READ.md</span></td><td>What the numbers mean. Give it to the team with the results.</td><td>No.</td></tr>
+          <tr><td><span class="path">scoring/scoring-rules-v2.md</span></td><td>The scoring spec the app implements.</td><td>No.</td></tr>
+          <tr><td><span class="path">scoring/</span> (v1 sheet &amp; rules) · <span class="path">dashboard/index.html</span></td><td>v1's pipeline, kept as reference until fully retired.</td><td>No.</td></tr>
         </tbody>
       </table>
       </div>
     </section>
 
-    <footer>Built from the AI-Dev-Survey wayfinder map (issues #1–#20). Tick-boxes are remembered in this browser only.</footer>
+    <footer>Built from the AI-Dev-Survey wayfinder maps (v1 issues #1–#20, v2 issue #21). Tick-boxes are remembered in this browser only.</footer>
   </main>
 </div>
 

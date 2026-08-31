@@ -280,7 +280,7 @@ stops being special: reading is an option like any other, so it does not need th
 | **Lever** | A check ticked in asking 2, not in asking 1. Derived, never asked. |
 | **Hold** | A reading position ticked in both. The line does not move — a position, not an obstacle. |
 | **Learning interest** | Ticked in asking 3, not in asking 2. |
-| **Inconsistent** | *A person reads all of it* alongside **any** check, in the same asking. *Reads the risky parts* + a check is coherent and is **not** flagged. Levers and Holds are not computed for that person. |
+| ~~**Inconsistent**~~ | **Retired by [#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)** (the later decision): under the symmetric *“which count as enough”* stem, any tick combination is a position — *reads all of it* + a check means either suffices. Levers and Holds compute for everyone. |
 
 ---
 

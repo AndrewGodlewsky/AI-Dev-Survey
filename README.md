@@ -18,7 +18,7 @@ Doer, reviewed → Doer, spot-checked → System-verified).
 
 ## What the survey asks
 
-Four parts, ~122 answers, roughly 22–33 minutes. Responses are **named and shared openly**
+Four parts, 122 answers, about 30 minutes. Responses are **named and shared openly**
 within the team.
 
 | Part | What it asks | Size | Scale |
@@ -44,10 +44,10 @@ central change from v1, and it came out of the author's pilot.
 - **Coverage Gap** — where someone wants AI involved, minus where it is involved today.
 - **Edge markers** — five deliberately extreme *probe* items, never scored, that locate a
   position somebody has to own out loud.
-- **Levers and Holds** — one eight-option Safeguard checklist asked four times with different
-  stems. A **Lever** is a check you would accept but do not today; a **Hold** is a reading
-  position you keep either way. Both are derived by *subtraction* — the survey never asks
-  anyone what would change their mind.
+- **Levers and Holds** — one eight-option Safeguard checklist asked three times with different
+  stems (today · willingness · team norm). A **Lever** is a check you would accept but do not
+  today; a **Hold** is a reading position you keep either way. Both are derived by
+  *subtraction* — the survey never asks anyone what would change their mind.
 
 Everything a Respondent reads — items, section copy, headings, option lists, scale labels — is
 written to the **[Framing rule](survey/item-framing-rule.md)**: *no implied destination*, in
@@ -58,9 +58,10 @@ either direction. The survey locates; it never points.
 1. **Take it** — each team member answers in Microsoft Forms.
 2. **Score it** — download the raw `.xlsx` export from Forms, drop it in `data/`, and run
    `python app/serve.py`. No installs, no dependencies — any Python 3. *(The pipeline is
-   built — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26); the scoring
-   rules it applies are the next decision,
-   [#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28). It replaces v1's
+   built — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26) — and the scoring
+   rules are specified in [`scoring/scoring-rules-v2.md`](scoring/scoring-rules-v2.md)
+   ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)); wiring them into the
+   app is [#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34). It replaces v1's
    Excel sheet entirely.)*
 3. **Read it** — the app opens the dashboard on `localhost`: the **five-questions** page,
    one simple chart per question a team meeting would ask (*Where are we today? What do we
@@ -124,9 +125,8 @@ settled, in plain language, and how it changes the rest of the project. Start th
 the *why* behind the survey's current shape.
 
 **Getting started:** open [`docs/SETUP.html`](docs/SETUP.html) in a browser — the step-by-step
-runbook for building the form, piloting it, exporting responses and reading the results.
-⚠️ **It documents the v1 pipeline** (Excel sheet → scored CSV → HTML file) and is rewritten once
-the local app lands.
+runbook for building the form, piloting it, exporting responses and reading the results,
+updated for the v2 pipeline (Forms → `data/` → `python app/serve.py` → localhost).
 
 ## Repository layout
 
@@ -135,9 +135,9 @@ the local app lands.
 | `CONTEXT.md` | Domain glossary — the vocabulary everything else uses. **Read it first.** |
 | `survey/` | The survey text. See the file map below. |
 | `rubric/` | `RUBRIC.md` — what each score means, and how answers become scores. Being rewritten for v2 ([#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33), [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)). |
-| `scoring/` | v1's Excel sheet and scoring rules. **Retired once the Python app scores** — a reference, not something to extend. |
+| `scoring/` | `scoring-rules-v2.md` — **the live v2 scoring spec** ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)). Also v1's Excel sheet and rules, **retired once the Python app scores** — a reference, not something to extend. |
 | `dashboard/` | `index.html` — v1's self-contained dashboard (reference). `prototype-simple.html` — the **five-questions** page, v2's rendering template (light-only). |
-| `app/` | The local Python app: `serve.py` (find export → parse → serve dashboard), `make_fixture.py`, `sample-export.xlsx` (the fake fixture). Scoring arrives with [#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28). |
+| `app/` | The local Python app: `serve.py` (find export → parse → serve dashboard), `make_fixture.py`, `sample-export.xlsx` (the fake fixture). Scoring arrives with [#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34). |
 | `data/` | Where real Forms exports go. **Gitignored — never committed**; see *Where the data lives* above. |
 | `docs/` | `HOW-TO-READ.md` (results guide), `SETUP.html` (v1 runbook), `v2-item-banks-explained.md`, `adr/` (decision records), `agents/` (agent configuration), `grilling/` (the working behind every decision). |
 | `scripts/` | Repo upkeep, e.g. `update-readme.py`, which regenerates the progress block below. |
@@ -152,7 +152,7 @@ the local app lands.
 | `direction-section.md` / `direction-items.md` | The spec, then the 20 items + 5 probes + 2 checklist askings. |
 | `team-section.md` / `team-items.md` | The spec, then the 24 items + the checklist. |
 | `probe-items.md` / `safeguard-items.md` | The probe and checklist *rules*; both partly superseded by the two section files above, with banners saying which parts. |
-| `SURVEY.md` | v1's assembled document. The v2 assembly is [#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29). |
+| `SURVEY.md` | **The v2 form, verbatim, paste-ready for Forms** — 9 sections, 14 questions, 122 answers, with the build checklist as Appendix A ([#29](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29)). |
 
 ## How the project is being built
 
@@ -166,7 +166,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 28 of 32 tickets resolved.
+**Map progress:** 29 of 32 tickets resolved.
 
 ### Deliverables
 
@@ -205,12 +205,12 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Local app: architecture, launch, and how index.html is fed](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26)
 - [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27)
 - [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)
+- [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29)
 - [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
 - [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)
 
 ### Still open
 
-- [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) _(task)_
 - [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
 - [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) _(task)_
 - [Build the five-questions dashboard on real data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34) _(task)_
@@ -231,7 +231,9 @@ the **dashboard's shape is chosen** (the five-questions page, light-only), and *
 data safety are settled** ([#27](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27):
 initials in the report, real data quarantined in `data/`, a pre-commit guard watching).
 
-What remains is everything downstream of the words: specifying the scoring
-([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) — the gate for the
-dashboard build), assembling the document, writing the rubric levels, and wiring the
-dashboard to real data. Five tickets — see *Still open* above.
+The **scoring is now specified** too —
+[`scoring/scoring-rules-v2.md`](scoring/scoring-rules-v2.md)
+([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)): the v1 arithmetic core
+carries verbatim, Pattern flags rebuild on the v2 blocks, and the Stance-gap machinery is
+formally dead. What remains is assembling the document, writing the rubric levels, and
+building the dashboard on real data — four tickets, all unblocked; see *Still open* above.
