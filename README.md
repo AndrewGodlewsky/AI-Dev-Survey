@@ -56,12 +56,35 @@ either direction. The survey locates; it never points.
 ## How it runs
 
 1. **Take it** — each team member answers in Microsoft Forms.
-2. **Score it** — drop the raw `.xlsx` export in a folder and run the local Python app. *(v2,
-   in design — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26). It replaces
-   v1's Excel sheet entirely.)*
-3. **Read it** — the app serves the dashboard on `localhost`. The one-page
+2. **Score it** — download the raw `.xlsx` export from Forms, drop it in `data/`, and run
+   `python app/serve.py`. No installs, no dependencies — any Python 3. *(The pipeline is
+   built — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26); the scoring
+   rules it applies are the next decision,
+   [#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28). It replaces v1's
+   Excel sheet entirely.)*
+3. **Read it** — the app opens the dashboard on `localhost`: the **five-questions** page,
+   one simple chart per question a team meeting would ask (*Where are we today? What do we
+   want more of? Where would AI do the work? Where do we differ most? What norms would we
+   set?*). People appear as **initials**, full name on hover. The one-page
    [How to read the results](docs/HOW-TO-READ.md) explains what a big Gap or a wide spread
-   means, and which readings are softer than they look.
+   means *(still describes v1's views; rewritten once the v2 dashboard is built)*.
+4. **Share it** — nothing travels to the manager as a file. You screenshot the pieces you
+   want to show. Initials are a display choice, not anonymity — results are already open
+   within the team.
+
+### Where the data lives
+
+This repository is **public**, and a real export contains every Respondent's name and
+email — so real data and the repo are kept apart by three layers, decided in
+[#27](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27):
+
+- **Real exports live only in `data/`**, which is gitignored (along with `*.xlsx` anywhere).
+- **Development never needs real data** — `app/sample-export.xlsx` is a committed, fully
+  fake export (7 invented people, `@example.invalid` emails) that the app falls back to;
+  regenerate it with `python app/make_fixture.py`.
+- **A pre-commit guard** (`.githooks/pre-commit`) refuses to commit anything in `data/`
+  (even force-added), any unexpected `.xlsx`, or any CSV with an `Email` column. After a
+  fresh clone, re-arm it once: `git config core.hooksPath .githooks`.
 
 ## What v2 changed, and why
 
@@ -114,7 +137,8 @@ the local app lands.
 | `rubric/` | `RUBRIC.md` — what each score means, and how answers become scores. Being rewritten for v2 ([#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33), [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)). |
 | `scoring/` | v1's Excel sheet and scoring rules. **Retired once the Python app scores** — a reference, not something to extend. |
 | `dashboard/` | `index.html` — v1's self-contained dashboard (reference). `prototype-simple.html` — the **five-questions** page, v2's rendering template (light-only). |
-| `app/` | The local Python app. *Does not exist yet* — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26). |
+| `app/` | The local Python app: `serve.py` (find export → parse → serve dashboard), `make_fixture.py`, `sample-export.xlsx` (the fake fixture). Scoring arrives with [#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28). |
+| `data/` | Where real Forms exports go. **Gitignored — never committed**; see *Where the data lives* above. |
 | `docs/` | `HOW-TO-READ.md` (results guide), `SETUP.html` (v1 runbook), `v2-item-banks-explained.md`, `adr/` (decision records), `agents/` (agent configuration), `grilling/` (the working behind every decision). |
 | `scripts/` | Repo upkeep, e.g. `update-readme.py`, which regenerates the progress block below. |
 
@@ -142,7 +166,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 27 of 32 tickets resolved.
+**Map progress:** 28 of 32 tickets resolved.
 
 ### Deliverables
 
@@ -180,12 +204,12 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Coverage grid: what replaces the six-month pass](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/25)
 - [Local app: architecture, launch, and how index.html is fed](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26)
 - [Report identity, and where real exports live](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27)
+- [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)
 - [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
 - [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)
 
 ### Still open
 
-- [Scoring rules v2: what survives the Stance gap](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) _(grilling)_
 - [Assemble the v2 survey document](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/29) _(task)_
 - [Team Dimension rubric levels](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30) _(task)_
 - [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33) _(task)_
@@ -198,12 +222,16 @@ is regenerated from GitHub whenever a ticket is closed — run
 v1 is built end to end and was piloted by the author (one response). **It is not being run on
 the team** — v2 replaces it, and nobody outside the author ever answers v1.
 
-**v2, as of 2026-08-30:** the survey is **fully written**. Every item, section description and
-checklist stem now exists — the Current-state section and Coverage grid today pass frozen from
-v1, the Direction and Team sections settled by
-[#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) and
-[#32](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32).
+**v2, as of 2026-08-31:** the survey is **fully written** — every item, section description and
+checklist stem exists (Current-state and the Coverage today pass frozen from v1; Direction and
+Team settled by [#31](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31) and
+[#32](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)). The **app pipeline is
+built** (drop the export, one command, dashboard on localhost — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26)),
+the **dashboard's shape is chosen** (the five-questions page, light-only), and **identity and
+data safety are settled** ([#27](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/27):
+initials in the report, real data quarantined in `data/`, a pre-commit guard watching).
 
-What remains is everything downstream of the words: assembling the document, writing the rubric
-levels, specifying the scoring, and building the local app. Six tickets, all unblocked — see
-*Still open* above.
+What remains is everything downstream of the words: specifying the scoring
+([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28) — the gate for the
+dashboard build), assembling the document, writing the rubric levels, and wiring the
+dashboard to real data. Five tickets — see *Still open* above.
