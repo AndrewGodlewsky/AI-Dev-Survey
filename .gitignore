@@ -9,3 +9,6 @@ data/
 *.xlsx
 !scoring/scoring.xlsx
 !app/sample-export.xlsx
+
+# Python bytecode (the app runs from source)
+__pycache__/

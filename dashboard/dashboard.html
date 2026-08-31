@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-Dev-Survey — results</title>
+<!--
+  The v2 dashboard (wayfinder #34), served by app/serve.py and fed /scored.json —
+  Python computes, this file only draws. Design reference: prototype-simple.html
+  ("Five questions", picked in #26). LIGHT-THEMED ONLY — no dark variant, by decision.
+  Deliberately absent (they live in the CSV export, /scored.csv): probes/edge markers,
+  pattern flags, safeguard/lever detail, per-person cards, filters.
+-->
+<style>
+:root{
+  color-scheme:light; /* light only — decided 2026-08-31, no dark variant */
+  --surface:#fcfcfb; --page:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --cur:#2a78d6; --dir:#eb6834; --warn:#8a5a00; --warnbg:#fff4d6;
+  --a1:#e34948; --a2:#ee9c93; --a0:#c3c2b7; --a4:#86b6ef; --a5:#2a78d6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{max-width:980px;margin:0 auto;padding:24px 20px 40px}
+h1{font-size:20px;margin:0;font-weight:650}
+h2{font-size:16px;margin:0 0 4px;font-weight:650}
+.sub{color:var(--ink2)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:14px}
+.note{font-size:12px;color:var(--ink2)}
+.muted{color:var(--muted)}
+.hdr{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;margin-bottom:14px}
+.badge{font-size:11px;border:1px solid var(--axis);border-radius:999px;padding:2px 9px;color:var(--ink2)}
+.badge.fake{border-color:var(--warn);color:var(--warn);background:var(--warnbg);font-weight:650}
+.warn{border-left:3px solid var(--warn);background:var(--warnbg);color:var(--warn);border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.axis{fill:var(--muted);font-size:11px}
+.name{fill:var(--ink);font-size:12.5px}
+.lbl{fill:var(--ink2);font-size:11px}
+.big{font-size:15px}
+.grp{fill:var(--ink);font-size:13px;font-weight:650}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.take{font-size:13px;color:var(--ink2);border-left:3px solid var(--grid);padding-left:10px;margin-top:10px}
+.q{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.dl{font-size:12px;color:var(--ink2)}
+.dl a{color:var(--cur)}
+.tip{position:fixed;z-index:50;max-width:340px;padding:7px 10px;background:var(--ink);color:var(--surface);border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none}
+</style>
+</head>
+<body>
+<div class="app" id="root"><p class="note">Loading /scored.json…</p></div>
+<div class="tip" id="tip"></div>
+<script>
+'use strict';
+/* ---------- tiny helpers (from the design reference) ---------- */
+function el(tag, attrs, ...kids){
+  const svg = 'svg line circle rect text g path polyline title'.split(' ').includes(tag);
+  const n = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (k==='data-tip') n.dataset.tip = v;
+    else if (v!=null) n.setAttribute(k,v);
+  }
+  for (const k of kids.flat()) if (k!=null) n.append(k.nodeType?k:document.createTextNode(k));
+  return n;
+}
+const X = (v,min,max,x0,x1)=> x0 + (v-min)/(max-min)*(x1-x0);
+const r1 = x=> x==null ? '#N/A' : (Math.round(x*10)/10).toFixed(1);
+const trunc = (s,n)=> s.length>n ? s.slice(0,n-1).trimEnd()+'…' : s;
+
+function track(y,x0,x1,min,max){
+  const g = el('g',{});
+  g.append(el('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'var(--grid)','stroke-width':1}));
+  for(let t=min;t<=max;t++) g.append(el('line',{x1:X(t,min,max,x0,x1),y1:y-3,x2:X(t,min,max,x0,x1),y2:y+3,stroke:'var(--axis)','stroke-width':1}));
+  return g;
+}
+function axisNums(y,x0,x1,min,max){
+  const g = el('g',{});
+  for(let t=min;t<=max;t++) g.append(el('text',{x:X(t,min,max,x0,x1),y,class:'axis','text-anchor':'middle'},t));
+  return g;
+}
+function qCard(no,title,how,svg,take){
+  return el('div',{class:'card'}, el('div',{class:'q'},no), el('h2',{},title),
+    el('p',{class:'note'},how), svg, take?el('p',{class:'take'},take):null);
+}
+function leg(c,t){ return el('span',{}, el('i',{style:`background:${c}`}), t); }
+const who = (D,i)=> `${D.people[i].initials} (${D.people[i].name})`;
+
+/* ---------- the five questions ---------- */
+function q1Card(D){
+  const W=920,x0=190,x1=W-40,rowH=44,H=D.q1.length*rowH+50;
+  const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  svg.append(axisNums(16,x0,x1,1,5));
+  D.q1.forEach((d,i)=>{
+    const y=40+i*rowH;
+    svg.append(track(y,x0,x1,1,5));
+    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},d.label));
+    d.values.forEach((v,p)=>{
+      if(v==null) return;
+      svg.append(el('circle',{cx:X(v,1,5,x0,x1),cy:y+(p%2?6:-6),r:6,fill:'var(--cur)','fill-opacity':.55,
+        'data-tip':`${who(D,p)} — ${d.label} today: ${r1(v)}`}));
+    });
+    if(d.mean!=null) svg.append(el('line',{x1:X(d.mean,1,5,x0,x1),y1:y-12,x2:X(d.mean,1,5,x0,x1),y2:y+12,
+      stroke:'var(--ink)','stroke-width':2.5,'data-tip':`${d.label} team mean: ${r1(d.mean)} (n=${d.n})`}));
+  });
+  return qCard('1','Where are we today?',
+    'Each dot is one of us (hover for who). The dark tick is the team mean.',svg,D.takes.q1);
+}
+
+function q2Card(D){
+  const gaps=D.q2.filter(o=>o.gap!=null);
+  const lim=Math.max(1.2,...gaps.map(o=>Math.abs(o.gap)))*1.1;
+  const W=920,x0=190,x1=W-70,rowH=34,H=D.q2.length*rowH+30,mid=X(0,-lim,lim,x0,x1);
+  const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  svg.append(el('line',{x1:mid,y1:8,x2:mid,y2:H-18,stroke:'var(--axis)'}));
+  D.q2.forEach((o,i)=>{
+    const y=22+i*rowH;
+    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.label));
+    if(o.gap==null){
+      svg.append(el('text',{x:mid+8,y:y+4,class:'lbl'},'#N/A')); return;
+    }
+    const xg=X(o.gap,-lim,lim,x0,x1);
+    svg.append(el('rect',{x:Math.min(mid,xg),y:y-8,width:Math.max(2,Math.abs(xg-mid)),height:16,rx:4,
+      fill:o.gap>=0?'var(--dir)':'var(--cur)',
+      'data-tip':`${o.label}: direction ${r1(o.mean_dir)} − today ${r1(o.mean_cur)} = ${o.gap>=0?'+':''}${r1(o.gap)}`}));
+    svg.append(el('text',{x:xg+(o.gap>=0?8:-8),y:y+4,class:'lbl','text-anchor':o.gap>=0?'start':'end'},(o.gap>=0?'+':'')+r1(o.gap)));
+  });
+  return qCard('2','What do we want more — or less — of?',
+    'Direction minus today, team average per Dimension. Right = want more of it. Appetite, never a forecast.',svg,D.takes.q2);
+}
+
+function q3Card(D){
+  const W=920,x0=190,x1=W-60,rowH=34,H=D.q3.length*rowH+50;
+  const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  svg.append(axisNums(16,x0,x1,1,6));
+  D.q3.forEach((a,i)=>{
+    const y=40+i*rowH;
+    svg.append(track(y,x0,x1,1,6));
+    svg.append(el('text',{x:x0-14,y:y+4,class:'name','text-anchor':'end'},a.label));
+    const tip=(pas,v,nn,na)=>`${a.label} — ${pas}: median level ${v} (${nn} answering, ${na} N/A)`;
+    if(a.cur_med==null&&a.dir_med==null){
+      svg.append(el('text',{x:x1+10,y:y+4,class:'lbl','data-tip':`${a.label}: nobody does this work`},'all N/A'));
+      return;
+    }
+    const xa=a.cur_med==null?null:X(a.cur_med,1,6,x0,x1), xb=a.dir_med==null?null:X(a.dir_med,1,6,x0,x1);
+    if(xa!=null&&xb!=null) svg.append(el('line',{x1:xa,y1:y,x2:xb,y2:y,stroke:'var(--dir)','stroke-width':2}));
+    if(xa!=null) svg.append(el('circle',{cx:xa,cy:y,r:6.5,stroke:'var(--surface)','stroke-width':2,fill:'var(--cur)',
+      'data-tip':tip('today',a.cur_med,a.n.cur,a.na.cur)}));
+    if(xb!=null) svg.append(el('circle',{cx:xb,cy:y,r:6.5,stroke:'var(--surface)','stroke-width':2,fill:'var(--dir)',
+      'data-tip':tip('wanted',a.dir_med,a.n.dir,a.na.dir)}));
+    if(a.move_med) svg.append(el('text',{x:x1+10,y:y+4,class:'lbl',
+      'data-tip':`${a.label}: median within-person move, over the ${a.n_moves} who do it in both passes`},
+      (a.move_med>0?'+':'')+a.move_med));
+  });
+  const svgWrap=el('div',{},svg,el('div',{class:'legend'},leg('var(--cur)','today (median level)'),leg('var(--dir)','wanted (median level)')));
+  return qCard('3','Where would AI do the work?',
+    'Involvement level 1 (none) → 6 (system-verified), team median per pass. The number at the right is the median within-person move.',
+    svgWrap,D.takes.q3);
+}
+
+function q4Card(D){
+  const W=920,x0=190,x1=W-40,rowH=44,H=D.q4.length*rowH+50;
+  const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  svg.append(axisNums(16,x0,x1,1,5));
+  D.q4.forEach((o,i)=>{
+    const y=40+i*rowH;
+    const vals=o.values.map((v,p)=>[v,p]).filter(x=>x[0]!=null);
+    const lo=Math.min(...vals.map(x=>x[0])), hi=Math.max(...vals.map(x=>x[0]));
+    const pl=vals.find(x=>x[0]===lo)[1], ph=vals.find(x=>x[0]===hi)[1];
+    svg.append(track(y,x0,x1,1,5));
+    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.label));
+    svg.append(el('rect',{x:X(lo,1,5,x0,x1),y:y-7,width:Math.max(2,X(hi,1,5,x0,x1)-X(lo,1,5,x0,x1)),height:14,rx:4,
+      fill:'var(--cur)','fill-opacity':.25,'data-tip':`${o.label}: range ${r1(o.range)} across the team`}));
+    svg.append(el('text',{x:X(lo,1,5,x0,x1)-8,y:y+4,class:'lbl','text-anchor':'end',
+      'data-tip':`${who(D,pl)}: ${r1(lo)}`},D.people[pl].initials));
+    svg.append(el('text',{x:X(hi,1,5,x0,x1)+8,y:y+4,class:'lbl',
+      'data-tip':`${who(D,ph)}: ${r1(hi)}`},D.people[ph].initials));
+  });
+  return qCard('4','Where do we differ most?',
+    'The band spans the team, lowest to highest, on today’s scores. Initials mark the ends (hover for the name).',svg,D.takes.q4);
+}
+
+function q5Card(D){
+  const W=920,x0=330,x1=W-140,rowH=27,grpH=34;
+  const nRows=D.q5.reduce((s,g)=>s+g.items.length,0);
+  const H=nRows*rowH+D.q5.length*grpH+30;
+  const mid=(x0+x1)/2, unit=(x1-x0)/(D.n*2);
+  const COLS=['var(--a1)','var(--a2)','var(--a0)','var(--a4)','var(--a5)'];
+  const LBL=['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'];
+  const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  let y=18;
+  D.q5.forEach(g=>{
+    let head=`${g.label} — norm ${r1(g.norm.mean)}, range ${r1(g.norm.range)}`;
+    if(g.key==='agent-latitude') head+=` · ${g.facets.map(f=>`${f.label} ${r1(f.mean)}`).join(' · ')}`;
+    svg.append(el('text',{x:14,y:y+4,class:'grp',
+      'data-tip':`${g.label}: a Norm score per person (mean ${r1(g.norm.mean)}, range ${r1(g.norm.range)}, n=${g.norm.n}). `
+        +g.facets.map(f=>`${f.label}: ${r1(f.mean)}`).join(' · ')},head));
+    y+=grpH-8;
+    g.items.forEach(it=>{
+      const c=it.counts, answered=c.reduce((s,x)=>s+x,0);
+      svg.append(el('text',{x:x0-12,y:y+4,class:'lbl','text-anchor':'end',
+        'data-tip':`${it.id}${it.rev?' (reverse-worded: agreeing points the other way on the scale)':''} — “${it.text}” · `
+          +c.map((n,j)=>`${LBL[j]}: ${n}`).join(', ')},
+        trunc(it.text,52)+(it.rev?' ↺':'')));
+      svg.append(el('line',{x1:mid,y1:y-9,x2:mid,y2:y+9,stroke:'var(--axis)','stroke-width':1}));
+      let xl=mid-(c[0]+c[1]+c[2]/2)*unit;
+      c.forEach((n,j)=>{
+        if(n>0) svg.append(el('rect',{x:xl+1,y:y-8,width:Math.max(1,n*unit-2),height:16,rx:3,fill:COLS[j],
+          'data-tip':`“${it.text}” — ${n} of ${answered}: ${LBL[j]}`}));
+        xl+=n*unit;
+      });
+      const lean=c[3]+c[4]-c[0]-c[1];
+      svg.append(el('text',{x:x1+12,y:y+4,class:'lbl'},
+        Math.min(c[0]+c[1],c[3]+c[4])>=2?'divided':lean>0?'leans agree':lean<0?'leans disagree':'mixed'));
+      y+=rowH;
+    });
+    y+=8;
+  });
+  const wrap=el('div',{},svg,el('div',{class:'legend'},
+    leg('var(--a1)','Strongly disagree'),leg('var(--a2)','Disagree'),leg('var(--a0)','Neutral'),
+    leg('var(--a4)','Agree'),leg('var(--a5)','Strongly agree'),
+    el('span',{class:'muted'},'↺ reverse-worded (counts show the raw answer)')));
+  return qCard('5','What norms would we set?',
+    '“The team should…” — every bar is raw answers, one per person, centered on neutral. Width away from center = how much the room disagrees. Grouped by Team Dimension; the spread is the finding, not the mean.',
+    wrap,D.takes.q5);
+}
+
+/* ---------- shell + tooltip ---------- */
+function render(D){
+  const root=document.getElementById('root');
+  root.textContent='';
+  root.append(el('div',{class:'hdr'},
+    el('h1',{},'AI-Dev-Survey — results'),
+    el('span',{class:'sub'},`${D.n} respondent${D.n===1?'':'s'} · named & shared within the team`),
+    el('span',{class:'badge'},D.file),
+    D.fixture?el('span',{class:'badge fake'},'FAKE FIXTURE DATA'):null,
+    el('span',{class:'dl'},el('a',{href:'/scored.csv'},'download scored.csv'))));
+  for(const w of D.warnings) root.append(el('div',{class:'warn'},'⚠ '+w));
+  for(const m of D.malformed) root.append(el('div',{class:'warn'},
+    `⚠ ${m.name} has malformed (blank) answers — affected scores read #N/A: ${m.ids.slice(0,6).join(', ')}${m.ids.length>6?'…':''}`));
+  root.append(q1Card(D),q2Card(D),q3Card(D),q4Card(D),q5Card(D));
+}
+fetch('/scored.json').then(r=>{
+  if(!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json();
+}).then(render).catch(e=>{
+  document.getElementById('root').textContent=`Could not load /scored.json (${e.message}). Is app/serve.py running?`;
+});
+const tip=document.getElementById('tip');
+addEventListener('mousemove',e=>{
+  const t=e.target.closest('[data-tip]');
+  if(t){ tip.textContent=t.dataset.tip; tip.style.display='block';
+    tip.style.left=Math.min(innerWidth-360,e.clientX+14)+'px'; tip.style.top=(e.clientY+16)+'px'; }
+  else tip.style.display='none';
+});
+</script>
+</body>
+</html>

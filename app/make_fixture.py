@@ -1,52 +1,61 @@
 """Regenerate app/sample-export.xlsx — the committed, fully FAKE Forms export fixture.
 
 Decided in #27: the repo never holds real survey data; dev and tests run against
-this file. It copies the *header row* (statement text — no personal data) from a
-real export and fabricates 7 respondents with invented names/emails and
-deterministic answers. Re-run when the survey's columns change (e.g. once #29
-assembles v2):  python app/make_fixture.py [path-to-real-export.xlsx]
-(default source: newest .xlsx in data/)
+this file. v2 (#34): the header is synthesized from survey/SURVEY.md via
+serve.py's survey map — no real v2 export exists to copy from — and 7 invented
+respondents get deterministic, persona-shaded answers so the dashboard has
+spread, gaps and a few N/As to show. Re-run when the survey's wording changes:
+
+    python app/make_fixture.py
 """
-import re, sys, zipfile
+import random, sys, zipfile
 from pathlib import Path
-from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from serve import SURVEY, SCALES, survey_header
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "app" / "sample-export.xlsx"
-NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
-FAKE = [("Ada Fixture", "ada@example.invalid"), ("Bo Sample", "bo@example.invalid"),
-        ("Cy Mock", "cy@example.invalid"), ("Dee Stub", "dee@example.invalid"),
-        ("Ed Dummy", "ed@example.invalid"), ("Fay Test", "fay@example.invalid"),
-        ("Gus Fake", "gus@example.invalid")]
-BUILTINS = ["ID", "Start time", "Completion time", "Email", "Name", "Last modified time"]
+FAKE = [("Ada Fixture", "ada@example.invalid", 0.80), ("Bo Sample", "bo@example.invalid", 0.35),
+        ("Cy Mock", "cy@example.invalid", 0.90), ("Dee Stub", "dee@example.invalid", 0.15),
+        ("Ed Dummy", "ed@example.invalid", 0.55), ("Fay Test", "fay@example.invalid", 0.70),
+        ("Gus Fake", "gus@example.invalid", 0.30)]     # persona: appetite for AI, 0..1
 
-def read_export(path):
-    z = zipfile.ZipFile(path)
-    shared = ["".join(t.text or "" for t in si.findall(".//m:t", NS))
-              for si in ET.fromstring(z.read("xl/sharedStrings.xml")).findall("m:si", NS)]
-    sheet = ET.fromstring(z.read("xl/worksheets/sheet1.xml"))
-    rows = []
-    for row in sheet.findall(".//m:row", NS):
-        cells = {}
-        for c in row.findall("m:c", NS):
-            v = c.findtext("m:v", None, NS)
-            col = 0
-            for ch in c.get("r"):
-                if ch.isdigit(): break
-                col = col * 26 + ord(ch) - 64
-            cells[col - 1] = shared[int(v)] if (v is not None and c.get("t") == "s") else v
-        rows.append(cells)
-    width = max(max(r) for r in rows if r) + 1
-    return [rows[0].get(i) for i in range(width)], [ [r.get(i) for i in range(width)] for r in rows[1:] ]
+def pick_level(rng, k, persona):
+    """A plausible answer: persona-centred gaussian, clamped to 1..k."""
+    return max(1, min(k, round(rng.gauss(1 + (k - 1) * persona, 1.1))))
 
-def fake_cell(src, person, col):
-    """Deterministic fake answer: keep the label's wording, vary its leading digit."""
-    if src is None: return None
-    m = re.match(r"\s*(\d+)(\D.*)$", src, re.S)
-    if not m: return src            # checklist / free-label cells: option text, no digits to vary
-    hi = 6 if int(m.group(1)) > 5 else 5
-    return f"{(person * 3 + col) % hi + 1}{m.group(2)}"
+def fake_cells(name, persona):
+    cells = {}
+    for q in SURVEY:
+        if q["choice"]:
+            opts = [t for _, t in q["items"]]
+            rng = random.Random(f"{name}|Q{q['num']}")
+            picked = [o for o in opts if rng.random() < 0.25 + 0.3 * persona]
+            if not picked and q["num"] != 11:
+                picked = [opts[int(persona * 7)]]
+            if q["num"] == 11 and rng.random() < 0.3:
+                picked = []                            # know-more is the one optional question
+            if picked:
+                cells[q["title"]] = "; ".join(picked)
+            continue
+        labels = SCALES[q["scale"]]
+        for iid, stmt in q["items"]:
+            rng = random.Random(f"{name}|{iid}")
+            if q["scale"] == "Involvement":
+                # N/A hangs off the AREA, so the two passes mostly pair (spec §4)
+                area = iid.rsplit(".", 2)[1]
+                na = random.Random(f"{name}|na|{area}").random()
+                if na < 0.06 or (na < 0.09 and iid.endswith(".current")):
+                    cells[stmt] = labels[-1]           # N/A – I don't do this work
+                    continue
+                lean = persona + (0.12 if iid.endswith(".direction") else 0)
+                cells[stmt] = labels[pick_level(rng, len(labels) - 1, lean) - 1]
+            else:
+                lean = persona + (0.12 if q["num"] in (7, 9) else 0)   # direction runs warmer
+                cells[stmt] = labels[pick_level(rng, len(labels), min(1, lean)) - 1]
+    return cells
 
 def col_ref(i):
     s = ""
@@ -105,24 +114,16 @@ def write_xlsx(header, rows, out):
         z.writestr("xl/sharedStrings.xml", ss)
 
 def main():
-    if len(sys.argv) > 1:
-        src = Path(sys.argv[1])
-    else:
-        cand = sorted((ROOT / "data").glob("*.xlsx"), key=lambda p: p.stat().st_mtime, reverse=True)
-        if not cand: sys.exit("no source export found — pass a path or put one in data/")
-        src = cand[0]
-    header, rows = read_export(src)
-    template = rows[0]
-    fixed = {header.index(b): b for b in BUILTINS if b in header}
+    header = survey_header()
     out_rows = []
-    for n, (name, email) in enumerate(FAKE):
-        row = [fake_cell(template[i], n, i) for i in range(len(header))]
-        for i, b in fixed.items():
-            row[i] = {"ID": n + 1, "Start time": 46000.5 + n, "Completion time": 46000.52 + n,
-                      "Email": email, "Name": name, "Last modified time": None}[b]
-        out_rows.append(row)
+    for n, (name, email, persona) in enumerate(FAKE):
+        cells = fake_cells(name, persona)
+        cells.update({"ID": n + 1, "Start time": 46200.5 + n, "Completion time": 46200.52 + n,
+                      "Email": email, "Name": name})
+        out_rows.append([cells.get(h) for h in header])
     write_xlsx(header, out_rows, OUT)
-    print(f"wrote {OUT.relative_to(ROOT)}: {len(out_rows)} fake respondents x {len(header)} columns (header from {src.name})")
+    print(f"wrote {OUT.relative_to(ROOT)}: {len(out_rows)} fake respondents x {len(header)} columns"
+          f" (header synthesized from survey/SURVEY.md)")
 
 if __name__ == "__main__":
     main()

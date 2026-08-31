@@ -166,7 +166,7 @@ is regenerated from GitHub whenever a ticket is closed — run
 
 <!-- progress:start -->
 
-**Map progress:** 31 of 32 tickets resolved.
+**Map progress:** 32 of 32 tickets resolved.
 
 ### Deliverables
 
@@ -210,10 +210,11 @@ is regenerated from GitHub whenever a ticket is closed — run
 - [Team item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/31)
 - [Direction item bank](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/32)
 - [Rubric v2: personal side](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33)
+- [Build the five-questions dashboard on real data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34)
 
 ### Still open
 
-- [Build the five-questions dashboard on real data](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34) _(task)_
+- _none — the map is complete_
 
 <!-- progress:end -->
 

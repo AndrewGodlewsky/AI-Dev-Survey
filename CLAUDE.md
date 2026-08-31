@@ -23,12 +23,14 @@ base to extend. See the map below.
 - Scoring lives in the local Python app (map v2). The v1 Excel sheet
   (`scoring/scoring.xlsx`, formulas only, no macros/VBA) is retired once Python
   scores — read it as a reference, don't extend it.
-- Dashboard: served by the local Python app on localhost. The v2 template is the
-  **five-questions** page, `dashboard/prototype-simple.html` (decided in #26);
-  it is **light-themed only — never add a dark variant**. `dashboard/index.html`
-  is v1's dashboard, kept as a reference only — its layout is retired ("far too
-  busy"). v1's "one self-contained HTML file, opened from disk" rule no longer
-  applies. Still no external CDNs — it runs locally and offline.
+- Dashboard: served by the local Python app on localhost. The live page is
+  `dashboard/dashboard.html` (built in #34, fed by `/scored.json`); its design
+  reference is the **five-questions** page `dashboard/prototype-simple.html`
+  (decided in #26). Both are **light-themed only — never add a dark variant**.
+  `dashboard/index.html` is v1's dashboard, kept as a reference only — its
+  layout is retired ("far too busy"). v1's "one self-contained HTML file,
+  opened from disk" rule no longer applies. Still no external CDNs — it runs
+  locally and offline.
 - Responses are named and shared openly; horizon is 6 months; Dimension
   scales keep their natural direction.
 - **Real survey data lives only in `data/` (gitignored) and is never committed**
