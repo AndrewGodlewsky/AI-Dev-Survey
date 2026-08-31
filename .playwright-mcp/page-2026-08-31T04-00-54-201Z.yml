@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - heading "AI-Dev-Survey — results" [level=1] [ref=e4]
+      - generic [ref=e5]: 7 respondents · named & shared within the team
+      - generic [ref=e6]: PROTOTYPE · fabricated data
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: Answered
+          - generic [ref=e11]: 7 of 7
+          - generic [ref=e12]: everyone on the roster
+        - generic [ref=e13]:
+          - generic [ref=e14]: Want more
+          - generic [ref=e15]: 4 of 7
+          - generic [ref=e16]: dimensions where appetite exceeds practice
+        - generic [ref=e17]:
+          - generic [ref=e18]: Biggest appetite
+          - generic [ref=e19]: Autonomy
+          - generic [ref=e20]: direction sits 0.8 above today
+        - generic [ref=e21]:
+          - generic [ref=e22]: Most divided
+          - generic [ref=e23]: Agent latitude
+          - generic [ref=e24]: the norm the room splits on
+      - generic [ref=e25]:
+        - heading "Where we are, and which way we lean" [level=2] [ref=e26]
+        - paragraph [ref=e27]: "Team average per dimension: blue = today, orange = the way we’d want to work. A long line = appetite for change."
+        - img [ref=e28]:
+          - generic [ref=e29]:
+            - generic [ref=e30]: "1"
+            - generic [ref=e31]: "2"
+            - generic [ref=e32]: "3"
+            - generic [ref=e33]: "4"
+            - generic [ref=e34]: "5"
+          - generic [ref=e36]: Comfort
+          - generic [ref=e39]: today
+          - generic [ref=e40]: direction
+          - generic [ref=e42]: Trust
+          - generic [ref=e46]: Fluency
+          - generic [ref=e50]: Guardrails
+          - generic [ref=e54]: Concern
+          - generic [ref=e58]: Autonomy
+          - generic [ref=e62]: Craft values
+      - generic [ref=e65]:
+        - heading "What the numbers say" [level=2] [ref=e66]
+        - paragraph [ref=e67]: "The team would move on 4 of 7 dimensions — most of all autonomy and fluency. Autonomy is where individuals differ most today (a 2.3-point range), and agent latitude is the norm the room genuinely splits on. Guardrails, concern and craft values barely move: nobody is asking to lower the bar."
+      - generic [ref=e68]:
+        - heading "The norms we’d set ourselves" [level=2] [ref=e69]
+        - paragraph [ref=e70]: “The team should…” — each bar is 7 answers, centered on neutral. Width away from center = how much the room disagrees.
+        - img [ref=e71]:
+          - generic [ref=e72]: Transparency
+          - generic [ref=e76]: leans agree
+          - generic [ref=e77]: Verification
+          - generic [ref=e82]: leans agree
+          - generic [ref=e83]: Agent latitude
+          - generic [ref=e89]: divided
+          - generic [ref=e90]: Pace
+          - generic [ref=e96]: divided
+          - generic [ref=e97]: Shared practice
+          - generic [ref=e101]: leans agree
+        - generic [ref=e102]:
+          - generic [ref=e103]: Strongly disagree
+          - generic [ref=e105]: Disagree
+          - generic [ref=e107]: Neutral
+          - generic [ref=e109]: Agree
+          - generic [ref=e111]: Strongly agree
+      - paragraph [ref=e113]: Scores are 1–5 team means. Spread and individual positions are in the discussion views, not here.
+  - generic [ref=e114]:
+    - button "←" [ref=e115] [cursor=pointer]
+    - generic [ref=e116]: A — The brief
+    - button "→" [ref=e117] [cursor=pointer]

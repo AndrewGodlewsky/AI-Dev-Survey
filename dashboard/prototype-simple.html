@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTOTYPE — simplified dashboard (five questions)</title>
+<!--
+  PROTOTYPE (wayfinder #26 follow-up) — VERDICT APPLIED.
+  Three variants were built (A memo / B five-questions / C wall); the user picked B
+  ("Five questions") and ruled the dashboard LIGHT-THEMED ONLY — no dark variant.
+  Losing variants and the switcher are deleted per the prototype skill.
+
+  This file is now the design reference for the v2 dashboard: one section per question
+  a team meeting would ask, one chart + one takeaway each, people visible as dots.
+  Fabricated data for 7 respondents; the real app (app/serve.py) feeds the real thing.
+
+  Stripped relative to v1 (deliberate): probes/edge markers, pattern flags,
+  safeguard/lever detail, the 19x3 coverage heatmap, per-person cards, filters, sidebar.
+-->
+<style>
+:root{
+  color-scheme:light; /* light only — decided 2026-08-31, no dark variant */
+  --surface:#fcfcfb; --page:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --wash:rgba(11,11,11,.04);
+  --cur:#2a78d6; --dir:#eb6834;
+  --div-neg:#2a78d6; --div-pos:#e34948;
+  --a1:#e34948; --a2:#ee9c93; --a0:#c3c2b7; --a4:#86b6ef; --a5:#2a78d6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{max-width:980px;margin:0 auto;padding:24px 20px 40px}
+h1{font-size:20px;margin:0;font-weight:650}
+h2{font-size:16px;margin:0 0 4px;font-weight:650}
+.sub{color:var(--ink2)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:14px}
+.note{font-size:12px;color:var(--ink2)}
+.muted{color:var(--muted)}
+.hdr{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;margin-bottom:14px}
+.proto{font-size:11px;border:1px solid var(--axis);border-radius:999px;padding:2px 9px;color:var(--ink2)}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.axis{fill:var(--muted);font-size:11px}
+.name{fill:var(--ink);font-size:12.5px}
+.lbl{fill:var(--ink2);font-size:11px}
+.big{font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.take{font-size:13px;color:var(--ink2);border-left:3px solid var(--grid);padding-left:10px;margin-top:10px}
+.q{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.tip{position:fixed;z-index:50;max-width:300px;padding:7px 10px;background:var(--ink);color:var(--surface);border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none}
+</style>
+</head>
+<body>
+<div class="app" id="root"></div>
+<div class="tip" id="tip"></div>
+<script>
+'use strict';
+/* ---------- fabricated data: 7 respondents ---------- */
+const PEOPLE = ['AG','BM','CK','DR','EP','JT','MS'];
+const DIMS = [
+  // key, label, current per person, direction per person (1–5)
+  ['comfort',  'Comfort',      [4.2,3.4,4.6,2.8,3.9,4.4,3.1], [4.6,4.0,4.8,3.4,4.4,4.8,3.6]],
+  ['trust',    'Trust',        [2.9,2.2,3.8,1.9,2.6,3.4,2.1], [3.6,3.0,4.2,2.2,3.4,4.0,2.4]],
+  ['fluency',  'Fluency',      [3.6,2.6,4.4,2.2,3.1,4.1,2.4], [4.4,3.6,4.8,3.2,4.2,4.6,3.4]],
+  ['guardrails','Guardrails',  [3.8,4.4,2.9,4.7,3.6,3.1,4.5], [3.6,4.2,2.8,4.6,3.4,3.0,4.4]],
+  ['concern',  'Concern',      [3.1,3.9,2.2,4.4,3.3,2.5,4.1], [2.9,3.7,2.1,4.3,3.1,2.4,4.0]],
+  ['autonomy', 'Autonomy',     [2.6,1.8,3.7,1.4,2.3,3.2,1.7], [3.8,2.8,4.4,1.8,3.4,4.2,2.2]],
+  ['craft',    'Craft values', [4.3,4.6,3.7,4.8,4.2,3.9,4.7], [4.2,4.6,3.8,4.8,4.1,3.9,4.7]],
+];
+const TEAM = [
+  // label, counts per agreement level 1..5 (Strongly disagree … Strongly agree), gist
+  ['Transparency',   [0,0,1,3,3], 'we should say when AI wrote it'],
+  ['Verification',   [0,1,1,3,2], 'a person reviews AI output'],
+  ['Agent latitude', [2,2,1,1,1], 'agents may work unattended in our repo'],
+  ['Pace',           [1,2,2,1,1], 'adopt fast, tolerate misses'],
+  ['Shared practice',[0,0,2,3,2], 'invest in shared setup & skills'],
+];
+const COV = [
+  // area, mean current level, mean direction level (1–6 involvement)
+  ['Writing tests',        2.9, 4.3], ['Documentation',       3.1, 4.4],
+  ['Meeting notes',        3.4, 4.6], ['Writing code',        2.7, 3.7],
+  ['Refactoring',          2.4, 3.4], ['Debugging',           2.6, 3.3],
+  ['CI/CD & build config', 1.9, 2.9], ['Code review',         2.1, 2.6],
+  ['Incident response',    1.4, 1.7], ['Security review',     1.6, 1.7],
+];
+const mean = a=>a.reduce((s,x)=>s+x,0)/a.length;
+const r1 = x=>(Math.round(x*10)/10).toFixed(1);
+const spread = a=>Math.max(...a)-Math.min(...a);
+
+/* ---------- tiny helpers ---------- */
+function el(tag, attrs, ...kids){
+  const svg = 'svg line circle rect text g path polyline title'.split(' ').includes(tag);
+  const n = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (k==='data-tip') n.dataset.tip = v;
+    else if (v!=null) n.setAttribute(k,v);
+  }
+  for (const k of kids.flat()) if (k!=null) n.append(k.nodeType?k:document.createTextNode(k));
+  return n;
+}
+const X = (v,min,max,x0,x1)=> x0 + (v-min)/(max-min)*(x1-x0);
+
+function track(y,x0,x1,min,max){
+  const g = el('g',{});
+  g.append(el('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:'var(--grid)','stroke-width':1}));
+  for(let t=min;t<=max;t++) g.append(el('line',{x1:X(t,min,max,x0,x1),y1:y-3,x2:X(t,min,max,x0,x1),y2:y+3,stroke:'var(--axis)','stroke-width':1}));
+  return g;
+}
+function axisNums(y,x0,x1,min,max){
+  const g = el('g',{});
+  for(let t=min;t<=max;t++) g.append(el('text',{x:X(t,min,max,x0,x1),y,class:'axis','text-anchor':'middle'},t));
+  return g;
+}
+function qCard(q,how,svg,take){
+  return el('div',{class:'card'}, el('div',{class:'q'},q.split('·')[0]), el('h2',{},q.split('·')[1]),
+    el('p',{class:'note'},how), svg, el('p',{class:'take'},take));
+}
+function leg(c,t){ return el('span',{}, el('i',{style:`background:${c}`}), t); }
+
+/* diverging stacked agreement bars, centered on neutral */
+function teamCard(title){
+  const W=920,x0=190,x1=W-160,rowH=40,H=TEAM.length*rowH+38,mid=(x0+x1)/2,unit=(x1-x0)/7/2;
+  const svg = el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+  const COLS=['var(--a1)','var(--a2)','var(--a0)','var(--a4)','var(--a5)'];
+  const LBL=['Strongly disagree','Disagree','Neutral','Agree','Strongly agree'];
+  TEAM.forEach(([l,cnt,gist],i)=>{
+    const y=26+i*rowH;
+    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},l));
+    svg.append(el('line',{x1:mid,y1:y-13,x2:mid,y2:y+13,stroke:'var(--axis)','stroke-width':1}));
+    let xl=mid-(cnt[0]+cnt[1]+cnt[2]/2)*unit;
+    cnt.forEach((n,j)=>{
+      if(n>0) svg.append(el('rect',{x:xl+1,y:y-9,width:n*unit-2,height:18,rx:4,fill:COLS[j],
+        'data-tip':`${l}: ${n} of 7 — ${LBL[j]} (“${gist}”)`}));
+      xl+=n*unit;
+    });
+    const lean = cnt[3]+cnt[4]-cnt[0]-cnt[1];
+    svg.append(el('text',{x:x1+12,y:y+4,class:'lbl'}, Math.min(cnt[0]+cnt[1],cnt[3]+cnt[4])>=2 ? 'divided' : lean>0?'leans agree':lean<0?'leans disagree':'mixed'));
+  });
+  return el('div',{class:'card'},
+    el('h2',{},title),
+    el('p',{class:'note'},'“The team should…” — each bar is 7 answers, centered on neutral. Width away from center = how much the room disagrees.'),
+    svg,
+    el('div',{class:'legend'},
+      leg('var(--a1)','Strongly disagree'), leg('var(--a2)','Disagree'), leg('var(--a0)','Neutral'),
+      leg('var(--a4)','Agree'), leg('var(--a5)','Strongly agree')));
+}
+
+/* ---------- the five questions ---------- */
+function fiveQuestions(){
+  const qs = [];
+  // 1 — dot strip per dimension
+  { const W=920,x0=190,x1=W-40,rowH=44,H=DIMS.length*rowH+50;
+    const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+    svg.append(axisNums(16,x0,x1,1,5));
+    DIMS.forEach(([k,l,c],i)=>{
+      const y=40+i*rowH;
+      svg.append(track(y,x0,x1,1,5));
+      svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},l));
+      c.forEach((v,p)=> svg.append(el('circle',{cx:X(v,1,5,x0,x1),cy:y+(p%2?6:-6),r:6,fill:'var(--cur)','fill-opacity':.55,'data-tip':`${PEOPLE[p]} — ${l} today: ${v}`})));
+      svg.append(el('line',{x1:X(mean(c),1,5,x0,x1),y1:y-12,x2:X(mean(c),1,5,x0,x1),y2:y+12,stroke:'var(--ink)','stroke-width':2.5,'data-tip':`${l} team mean: ${r1(mean(c))}`}));
+    });
+    qs.push(qCard('1 · Where are we today?','Each dot is one of us (hover for who). The dark tick is the team mean.',svg,
+      'Wide rows are the honest finding: we are not one team on trust, fluency or autonomy — we are two.')); }
+  // 2 — gap diverging bars
+  { const gaps=DIMS.map(([k,l,c,d])=>({l,g:mean(d)-mean(c)})).sort((a,b)=>b.g-a.g);
+    const W=920,x0=190,x1=W-70,rowH=34,H=gaps.length*rowH+30,mid=X(0,-1.2,1.2,x0,x1);
+    const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+    svg.append(el('line',{x1:mid,y1:8,x2:mid,y2:H-18,stroke:'var(--axis)'}));
+    gaps.forEach((o,i)=>{ const y=22+i*rowH, xg=X(o.g,-1.2,1.2,x0,x1);
+      svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.l));
+      svg.append(el('rect',{x:Math.min(mid,xg),y:y-8,width:Math.max(2,Math.abs(xg-mid)),height:16,rx:4,
+        fill: o.g>=0?'var(--dir)':'var(--div-neg)','data-tip':`${o.l}: direction − today = ${o.g>=0?'+':''}${r1(o.g)}`}));
+      svg.append(el('text',{x:xg+(o.g>=0?8:-8),y:y+4,class:'lbl','text-anchor':o.g>=0?'start':'end'},(o.g>=0?'+':'')+r1(o.g)));
+    });
+    qs.push(qCard('2 · What do we want more — or less — of?','Direction minus today, team average. Right = want more of it.',svg,
+      'Appetite is real but selective: autonomy and fluency lead; nobody wants less rigor.')); }
+  // 3 — coverage movers
+  { const W=920,x0=190,x1=W-40,rowH=34,H=COV.length*rowH+50;
+    const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+    svg.append(axisNums(16,x0,x1,1,6));
+    COV.forEach(([l,c,d],i)=>{ const y=40+i*rowH;
+      svg.append(track(y,x0,x1,1,6));
+      svg.append(el('text',{x:x0-14,y:y+4,class:'name','text-anchor':'end'},l));
+      const xa=X(c,1,6,x0,x1),xb=X(d,1,6,x0,x1);
+      svg.append(el('line',{x1:xa,y1:y,x2:xb,y2:y,stroke:'var(--dir)','stroke-width':2}));
+      svg.append(el('circle',{cx:xa,cy:y,r:6.5,stroke:'var(--surface)','stroke-width':2,fill:'var(--cur)','data-tip':`${l} — today: level ${r1(c)}`}));
+      svg.append(el('circle',{cx:xb,cy:y,r:6.5,stroke:'var(--surface)','stroke-width':2,fill:'var(--dir)','data-tip':`${l} — wanted: level ${r1(d)}`}));
+    });
+    qs.push(qCard('3 · Where would AI do the work?','Involvement level 1 (none) → 6 (system-verified), team average. Ten areas shown; the rest barely move.',svg,
+      'The appetite is in the toil — tests, docs, notes — not in the judgment work: review, incidents and security stay human.')); }
+  // 4 — disagreement ranges
+  { const rows=DIMS.map(([k,l,c])=>({l,c,s:spread(c)})).sort((a,b)=>b.s-a.s).slice(0,4);
+    const W=920,x0=190,x1=W-40,rowH=44,H=rows.length*rowH+50;
+    const svg=el('svg',{class:'chart',viewBox:`0 0 ${W} ${H}`});
+    svg.append(axisNums(16,x0,x1,1,5));
+    rows.forEach((o,i)=>{ const y=40+i*rowH,lo=Math.min(...o.c),hi=Math.max(...o.c);
+      svg.append(track(y,x0,x1,1,5));
+      svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.l));
+      svg.append(el('rect',{x:X(lo,1,5,x0,x1),y:y-7,width:X(hi,1,5,x0,x1)-X(lo,1,5,x0,x1),height:14,rx:4,fill:'var(--cur)','fill-opacity':.25}));
+      const pl=PEOPLE[o.c.indexOf(lo)], ph=PEOPLE[o.c.indexOf(hi)];
+      svg.append(el('text',{x:X(lo,1,5,x0,x1)-8,y:y+4,class:'lbl','text-anchor':'end','data-tip':`${pl}: ${lo}`},pl));
+      svg.append(el('text',{x:X(hi,1,5,x0,x1)+8,y:y+4,class:'lbl','data-tip':`${ph}: ${hi}`},ph));
+    });
+    qs.push(qCard('4 · Where do we differ most?','The band spans the team, lowest to highest, on today’s scores. Initials mark the ends.',svg,
+      'These are conversations, not averages: the fluency range says pairing would move us further than tooling.')); }
+  // 5 — team norms
+  qs.push(el('div',{}, el('div',{class:'q'},'5'), teamCard('What norms would we set?')));
+  return el('div',{},qs);
+}
+
+/* ---------- shell + tooltip ---------- */
+const root=document.getElementById('root');
+root.append(el('div',{class:'hdr'},
+  el('h1',{},'AI-Dev-Survey — results'),
+  el('span',{class:'sub'},'7 respondents · named & shared within the team'),
+  el('span',{class:'proto'},'PROTOTYPE · fabricated data')));
+root.append(fiveQuestions());
+const tip=document.getElementById('tip');
+addEventListener('mousemove',e=>{
+  const t=e.target.closest('[data-tip]');
+  if(t){ tip.textContent=t.dataset.tip; tip.style.display='block';
+    tip.style.left=Math.min(innerWidth-320,e.clientX+14)+'px'; tip.style.top=(e.clientY+16)+'px'; }
+  else tip.style.display='none';
+});
+</script>
+</body>
+</html>
