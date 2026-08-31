@@ -57,18 +57,18 @@ either direction. The survey locates; it never points.
 
 1. **Take it** — each team member answers in Microsoft Forms.
 2. **Score it** — download the raw `.xlsx` export from Forms, drop it in `data/`, and run
-   `python app/serve.py`. No installs, no dependencies — any Python 3. *(The pipeline is
-   built — [#26](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/26) — and the scoring
-   rules are specified in [`scoring/scoring-rules-v2.md`](scoring/scoring-rules-v2.md)
-   ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)); wiring them into the
-   app is [#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34). It replaces v1's
-   Excel sheet entirely.)*
+   `python app/serve.py`. No installs, no dependencies — any Python 3. The app scores in
+   memory to [`scoring/scoring-rules-v2.md`](scoring/scoring-rules-v2.md)
+   ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28), wired in
+   [#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34)) and replaces v1's
+   Excel sheet entirely; the dashboard offers everything it computed as a CSV download.
 3. **Read it** — the app opens the dashboard on `localhost`: the **five-questions** page,
    one simple chart per question a team meeting would ask (*Where are we today? What do we
    want more of? Where would AI do the work? Where do we differ most? What norms would we
    set?*). People appear as **initials**, full name on hover. The one-page
    [How to read the results](docs/HOW-TO-READ.md) explains what a big Gap or a wide spread
-   means *(still describes v1's views; rewritten once the v2 dashboard is built)*.
+   means *(still describes v1's views; the rewrite is
+   [#36](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/36))*.
 4. **Share it** — nothing travels to the manager as a file. You screenshot the pieces you
    want to show. Initials are a display choice, not anonymity — results are already open
    within the team.
@@ -134,12 +134,12 @@ updated for the v2 pipeline (Forms → `data/` → `python app/serve.py` → loc
 |---|---|
 | `CONTEXT.md` | Domain glossary — the vocabulary everything else uses. **Read it first.** |
 | `survey/` | The survey text. See the file map below. |
-| `rubric/` | `RUBRIC.md` — what each score means, and how answers become scores. Being rewritten for v2 ([#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33), [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)). |
-| `scoring/` | `scoring-rules-v2.md` — **the live v2 scoring spec** ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)). Also v1's Excel sheet and rules, **retired once the Python app scores** — a reference, not something to extend. |
-| `dashboard/` | `index.html` — v1's self-contained dashboard (reference). `prototype-simple.html` — the **five-questions** page, v2's rendering template (light-only). |
-| `app/` | The local Python app: `serve.py` (find export → parse → serve dashboard), `make_fixture.py`, `sample-export.xlsx` (the fake fixture). Scoring arrives with [#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34). |
+| `rubric/` | `RUBRIC.md` — what each score means, and how answers become scores. Rewritten for v2 ([#33](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/33), [#30](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/30)). |
+| `scoring/` | `scoring-rules-v2.md` — **the live v2 scoring spec** ([#28](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/28)), implemented by the app. Also v1's Excel sheet and rules — a reference until their retirement ticket lands, not something to extend. |
+| `dashboard/` | `dashboard.html` — **the live v2 page**, served by the app and fed `/scored.json` ([#34](https://github.com/AndrewGodlewsky/AI-Dev-Survey/issues/34)). `prototype-simple.html` — its five-questions design reference (light-only). `index.html` — v1's dashboard (reference). |
+| `app/` | The local Python app: `serve.py` (find export → parse → **score** → serve dashboard), `make_fixture.py`, `sample-export.xlsx` (the fake v2 fixture), `test_scoring.py` (the Sofia worked example and friends — `python -m unittest discover app`). |
 | `data/` | Where real Forms exports go. **Gitignored — never committed**; see *Where the data lives* above. |
-| `docs/` | `HOW-TO-READ.md` (results guide), `SETUP.html` (v1 runbook), `v2-item-banks-explained.md`, `adr/` (decision records), `agents/` (agent configuration), `grilling/` (the working behind every decision). |
+| `docs/` | `HOW-TO-READ.md` (results guide), `SETUP.html` (the v2 runbook), `v2-item-banks-explained.md`, `adr/` (decision records), `agents/` (agent configuration), `grilling/` (the working behind every decision). |
 | `scripts/` | Repo upkeep, e.g. `update-readme.py`, which regenerates the progress block below. |
 
 **Inside `survey/` — the v2 files that matter:**

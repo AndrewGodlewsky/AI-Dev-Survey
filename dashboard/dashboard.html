@@ -45,10 +45,54 @@ h2{font-size:16px;margin:0 0 4px;font-weight:650}
 .dl{font-size:12px;color:var(--ink2)}
 .dl a{color:var(--cur)}
 .tip{position:fixed;z-index:50;max-width:340px;padding:7px 10px;background:var(--ink);color:var(--surface);border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none}
+.glossary summary{cursor:pointer;font-size:16px;font-weight:650;list-style-position:outside}
+.glossary summary .note{font-weight:400;margin-left:8px}
+.glossary[open] summary .note{display:none}
+.glossary h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px}
+.glossary dl{margin:0;font-size:13px}
+.glossary dt{font-weight:650;margin-top:8px}
+.glossary dd{margin:1px 0 0;color:var(--ink2)}
 </style>
 </head>
 <body>
 <div class="app" id="root"><p class="note">Loading /scored.json…</p></div>
+<div class="app" style="padding-top:0">
+<!-- Definitions condensed from CONTEXT.md and rubric/RUBRIC.md — those files stay canonical. -->
+<details class="card glossary">
+<summary>Glossary — the terms on this page<span class="note">(click to open)</span></summary>
+
+<h3>The scores (questions 1, 2 and 4)</h3>
+<dl>
+<dt>Dimension</dt><dd>One independently scored 1–5 scale. There are seven personal ones, and deliberately no single master "AI level" — each stands alone. A high score is a position, not a grade: Guardrails high ≠ responsible, Concern high ≠ negative.</dd>
+<dt>The seven Dimensions</dt><dd><b>Comfort</b> — willingness to use AI in one's own development work. <b>Trust</b> — confidence that AI output is correct and safe without line-by-line scrutiny. <b>Fluency</b> — practical skill with AI tools: prompting, agent workflows, setup, failure modes. <b>Guardrails</b> — how much review, disclosure, testing and policy someone wants around AI-assisted work. <b>Concern</b> — perceived risk: security, IP/licensing, skill atrophy, job impact, maintainability (5 = most concerned). <b>Autonomy</b> — how unsupervised AI may act on someone's behalf: autocomplete → chat → supervised agent → autonomous agent. <b>Craft values</b> — weight placed on general development principles (understanding every line, tests, review, ownership); a lens for reading the others, not an adoption metric.</dd>
+<dt>Current score · Direction score</dt><dd>Where someone is today on a Dimension, and how much they would <em>want</em> to work a given way — appetite, never a forecast. Both are decimals; the nearest whole number is a landmark pointing at the rubric's prose, never the score itself.</dd>
+<dt>Gap</dt><dd>Direction minus Current, per Dimension. Positive = would want more of it than practised today; negative = would pull back. Appetite minus practice — a Gap of 0.3 is real, and its direction matters more than its size.</dd>
+<dt>Team mean · range · n</dt><dd>A team number is the mean plus the range (highest minus lowest) plus every named value — no standard deviation at this team size. <em>n</em> is how many people that number is built from.</dd>
+</dl>
+
+<h3>The work grid (question 3)</h3>
+<dl>
+<dt>Coverage</dt><dd>Not a score but a profile: an Involvement level per area of work, asked twice — <b>today</b> (how you do it now) and <b>direction</b> (where you want AI). The chart shows the team median per pass; the number at the right is the median within-person move.</dd>
+<dt>Involvement level</dt><dd>1 <b>None</b> (no AI) · 2 <b>Advisor</b> (AI explains, I do the work) · 3 <b>Drafter</b> (AI drafts, I rework every line) · 4 <b>Doer, reviewed</b> (AI does it, I review the result) · 5 <b>Doer, spot-checked</b> · 6 <b>System-verified</b> (AI does it end-to-end; automated checks catch errors). <b>N/A</b> = I don't do this work — excluded, never averaged in.</dd>
+</dl>
+
+<h3>The norms (question 5)</h3>
+<dl>
+<dt>Team Dimension · Norm score</dt><dd>A Dimension about how the team <em>should</em> work, answered once in team voice. Each person's Norm score is the norm they would set; the spread across people is the finding, not the mean. The direction is a direction, not the good direction.</dd>
+<dt>The five Team Dimensions</dt><dd><b>Transparency</b> — how much the team requires AI's role in work to be visible and personally owned. <b>Verification</b> — how much human review the team requires of AI output. <b>Agent latitude</b> — how freely agents may act in the shared codebase (its two facets, Parallel development and Limits, are the primary read — a middling 3 can hide opposite positions). <b>Pace</b> — how fast the team adopts, and who sets that pace. <b>Shared practice</b> — how much the team invests in shared AI setup and in keeping everyone able to work without AI.</dd>
+<dt>Reverse-worded (↺)</dt><dd>A statement worded so that agreeing means <em>less</em> of the Dimension; its answer is flipped before scoring. The bars here show the raw answer as given.</dd>
+</dl>
+
+<h3>Beside the numbers (in the terminal and the CSV download, not on this page)</h3>
+<dl>
+<dt>Safeguards · Lever · Hold · Dropped</dt><dd>Three identical tick-lists ask what counts as enough for AI-written output — today, would-be-willing, and as a team norm. A <b>Lever</b> is a check ticked in willing but not today; a <b>Hold</b> is a reading position ticked in both (the line does not move); a <b>Dropped</b> is ticked today but not in willing. Positions, never scores.</dd>
+<dt>Edge marker</dt><dd>Raised when someone answers a deliberately extreme probe statement at 4–5, or reports Involvement level 6 on a high-stakes area. It locates a position; it does not report a fault.</dd>
+<dt>Pattern flag</dt><dd>Raised when a block of answers is flat in a way its reverse-worded items don't support. It locates a conversation to have — never a fault, and it changes no numbers.</dd>
+<dt>#N/A</dt><dd>A blank scored answer is a malformed export, not data: the affected score reads #N/A visibly and nothing is averaged around it. Recovery is a conversation, not a formula.</dd>
+<dt>Initials</dt><dd>A display choice, not anonymity — hover shows the full name, and results are shared openly within the team. Nothing leaves the team as a file; anything shared onward is a screenshot chosen together.</dd>
+</dl>
+</details>
+</div>
 <div class="tip" id="tip"></div>
 <script>
 'use strict';
@@ -85,6 +129,20 @@ function qCard(no,title,how,svg,take){
 function leg(c,t){ return el('span',{}, el('i',{style:`background:${c}`}), t); }
 const who = (D,i)=> `${D.people[i].initials} (${D.people[i].name})`;
 
+/* Hover definitions for the seven Dimensions (condensed from rubric/RUBRIC.md §4 —
+   that file stays canonical). Keyed by display label. */
+const DIM_DEFS = {
+  'Comfort': 'Comfort — how willing you are to use AI in your own development work: from keeping it away from anything real to reaching for it on most things, including what ships to production. Low is a position, not a fault.',
+  'Trust': 'Trust — how far you believe AI output (code, tests, docs) is correct and safe without reading it line by line. Low = you verify everything before it counts; high = you act on it largely unchecked.',
+  'Fluency': 'Fluency — practical skill with AI tools: prompting well, pointing them at the right files and context, running agent workflows, and knowing what to change when they fail.',
+  'Guardrails': 'Guardrails — how much review, disclosure, testing and policy you want wrapped around AI-assisted work. It measures how much process you want, not how responsible you are — high isn’t “careful” and low isn’t “reckless”.',
+  'Concern': 'Concern — how much risk you see in AI-assisted development: security holes, IP/licensing exposure, your own skills eroding, job impact, long-term maintainability. 5 = most concerned; high is not “negative”.',
+  'Autonomy': 'Autonomy — how unsupervised AI may act on your behalf: autocomplete → chat → an agent you approve step by step → an agent that runs on its own and comes back with a finished change.',
+  'Craft values': 'Craft values — the weight you put on general development principles: understanding every line you ship, tests, review, owning your work. Not AI-specific — a lens for reading the other Dimensions, not an adoption metric.',
+};
+const dimLabel = (x,y,label)=> el('text',{x,y,class:'name big','text-anchor':'end',
+  style:'cursor:help','data-tip':DIM_DEFS[label]||null},label);
+
 /* ---------- the five questions ---------- */
 function q1Card(D){
   const W=920,x0=190,x1=W-40,rowH=44,H=D.q1.length*rowH+50;
@@ -93,7 +151,7 @@ function q1Card(D){
   D.q1.forEach((d,i)=>{
     const y=40+i*rowH;
     svg.append(track(y,x0,x1,1,5));
-    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},d.label));
+    svg.append(dimLabel(x0-14,y+4,d.label));
     d.values.forEach((v,p)=>{
       if(v==null) return;
       svg.append(el('circle',{cx:X(v,1,5,x0,x1),cy:y+(p%2?6:-6),r:6,fill:'var(--cur)','fill-opacity':.55,
@@ -114,7 +172,7 @@ function q2Card(D){
   svg.append(el('line',{x1:mid,y1:8,x2:mid,y2:H-18,stroke:'var(--axis)'}));
   D.q2.forEach((o,i)=>{
     const y=22+i*rowH;
-    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.label));
+    svg.append(dimLabel(x0-14,y+4,o.label));
     if(o.gap==null){
       svg.append(el('text',{x:mid+8,y:y+4,class:'lbl'},'#N/A')); return;
     }
@@ -167,7 +225,7 @@ function q4Card(D){
     const lo=Math.min(...vals.map(x=>x[0])), hi=Math.max(...vals.map(x=>x[0]));
     const pl=vals.find(x=>x[0]===lo)[1], ph=vals.find(x=>x[0]===hi)[1];
     svg.append(track(y,x0,x1,1,5));
-    svg.append(el('text',{x:x0-14,y:y+4,class:'name big','text-anchor':'end'},o.label));
+    svg.append(dimLabel(x0-14,y+4,o.label));
     svg.append(el('rect',{x:X(lo,1,5,x0,x1),y:y-7,width:Math.max(2,X(hi,1,5,x0,x1)-X(lo,1,5,x0,x1)),height:14,rx:4,
       fill:'var(--cur)','fill-opacity':.25,'data-tip':`${o.label}: range ${r1(o.range)} across the team`}));
     svg.append(el('text',{x:X(lo,1,5,x0,x1)-8,y:y+4,class:'lbl','text-anchor':'end',
